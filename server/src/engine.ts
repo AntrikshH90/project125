@@ -106,13 +106,28 @@ export class Engine {
 
   // ── main entry ────────────────────────────────────────────────────────
 
+  /** Create the run record and launch it in the background. Returns immediately. */
+  start(task: string, repoUrl: string, opts: { ref?: string; baseBranch?: string } = {}): RunRecord {
+    const rec = this.newRecord(task, repoUrl);
+    this.runs.set(rec.id, rec);
+    void this.run(rec, opts);
+    return rec;
+  }
+
+  /** Blocking variant (tests/CLI). */
   async execute(task: string, repoUrl: string, opts: { ref?: string; baseBranch?: string } = {}): Promise<RunRecord> {
-    const rec: RunRecord = {
+    const rec = this.newRecord(task, repoUrl);
+    this.runs.set(rec.id, rec);
+    await this.run(rec, opts);
+    return rec;
+  }
+
+  private newRecord(task: string, repoUrl: string): RunRecord {
+    return {
       id: `run_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
       task,
       repoUrl,
-      repoRef: opts.ref,
-      status: "running",
+      status: "queued",
       createdAt: new Date().toISOString(),
       llmProvider: this.llm.name,
       sandboxProvider: this.sandbox.name,
@@ -121,9 +136,11 @@ export class Engine {
       currentAttempt: 0,
       stats: emptyStats(),
     };
-    this.runs.set(rec.id, rec);
-    const t0 = Date.now();
+  }
 
+  private async run(rec: RunRecord, opts: { ref?: string; baseBranch?: string }): Promise<void> {
+    rec.status = "running";
+    const t0 = Date.now();
     try {
       await this.executeInner(rec, opts);
       rec.status = "success";
@@ -141,7 +158,6 @@ export class Engine {
         stats: { ...rec.stats },
       });
     }
-    return rec;
   }
 
   private async executeInner(rec: RunRecord, opts: { ref?: string; baseBranch?: string }): Promise<void> {
@@ -462,12 +478,14 @@ function tail(s: string, n: number): string {
 function toOutcome(cmd: string, r: { exitCode: number; stdout: string; stderr: string; durationMs: number; checkpoint?: string | null }): TestOutcome {
   const combined = `${r.stdout}\n${r.stderr}`;
   const failures: string[] = [];
-  // jest / node:test / mocha patterns
-  const re = /✕\s+(.+)|fail(?:ing|ed)?\s*[:>]\s*(.+)|FAIL\s+(\S+)/gi;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(combined)) && failures.length < 10) {
-    const name = m[1] || m[2] || m[3];
-    if (name) failures.push(name.trim());
+  if (r.exitCode !== 0) {
+    // node:test / TAP ✖ (U+2716), jest ✕ (U+2715), mocha "failing:"
+    const re = /[✖✕]\s+([^\n(]+)|not ok \d+ - ([^\n]+)|fail(?:ing|ed)?\s*[:>]\s*([^\n]+)/gi;
+    let m: RegExpExecArray | null;
+    while ((m = re.exec(combined)) && failures.length < 10) {
+      const name = (m[1] || m[2] || m[3] || "").trim();
+      if (name && !/^\d+$/.test(name)) failures.push(name);
+    }
   }
   return {
     command: cmd,

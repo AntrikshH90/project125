@@ -38,7 +38,7 @@ export function createServer(): express.Express {
     res.json(engine.listRuns());
   });
 
-  app.post("/api/runs", async (req, res) => {
+  app.post("/api/runs", (req, res) => {
     const { task, repoUrl, ref, baseBranch } = req.body || {};
     if (!task || !repoUrl) {
       res.status(400).json({ error: "task and repoUrl required" });
@@ -48,15 +48,9 @@ export function createServer(): express.Express {
       res.status(400).json({ error: "repoUrl must be a GitHub https url" });
       return;
     }
-    // register SSE subscribers BEFORE the run starts
-    const runStarted = new Promise<{ id: string }>((resolve) => {
-      const pre = (runId: string) => resolve({ id: runId });
-      // engine.execute emits run_started with the id in events; we poll listRuns once instead
-      void pre;
-    });
-    void runStarted;
-    const rec = await engine.execute(task, repoUrl, { ref, baseBranch });
-    res.json({ id: rec.id, status: rec.status, prUrl: rec.prUrl, stats: rec.stats });
+    // launch in background; client polls /api/runs/:id (or SSE) for live events
+    const rec = engine.start(task, repoUrl, { ref, baseBranch });
+    res.status(202).json({ id: rec.id, status: rec.status });
   });
 
   // SSE: stream a run's events (replay + live)
