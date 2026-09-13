@@ -93,8 +93,8 @@ export class LocalSandbox implements SandboxProvider {
     }
     {
       const refPart = ref ? `--branch ${ref}` : "";
-      // clone into the repo dir (parent exists)
-      await exec(`git clone --depth 50 ${refPart} ${JSON.stringify(repoUrl)} repo`, {
+      // clone with LF endings so diffs stay minimal on Windows hosts
+      await exec(`git clone -c core.autocrlf=false -c core.eol=lf --depth 50 ${refPart} ${JSON.stringify(repoUrl)} repo`, {
         cwd: path.dirname(d),
         maxBuffer: 16 * 1024 * 1024,
       });

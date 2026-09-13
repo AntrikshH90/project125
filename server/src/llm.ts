@@ -83,7 +83,6 @@ export class NebiusLlm implements LlmProvider {
 export class MockLlm implements LlmProvider {
   readonly name = "mock";
   readonly models = { coder: "mock-coder-7b", planner: "mock-planner-3b" };
-  private patchCalls = 0;
   private n = 0;
 
   async chat(
@@ -118,8 +117,11 @@ export class MockLlm implements LlmProvider {
         0,
       );
     } else if (all.includes("TASK: PATCH")) {
-      this.patchCalls++;
       const isFib = all.includes("fib");
+      // wrongness is keyed to the STRATEGY (minimal-patch = first attempt),
+      // not to a call counter — so the backtrack demo is reproducible on
+      // every run, even on a long-lived server process.
+      const isFirstStrategy = all.includes("Make the smallest change that fixes the failing assertion");
       const wrongFix = {
         rationale:
           "Attempt 1: guard the base case at n < 2 and return 1 to stop the recursion.",
@@ -145,7 +147,7 @@ export class MockLlm implements LlmProvider {
         ],
       };
       const patch = isFib
-        ? this.patchCalls === 1
+        ? isFirstStrategy
           ? wrongFix
           : rightFix
         : {
