@@ -1,0 +1,14 @@
+# Aanya — Grand Horizon Hotel Voice Agent
+fastapi>=0.115
+uvicorn[standard]>=0.30
+sqlalchemy>=2.0
+websockets>=12.0
+httpx>=0.27
+python-dotenv>=1.0
+numpy>=1.26
+sounddevice>=0.4.6
+edge-tts>=6.1
+miniaudio>=1.59
+vosk>=0.3.45
+# PostgreSQL (optional — SQLite needs nothing extra):
+# psycopg[binary]>=3.1

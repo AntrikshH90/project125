@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aanya · Grand Horizon Hotel — Reservation Voice Agent</title>
+<style>
+  :root{
+    --bg:#0b1020; --card:#121a33; --card2:#0e1528; --line:#232d52;
+    --txt:#e8ecff; --muted:#8b94b8; --acc:#f0b429; --acc2:#6c8cff;
+    --ok:#34d399; --warn:#f59e0b; --bad:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:
+    radial-gradient(1200px 600px at 80% -10%, #1b2a5e33, transparent),
+    radial-gradient(900px 500px at -10% 110%, #f0b42922, transparent), var(--bg);
+    color:var(--txt);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+  .phone{width:100%;max-width:920px;display:grid;grid-template-columns:340px 1fr;gap:18px}
+  @media(max-width:860px){.phone{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);
+    border-radius:18px;padding:22px}
+  .brand{display:flex;gap:12px;align-items:center}
+  .logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--acc),#d97706);
+    display:flex;align-items:center;justify-content:center;font-size:24px}
+  h1{font-size:18px;margin:0}
+  .sub{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .avatar{width:120px;height:120px;margin:18px auto 6px;border-radius:50%;
+    background:conic-gradient(from 210deg,#f0b429,#d97706,#92400e,#f0b429);
+    display:flex;align-items:center;justify-content:center;font-size:52px;
+    box-shadow:0 0 0 6px #f0b42922,0 0 34px #f0b42933;position:relative}
+  .avatar.speaking{animation:pulse 1.1s infinite}
+  .avatar.thinking{animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 6px #f0b42922,0 0 14px #f0b42933}
+    50%{box-shadow:0 0 0 10px #f0b42911,0 0 44px #f0b42966}100%{box-shadow:0 0 0 6px #f0b42922,0 0 14px #f0b42933}}
+  .state{ text-align:center;color:var(--muted);font-size:13px;margin-bottom:16px}
+  .state b{color:var(--txt)}
+  .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11.5px;
+    border:1px solid var(--line);background:#0b1226;margin-left:6px}
+  .pill.ok{color:var(--ok);border-color:#34d39955}
+  .pill.live{color:var(--acc);border-color:#f0b42955;animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.55}}
+  .meter{height:6px;border-radius:99px;background:#0b1226;border:1px solid var(--line);overflow:hidden;margin:12px 0 18px}
+  .meter i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .08s}
+  button{width:100%;padding:14px;border:0;border-radius:12px;font-size:15px;font-weight:600;
+    cursor:pointer;transition:.15s;color:#1a1206}
+  #btnCall{background:linear-gradient(135deg,var(--acc),#d97706);box-shadow:0 6px 20px #f0b42933}
+  #btnCall:hover{transform:translateY(-1px)}
+  #btnCall.on{background:linear-gradient(135deg,var(--bad),#b91c1c);color:#fff}
+  #btnMute{background:#1a24472;color:var(--txt);border:1px solid var(--line);margin-top:10px;font-weight:500}
+  .hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.5}
+  .log{height:430px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:6px}
+  .msg{max-width:86%;padding:10px 14px;border-radius:14px;font-size:14px;line-height:1.45;white-space:pre-wrap}
+  .msg.user{align-self:flex-end;background:#27408b;border-bottom-right-radius:4px}
+  .msg.agent{align-self:flex-start;background:#18223f;border:1px solid var(--line);border-bottom-left-radius:4px}
+  .msg.agent::before{content:"Aanya · ";color:var(--acc);font-weight:600;font-size:12px}
+  .sys{align-self:center;font-size:11.5px;color:var(--muted);background:#0b1226;
+    border:1px dashed var(--line);padding:4px 12px;border-radius:99px}
+  .tool{align-self:flex-start;font-size:11.5px;color:#9db4ff;background:#101a36;
+    border:1px solid #2c3a6b;padding:6px 10px;border-radius:10px;font-family:Consolas,monospace}
+  .tool b{color:var(--acc2)}
+  .typebar{display:flex;gap:8px;margin-top:14px}
+  .typebar input{flex:1;background:#0b1226;border:1px solid var(--line);border-radius:10px;
+    padding:11px 14px;color:var(--txt);font-size:14px;outline:none}
+  .typebar input:focus{border-color:var(--acc)}
+  .typebar button{width:auto;padding:11px 18px;background:#27408b;color:#fff}
+  .typebar button:disabled{opacity:.4;cursor:not-allowed}
+  .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .head h2{margin:0;font-size:15px}
+  #health{font-size:11.5px;color:var(--muted)}
+  .log::-webkit-scrollbar{width:8px}
+  .log::-webkit-scrollbar-thumb{background:#232d52;border-radius:99px}
+</style>
+</head>
+<body>
+<div class="phone">
+  <!-- ═══════════ LEFT: call panel ═══════════ -->
+  <div class="card">
+    <div class="brand">
+      <div class="logo">🏨</div>
+      <div>
+        <h1>Grand Horizon Hotel</h1>
+        <div class="sub">Front desk · Aanya (Hinglish voice agent)</div>
+      </div>
+    </div>
+
+    <div class="avatar" id="avatar">👩‍💼</div>
+    <div class="state">Aanya is <b id="stateTxt">offline</b><span class="pill" id="modePill">checking…</span></div>
+
+    <div class="meter" title="mic level"><i id="micMeter"></i></div>
+
+    <button id="btnCall">📞 Start Reservation Call</button>
+    <button id="btnMute" disabled>🔇 Mute Mic</button>
+
+    <div class="hint">
+      Mic streams to Deepgram (16 kHz PCM) · Aanya replies via ElevenLabs.<br/>
+      Speak freely — interrupt her mid-sentence anytime.<br/>
+      No mic? Type in the text bar below (mock-STT path).
+    </div>
+  </div>
+
+  <!-- ═══════════ RIGHT: live transcript ═══════════ -->
+  <div class="card">
+    <div class="head">
+      <h2>💬 Live conversation</h2>
+      <span id="health"></span>
+    </div>
+    <div class="log" id="log">
+      <div class="sys">Call not started — press “Start Reservation Call” and allow mic access.</div>
+    </div>
+    <div class="typebar">
+      <input id="typeInput" placeholder="Type instead of speaking (Hinglish welcome)…" disabled />
+      <button id="btnSend" disabled>Send</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Aanya web client — mic capture, WS transport, playback, barge-in UI.
+   Audio: 16 kHz mono s16le PCM both directions.
+   - getUserMedia → AudioWorklet downsample → WS binary frames
+   - WS binary frames from server → AudioWorklet ring buffer → speaker
+   - JSON events: state, user_text, interim, agent_text, tool, interrupt
+   - Mic gate while agent audio playing (half-duplex echo guard); server-side
+     barge-in still triggers if you start talking over Aanya. */
+
+const $ = id => document.getElementById(id);
+const log = $('log'), stateTxt = $('stateTxt'), modePill = $('modePill');
+const btnCall = $('btnCall'), btnMute = $('btnMute'), btnSend = $('btnSend');
+const typeInput = $('typeInput'), micMeter = $('micMeter'), avatar = $('avatar');
+const health = $('health');
+
+let ws = null, micCtx = null, playCtx = null, micStream = null;
+let sending = false, muted = false, connected = false;
+
+/* ---------- little audio worklet: capture + meter ---------- */
+const CAPTURE_PROC = `
+class CaptureProc extends AudioWorkletProcessor {
+  process(inputs){
+    const ch = inputs[0][0];
+    if(ch && ch.length){
+      const buf = new Int16Array(ch.length);
+      let sum = 0;
+      for(let i=0;i<ch.length;i++){
+        const s = Math.max(-1, Math.min(1, ch[i]));
+        buf[i] = s < 0 ? s*0x8000 : s*0x7FFF;
+        sum += s*s;
+      }
+      const rms = Math.sqrt(sum/ch.length);
+      this.port.postMessage({pcm: buf.buffer, rms});
+    }
+    return true;
+  }
+}
+registerProcessor('capture-proc', CaptureProc);`;
+const PLAYBACK_PROC = `
+class PlaybackProc extends AudioWorkletProcessor {
+  constructor(){
+    super();
+    this.ring = new Float32Array(48000*4);   // 4 s ring @48k output (burst-safe)
+    this.w = 0; this.r = 0;
+    this.prev = 0;
+    this.port.onmessage = e => {
+      const pcm = new Int16Array(e.data.pcm);
+      for(let i=0;i<pcm.length;i++){
+        const f = pcm[i] / 32768;
+        // upsample 16k→48k: 3 linear-interpolated steps per input sample
+        for(let k=1;k<=3;k++){
+          this._push(this.prev + (f - this.prev) * (k/3));
+        }
+        this.prev = f;
+      }
+    };
+  }
+  _push(v){
+    this.ring[this.w] = v;
+    this.w = (this.w+1) % this.ring.length;
+  }
+  process(inputs, outputs){
+    const out = outputs[0][0];
+    if(out){
+      for(let i=0;i<out.length;i++){
+        if(this.r !== this.w){
+          out[i] = this.ring[this.r];
+          this.r = (this.r+1) % this.ring.length;
+        } else out[i] = 0;
+      }
+    }
+    return true;
+  }
+}
+registerProcessor('playback-proc', PlaybackProc);`;
+
+function addLog(html, cls){ const d = document.createElement('div'); d.className = cls; d.innerHTML = html; log.appendChild(d); log.scrollTop = log.scrollHeight; }
+const esc = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function ensureCtx(){
+  if(micCtx) return;
+  micCtx = new AudioContext({sampleRate: 16000});
+  // capture node
+  const blobURL = URL.createObjectURL(new Blob([CAPTURE_PROC], {type:'application/javascript'}));
+  await micCtx.audioWorklet.addModule(blobURL);
+  // playback context (standard rate for speakers)
+  playCtx = new AudioContext({sampleRate: 48000});  // fixed 48k for 3× upsample
+  const pURL = URL.createObjectURL(new Blob([PLAYBACK_PROC], {type:'application/javascript'}));
+  await playCtx.audioWorklet.addModule(pURL);
+}
+
+/* ---------- connect / call lifecycle ---------- */
+let sttMode = 'browser';   // updated from /api/health
+async function startCall(){
+  if(connected){ endCall(); return; }
+  await ensureCtx();
+  // CRITICAL: browsers suspend AudioContext until a user gesture —
+  // the click on this button IS the gesture, so resume both contexts now.
+  try{ await micCtx.resume(); }catch(e){}
+  try{ await playCtx.resume(); }catch(e){}
+  try{
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation:true, noiseSuppression:true, autoGainControl:true }
+    });
+  }catch(e){
+    addLog('Mic access blocked — text mode still works.', 'sys');
+  }
+  ws = new WebSocket(`ws://${location.host}/voice`);
+  ws.binaryType = 'arraybuffer';
+  ws.onopen = () => {
+    connected = true; sending = true;
+    btnCall.textContent = '🔴 End Call'; btnCall.classList.add('on');
+    btnMute.disabled = false; btnSend.disabled = false; typeInput.disabled = false;
+    stateTxt.textContent = 'listening';
+    addLog('Connected 🎙️ — ab boliye, Aanya sun rahi hai.', 'sys');
+    if(micStream){
+      // ALWAYS stream mic PCM to the server (Vosk/Deepgram recognize it there)
+      startMicPipe();
+      // If server says no server-side STT is available, also use free
+      // browser SpeechRecognition as a bonus path (Chrome/Edge only).
+      if(sttMode === 'browser' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)){
+        startBrowserSTT();
+      } else if(sttMode === 'browser'){
+        addLog('⚠ Server STT unavailable + browser unsupported — type below, ya models/vosk-hi install karo.', 'sys');
+      }
+    } else {
+      addLog('Mic nahi mila — neeche type karke baat kar sakte hain.', 'sys');
+    }
+  };
+  ws.onmessage = handleServerMsg;
+  ws.onclose = () => { cleanup(); };
+  ws.onerror = () => addLog('WebSocket error — is the server running?', 'sys');
+}
+
+/* ---------- free browser STT (no Deepgram key) ---------- */
+let recog = null, recogActive = false;
+function startBrowserSTT(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recog = new SR();
+  recog.lang = 'hi-IN';          // Hindi locale → Hinglish transcribes fine
+  recog.continuous = true;
+  recog.interimResults = true;
+  recogActive = true;
+  recog.onresult = e => {
+    let interim = '', final = '';
+    for(let i = e.resultIndex; i < e.results.length; i++){
+      const r = e.results[i];
+      if(r.isFinal) final += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    // don't send while Aanya's audio is playing out of our own speakers
+    // (speech recognizer would hear HER and echo it back as user text)
+    const aanyaSpeaking = (stateTxt.textContent === 'speaking');
+    if(aanyaSpeaking) return;
+    if(interim) showInterim(interim);
+    if(final && final.trim()){
+      if(interimEl){ interimEl.remove(); interimEl = null; }
+      if(connected && ws && ws.readyState === 1){
+        ws.send(JSON.stringify({type:'text_input', text: final.trim()}));
+      }
+    }
+  };
+  recog.onend = () => {
+    // Chrome ends the session periodically — restart while the call is on
+    if(recogActive && connected){
+      try{ recog.start(); }catch(e){}
+    }
+  };
+  try{ recog.start(); }catch(e){ addLog('Browser STT start failed: '+e, 'sys'); }
+}
+function stopBrowserSTT(){
+  recogActive = false;
+  if(recog){ try{ recog.stop(); }catch(e){} recog = null; }
+}
+
+function endCall(){
+  if(ws && ws.readyState === 1) ws.send(JSON.stringify({type:'stop'}));
+  setTimeout(()=> ws && ws.close(), 200);
+}
+
+async function handleServerMsg(ev){
+  if(ev.data instanceof ArrayBuffer){ feedPlayback(ev.data); return; }
+  const m = JSON.parse(ev.data);
+  switch(m.type){
+    case 'state': setState(m.value); break;
+    case 'user_text': addLog(esc(m.text), 'user'); break;
+    case 'interim': showInterim(m.text); break;
+    case 'agent_text': addLog(esc(m.text), 'agent'); break;
+    case 'tool_start': addLog(`<b>${esc(m.name||'tool')}</b>(${esc(JSON.stringify(m.args||{}).slice(0,100))})`, 'tool'); break;
+    case 'tool_result': addLog(`↩ ${esc(JSON.stringify(m.result||{}).slice(0,160))}`, 'tool'); break;
+    case 'error': addLog('⚠ ' + esc(m.error), 'sys'); break;
+    case 'interrupt': addLog('⚡ You interrupted Aanya', 'sys'); break;
+  }
+}
+
+function setState(s){
+  stateTxt.textContent = s;
+  avatar.className = 'avatar' + (s==='speaking' ? ' speaking' : s==='thinking' ? ' thinking' : '');
+}
+
+/* ---------- mic → server ---------- */
+let workletNode = null;
+function startMicPipe(){
+  const src = micCtx.createMediaStreamSource(micStream);
+  workletNode = new AudioWorkletNode(micCtx, 'capture-proc');
+  workletNode.port.onmessage = e => {
+    const {pcm, rms} = e.data;
+    micMeter.style.width = Math.min(100, rms*260) + '%';
+    if(muted || !sending || !ws || ws.readyState !== 1) return;
+    if(gateUntil && Date.now() < gateUntil) return;  // echo guard
+    ws.send(pcm);
+  };
+  src.connect(workletNode); workletNode.connect(micCtx.destination);
+}
+
+/* echo guard: mute mic for ~350 ms after we receive agent audio */
+let gateUntil = 0;
+function feedPlayback(buf){
+  if(playbackNode){
+    playbackNode.port.postMessage({pcm: buf});
+    gateUntil = Date.now() + 350;
+  }
+}
+let playbackNode = null;
+async function initPlayback(){
+  if(playbackNode) return;
+  await ensureCtx();
+  playbackNode = new AudioWorkletNode(playCtx, 'playback-proc', {numberOfInputs:0, numberOfOutputs:1, outputChannelCount:[1]});
+  playbackNode.connect(playCtx.destination);
+}
+initPlayback();
+
+/* ---------- interim transcript bubble ---------- */
+let interimEl = null;
+function showInterim(t){
+  if(!interimEl){ interimEl = document.createElement('div'); interimEl.className='msg user'; log.appendChild(interimEl); }
+  interimEl.textContent = '… ' + t;
+  log.scrollTop = log.scrollHeight;
+  if(t && connected && sending){
+    // typing over agent speech triggers server barge-in via Deepgram VAD
+  }
+}
+
+/* ---------- misc UI ---------- */
+btnCall.onclick = startCall;
+btnMute.onclick = () => { muted = !muted; btnMute.textContent = muted ? '🎙 Unmute Mic' : '🔇 Mute Mic'; };
+btnSend.onclick = () => { const t = typeInput.value.trim(); if(t){ ws && ws.readyState===1 && ws.send(JSON.stringify({type:'text_input', text:t})); addLog(esc(t), 'user'); typeInput.value=''; } };
+typeInput.onkeydown = e => { if(e.key==='Enter') btnSend.onclick(); };
+
+function cleanup(){
+  connected = false; sending = false;
+  stopBrowserSTT();
+  btnCall.textContent = '📞 Start Reservation Call'; btnCall.classList.remove('on');
+  btnMute.disabled = true; btnSend.disabled = true; typeInput.disabled = true;
+  micMeter.style.width = '0%';
+  if(micStream){ micStream.getTracks().forEach(t=>t.stop()); micStream = null; }
+  if(workletNode){ try{workletNode.disconnect()}catch(e){} workletNode = null; }
+  stateTxt.textContent = 'offline';
+  avatar.className = 'avatar';
+}
+
+/* ---------- health check on load ---------- */
+fetch('/api/health').then(r=>r.json()).then(h=>{
+  health.textContent = h.mode;
+  sttMode = h.mode.includes('stt=browser') ? 'browser' : 'deepgram';
+  const ttsLabel = h.mode.includes('tts=edge') ? 'free neural voice' :
+                   h.mode.includes('tts=elevenlabs') ? 'ElevenLabs voice' : 'mock chime';
+  modePill.textContent = ttsLabel;
+  modePill.className = 'pill ' + (h.mode.includes('elevenlabs') ? 'ok' : 'live');
+  if(!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) && sttMode==='browser'){
+    addLog('⚠ Chrome/Edge recommended for free browser STT (SpeechRecognition).', 'sys');
+  }
+}).catch(()=>{ modePill.textContent='server offline'; modePill.className='pill'; });
+</script>
+</body>
+</html>

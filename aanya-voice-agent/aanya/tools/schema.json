@@ -1,0 +1,80 @@
+{
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "check_room_availability",
+        "description": "Check if a room of the given type is available for the date range at Grand Horizon Hotel. Returns availability, available room count, per-night price and the total price for the stay. ALWAYS call this before telling a guest any room is available.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "room_type": {
+              "type": "string",
+              "enum": ["deluxe", "executive"],
+              "description": "Room category. Deluxe = INR 3,500/night. Executive = INR 6,000/night."
+            },
+            "check_in": {
+              "type": "string",
+              "description": "Check-in date in YYYY-MM-DD format (check-in time is always 2 PM IST)"
+            },
+            "check_out": {
+              "type": "string",
+              "description": "Check-out date in YYYY-MM-DD format (check-out time is always 12 noon IST)"
+            },
+            "guests": {
+              "type": "integer",
+              "description": "Number of guests staying (optional, default 2). Deluxe max 2, Executive max 3."
+            }
+          },
+          "required": ["room_type", "check_in", "check_out"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_hotel_booking",
+        "description": "Create a confirmed room reservation at Grand Horizon Hotel and save it to the database. Call ONLY after the guest has verbally agreed to the price and you have collected their name and phone number. Returns booking_id and total price payable at the hotel.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "room_type": {
+              "type": "string",
+              "enum": ["deluxe", "executive"]
+            },
+            "check_in": {
+              "type": "string",
+              "description": "Check-in date, YYYY-MM-DD"
+            },
+            "check_out": {
+              "type": "string",
+              "description": "Check-out date, YYYY-MM-DD"
+            },
+            "guest_name": {
+              "type": "string",
+              "description": "Guest's full name as they said it"
+            },
+            "phone": {
+              "type": "string",
+              "description": "Guest's 10-digit Indian mobile number"
+            },
+            "guests": {
+              "type": "integer",
+              "description": "Number of guests (optional, default 2)"
+            },
+            "email": {
+              "type": "string",
+              "description": "Guest's e-mail (optional)"
+            },
+            "special_requests": {
+              "type": "string",
+              "description": "Any special request the guest mentioned (optional)"
+            }
+          },
+          "required": ["room_type", "check_in", "check_out", "guest_name", "phone"]
+        }
+      }
+    }
+  ],
+  "tool_choice": "auto"
+}
