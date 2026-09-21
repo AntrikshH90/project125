@@ -1,1 +1,1 @@
-{"buildCommand":"npm run build --workspaces --if-present","outputDirectory":"apps/web/dist"}
+{"buildCommand":"npm run build --workspaces --if-present","outputDirectory":"apps/web/.next"}
