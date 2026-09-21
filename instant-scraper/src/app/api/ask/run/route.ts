@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { startJob } from "@/lib/jobs/runner";
 
 export const runtime = "nodejs";
-export const maxDuration = 600;
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   try {
