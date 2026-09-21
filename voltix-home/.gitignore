@@ -39,3 +39,4 @@ Thumbs.db
 face detection_deepfake also/__pycache__/
 face detection_deepfake also/src/__pycache__/
 face detection_deepfake also/src/model_lib/__pycache__/
+.vercel

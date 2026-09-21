@@ -20,3 +20,5 @@ drizzle/meta/
 Thumbs.db
 .idea/
 .vscode/
+
+.vercel

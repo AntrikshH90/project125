@@ -8,7 +8,7 @@
     "start": "next start -p 3022"
   },
   "dependencies": {
-    "next": "15.5.4",
+    "next": "^14.2.20",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwindcss": "^3.4.17"

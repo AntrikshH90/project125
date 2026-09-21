@@ -6,3 +6,5 @@ screenshots/
 Thumbs.db
 *.pdf
 !samples/*.pdf
+
+.vercel

@@ -2,3 +2,5 @@ downloads/
 .env
 node_modules/
 .next/
+
+.vercel
