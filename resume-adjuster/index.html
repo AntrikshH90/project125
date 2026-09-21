@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resume Adjuster — tailor any resume to a job, keep ATS 100%</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Browser-side PDF fallback. jsPDF for output. -->
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">⟁</span>
+      <h1>Resume Adjuster</h1>
+      <span class="tag">upload once · tailor forever · ATS-clean PDF</span>
+    </div>
+    <nav class="steps" aria-label="Workflow">
+      <span class="step active" data-step="1">1 · Upload</span>
+      <span class="step" data-step="2">2 · Vault &amp; Job</span>
+      <span class="step" data-step="3">3 · Tailor</span>
+      <span class="step" data-step="4">4 · Export</span>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <!-- LEFT COLUMN: INPUTS -->
+    <section class="col col-left">
+      <!-- Upload card -->
+      <article class="card" id="card-upload">
+        <h2>1. Upload resume</h2>
+        <p class="muted">PDF, DOCX, or TXT. We extract text and lock the layout. Nothing is uploaded to a third party — parsing happens on this device (or your local server).</p>
+
+        <label class="dropzone" id="dropzone">
+          <input type="file" id="file-input" accept=".pdf,.docx,.txt" hidden />
+          <div class="dz-inner">
+            <div class="dz-icon">⬆</div>
+            <div class="dz-title">Drop resume here or <u>browse</u></div>
+            <div class="dz-sub">PDF · DOCX · TXT · max 20 MB</div>
+          </div>
+        </label>
+
+        <div class="parse-status" id="parse-status" hidden>
+          <div class="row">
+            <span class="badge" id="parse-method">—</span>
+            <span class="muted" id="parse-filename">—</span>
+            <span class="muted" id="parse-bytes">—</span>
+          </div>
+          <progress id="parse-progress" max="100" value="0"></progress>
+        </div>
+
+        <details class="advanced">
+          <summary>Advanced parsing options</summary>
+          <div class="row gap">
+            <label><input type="checkbox" id="opt-server" checked /> Use local server parser (faster, recommended)</label>
+          </div>
+          <div class="row gap">
+            <label><input type="checkbox" id="opt-section-headers" checked /> Auto-detect section headers (Summary, Experience, Skills…)</label>
+          </div>
+        </details>
+      </article>
+
+      <!-- Job description -->
+      <article class="card" id="card-jd">
+        <h2>2. Job description</h2>
+        <p class="muted">Paste the full job posting. We extract keywords, must-haves, and nice-to-haves for ATS scoring.</p>
+        <textarea id="jd-input" rows="10" placeholder="Paste the job description here… include responsibilities, requirements, and any listed tech stack. More text = better matching."></textarea>
+        <div class="row gap">
+          <button class="btn ghost" id="jd-sample">Load sample JD</button>
+          <button class="btn ghost" id="jd-clear">Clear</button>
+          <span class="spacer"></span>
+          <span class="muted" id="jd-stats">0 words</span>
+        </div>
+
+        <div class="jd-extract" id="jd-extract" hidden>
+          <h3>Extracted signals</h3>
+          <div class="chips" id="jd-keywords"></div>
+          <div class="row gap small">
+            <span class="muted">Must-haves:</span>
+            <span class="chips" id="jd-must"></span>
+          </div>
+          <div class="row gap small">
+            <span class="muted">Nice-to-haves:</span>
+            <span class="chips" id="jd-nice"></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Skills vault -->
+      <article class="card" id="card-vault">
+        <h2>3. Skills vault <span class="muted small">(all the skills you have — used to auto-fill matches)</span></h2>
+
+        <div class="row gap">
+          <input type="text" id="vault-input" placeholder="e.g. Next.js, Prisma, Figma, leadership, public speaking" />
+          <button class="btn primary" id="vault-add">Add</button>
+        </div>
+
+        <div class="vault-tabs">
+          <button class="tab active" data-cat="all">All</button>
+          <button class="tab" data-cat="tech">Tech</button>
+          <button class="tab" data-cat="tool">Tools</button>
+          <button class="tab" data-cat="soft">Soft</button>
+          <button class="tab" data-cat="lang">Languages</button>
+          <button class="tab" data-cat="cert">Certifications</button>
+        </div>
+
+        <div class="vault-list" id="vault-list"></div>
+
+        <details class="advanced">
+          <summary>Import / Export</summary>
+          <div class="row gap">
+            <button class="btn ghost" id="vault-export">Export JSON</button>
+            <label class="btn ghost as-label">
+              Import JSON<input type="file" id="vault-import" accept=".json" hidden />
+            </label>
+            <button class="btn danger ghost" id="vault-clear">Clear vault</button>
+          </div>
+        </details>
+      </article>
+    </section>
+
+    <!-- CENTER COLUMN: LIVE PREVIEW -->
+    <section class="col col-center">
+      <article class="card preview-card">
+        <div class="preview-toolbar">
+          <div class="row gap">
+            <h2>Live preview</h2>
+            <span class="badge" id="layout-badge">Layout: detected</span>
+          </div>
+          <div class="row gap">
+            <label class="select-wrap">
+              Template
+              <select id="tpl-select">
+                <option value="classic">Classic single-column</option>
+                <option value="modern">Modern two-column</option>
+                <option value="compact">Compact (1 page)</option>
+                <option value="minimal">Minimal</option>
+              </select>
+            </label>
+            <label class="select-wrap">
+              Size
+              <select id="size-select">
+                <option value="11">11 pt</option>
+                <option value="10" selected>10 pt</option>
+                <option value="9">9 pt</option>
+              </select>
+            </label>
+            <button class="btn primary" id="btn-export">Export PDF</button>
+          </div>
+        </div>
+
+        <div class="preview-frame">
+          <div class="paper" id="paper">
+            <div class="paper-empty" id="paper-empty">
+              <h3>No resume loaded yet</h3>
+              <p>Upload a PDF/DOCX/TXT resume and paste a job description to get a tailored, ATS-clean version.</p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- RIGHT COLUMN: ATS + INJECTION -->
+    <section class="col col-right">
+      <article class="card score-card">
+        <h2>ATS score</h2>
+        <div class="score-ring" id="score-ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" class="ring-bg" />
+            <circle cx="60" cy="60" r="52" class="ring-fg" id="ring-fg" />
+          </svg>
+          <div class="score-num"><span id="score-num">0</span><span class="pct">%</span></div>
+        </div>
+        <p class="muted small" id="score-summary">Upload a resume and paste a job description to score.</p>
+
+        <div class="score-breakdown" id="score-breakdown">
+          <div class="bar"><label>Keyword match</label><div class="track"><i id="bar-kw"></i></div><span id="bar-kw-n">0</span></div>
+          <div class="bar"><label>Skills coverage</label><div class="track"><i id="bar-sk"></i></div><span id="bar-sk-n">0</span></div>
+          <div class="bar"><label>Format safety</label><div class="track"><i id="bar-fmt"></i></div><span id="bar-fmt-n">0</span></div>
+          <div class="bar"><label>Section completeness</label><div class="track"><i id="bar-sec"></i></div><span id="bar-sec-n">0</span></div>
+        </div>
+      </article>
+
+      <article class="card inject-card">
+        <h2>Suggestions</h2>
+        <p class="muted small">Keywords from the JD matched against your vault. Click ✓ to inject, ⨯ to skip. We never modify your layout — only content inside detected sections.</p>
+        <div class="suggest-list" id="suggest-list">
+          <div class="empty">No suggestions yet.</div>
+        </div>
+        <div class="row gap">
+          <button class="btn ghost" id="inject-all">Inject all matches</button>
+          <button class="btn ghost" id="recompute">Recompute</button>
+        </div>
+      </article>
+
+      <article class="card tips-card">
+        <h2>ATS rules we enforce</h2>
+        <ul class="tips">
+          <li>✓ Single-column body (no tables for layout)</li>
+          <li>✓ Standard section names (Experience, Education, Skills, Summary)</li>
+          <li>✓ No images, icons, or fancy headers in body</li>
+          <li>✓ Real text — never a scanned image</li>
+          <li>✓ Plain bullet characters (•, not custom glyphs)</li>
+          <li>✓ Contact info in plain text at the top</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <footer class="footer">
+    <span>Runs locally · your resume never leaves the machine.</span>
+    <span class="muted">Resume Adjuster v1.0</span>
+  </footer>
+</body>
+</html>

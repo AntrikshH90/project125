@@ -1,0 +1,8 @@
+node_modules/
+exports/
+screenshots/
+*.log
+.DS_Store
+Thumbs.db
+*.pdf
+!samples/*.pdf

@@ -1,0 +1,24 @@
+Senior Full-Stack Engineer
+
+We are looking for a Senior Full-Stack Engineer to join our product team. You will own features end-to-end, from architecture through deployment, and partner closely with design and product.
+
+Required:
+- 5+ years of experience with React, Next.js, and TypeScript
+- Strong Node.js / Express or Fastify background
+- PostgreSQL, Prisma or similar ORM
+- Docker, CI/CD, and AWS or GCP experience
+- Experience designing REST APIs and GraphQL
+- Solid understanding of testing (Jest, Playwright or Cypress)
+- Excellent communication and collaboration skills
+
+Preferred:
+- Experience with Kubernetes and Terraform
+- Familiarity with vector databases, embeddings, or LLM/RAG systems
+- Product mindset; comfortable with user research and A/B testing
+- Contributions to open-source
+
+You will:
+- Ship customer-facing features in a fast-paced environment
+- Mentor junior engineers and lead code reviews
+- Partner with design on UX decisions
+- Help shape our engineering culture and roadmap

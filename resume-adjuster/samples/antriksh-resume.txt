@@ -1,0 +1,50 @@
+Antriksh Yadav
+Senior Software Engineer · antrikshyadav97@gmail.com · linkedin.com/in/antrikshyadav97 · github.com/Antriksh-Lab · Bengaluru, India
+
+Summary
+Full-stack engineer with 6+ years building production web applications. Strong in React, TypeScript, and Node.js with a focus on performance, accessibility, and shipping. Led teams of 3-5 at two startups and contributed to open-source.
+
+Experience
+Senior Full-Stack Engineer — Apex Intelligence
+Jan 2023 – Present · Remote
+- Architected a multi-tenant SaaS dashboard using Next.js, Prisma, and PostgreSQL, serving 12k+ monthly users
+- Reduced page load time by 62% by migrating from client-side rendering to server components and edge caching
+- Built an internal admin panel with role-based access control used by 30+ staff members
+- Mentored 3 junior engineers; ran weekly code reviews and architecture sessions
+
+Full-Stack Engineer — Ember & Oak Restaurants
+Mar 2021 – Dec 2022 · Bengaluru
+- Shipped a 3D restaurant booking experience with React Three Fiber, GSAP, and Express/Mongo
+- Implemented a real-time availability engine handling 200+ concurrent bookings per minute
+- Owned the payments integration with Stripe and Razorpay, reducing checkout drop-off by 28%
+
+Software Engineer — Voltix Access
+Jul 2019 – Feb 2021 · Hyderabad
+- Built a face-recognition door access system using OpenCV, Python, and a Raspberry Pi edge device
+- Designed a REST API in Flask for device provisioning, audit logs, and remote unlock
+- Wrote 200+ unit tests; CI pipeline via GitHub Actions
+
+Education
+B.Tech in Computer Science — IIIT Hyderabad
+2015 – 2019 · CGPA 8.4/10
+
+Projects
+Emergency Mitra (SIH'26 Grand Prize Winner)
+- Built a Progressive Web App for emergency medical response used by 50k+ users
+- Tech: React, Service Workers, IndexedDB, Mapbox GL
+
+Voltix Face Recognition
+- Open-source face-recognition access system with Python and OpenCV
+- 400+ GitHub stars
+
+Skills
+JavaScript, TypeScript, React, Next.js, Node.js, Express, PostgreSQL, MongoDB, Prisma, Docker, AWS, GitHub Actions, Tailwind, GraphQL, REST, Jest, Playwright, Figma, Jira, Scrum
+
+Certifications
+AWS Certified Developer – Associate, Google Cloud Associate Engineer, Meta Front-End Developer
+
+Languages
+English (fluent), Hindi (native)
+
+Interests
+Open-source contribution, 3D web (Three.js), motorcycling

@@ -1,0 +1,16 @@
+{
+  "name": "resume-adjuster",
+  "version": "1.0.0",
+  "description": "Tailor any PDF/DOCX resume to a job description with a skills vault, ATS scoring, and re-flowed PDF output — original layout preserved.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "mammoth": "^1.7.2"
+  }
+}
