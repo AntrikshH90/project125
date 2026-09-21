@@ -1,0 +1,32 @@
+{
+  "name": "dataharvest",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DataHarvest - AI-powered web scraping and dataset collection platform",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev:web": "npm run dev -w @dataharvest/web",
+    "dev:api": "npm run dev -w @dataharvest/api",
+    "dev:worker": "npm run dev -w @dataharvest/worker",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @dataharvest/core",
+    "db:push": "npm run db:push -w @dataharvest/core",
+    "infra:up": "docker compose -f docker/docker-compose.yml up -d postgres redis minio",
+    "infra:down": "docker compose -f docker/docker-compose.yml down"
+  },
+  "allowScripts": {
+    "esbuild@0.18.20": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true,
+    "msgpackr-extract@3.0.4": true
+  },
+  "dependencies": {
+  }
+}

@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-graphite-950: #0b0c0e;
+  --color-graphite-900: #101216;
+  --color-graphite-850: #14161a;
+  --color-graphite-800: #191c21;
+  --color-graphite-700: #23272e;
+  --color-graphite-600: #32373f;
+  --color-slate-text: #e2e8f0;
+  --color-slate-dim: #8a94a6;
+  --color-amber-accent: #f59e0b;
+  --color-amber-soft: #fbbf24;
+  --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-graphite-950);
+  color: var(--color-slate-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(245, 158, 11, 0.35);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-graphite-600);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d434d;
+}
+
+@keyframes dh-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.dh-pulse {
+  animation: dh-pulse 1.6s ease-in-out infinite;
+}
+
+.dh-grid-bg {
+  background-image:
+    linear-gradient(rgba(245, 158, 11, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.dh-scroll-thin {
+  scrollbar-width: thin;
+}
