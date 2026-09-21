@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root{
+  --bg:#FFFCF7;
+  --ink:#0F0F0F;
+  --ink2:#1A1A1A;
+  --primary:#FF3B30;
+  --primary2:#FF6B1A;
+  --accent:#FFC01F;
+  --navy:#0B1E3C;
+  --cream:#F5EFE6;
+  --sand:#EDE8E0;
+  --muted:#8A817C;
+  --line:rgba(15,15,15,0.12);
+  --card:#FFFFFF;
+  --radius:16px;
+}
+
+*{ scrollbar-width: thin; scrollbar-color: #0F0F0F #FFFCF7; }
+::-webkit-scrollbar{ width:7px; height:7px }
+::-webkit-scrollbar-thumb{ background:#0F0F0F; border-radius:999px }
+::-webkit-scrollbar-track{ background:transparent }
+
+html{ scroll-behavior:smooth }
+body{
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-geist-sans), 'Space Grotesk', system-ui, sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed; inset:0; pointer-events:none; opacity:0.03; z-index:9999;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* animations */
+@keyframes slideUp{ from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes float2{ 0%,100%{transform:translateY(0) rotate(-0.8deg)} 50%{transform:translateY(-6px) rotate(0.8deg)} }
+@keyframes marq{ from{transform:translateX(0)} to{transform:translateX(-50%)} }
+@keyframes shimmer{ 0%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
+@keyframes pulseDot{ 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.25);opacity:0.85} }
+@keyframes spin{ from{transform:rotate(0)} to{transform:rotate(360deg)} }
+@keyframes pipeline{ 0%{transform:translateX(-100%)} 100%{transform:translateX(400%)} }
+@keyframes wave{ 0%,100%{height:8px} 50%{height:22px} }
+@keyframes gridMove{ from{background-position:0 0} to{background-position:40px 40px} }
+
+.reveal{ opacity:0; transform:translateY(12px); transition:0.6s cubic-bezier(0.16,1,0.3,1) }
+.reveal.in{ opacity:1; transform:translateY(0) }
+
+/* focus */
+*:focus-visible{ outline:2px solid #FF3B30; outline-offset:2px }

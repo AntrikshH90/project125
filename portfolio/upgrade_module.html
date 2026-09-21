@@ -1,0 +1,875 @@
+<!-- ============================================================
+     AX-OS UPGRADE MODULE · boot sequence, keyboard OS, FX engine
+     ============================================================ -->
+<style id="axos-styles">
+/* ---------- BOOT / OPENING ANIMATION ---------- */
+#boot {
+  position: fixed; inset: 0; z-index: 100000;
+  pointer-events: auto;
+}
+#boot .boot-panel {
+  position: absolute; left: 0; width: 100%; height: 50.5%;
+  background: #0c0d0b;
+  transition: transform .85s cubic-bezier(.76, 0, .24, 1);
+}
+#boot .boot-panel.top { top: 0; border-bottom: 1px solid rgba(214,255,98,.25); }
+#boot .boot-panel.bottom { bottom: 0; }
+#boot.done .boot-panel.top { transform: translateY(-101%); }
+#boot.done .boot-panel.bottom { transform: translateY(101%); }
+.boot-core {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 18px;
+  transition: opacity .35s ease, transform .35s ease;
+}
+#boot.done .boot-core { opacity: 0; transform: scale(.96); }
+.boot-mark {
+  width: 58px; height: 58px; border: 2px solid #d6ff62; border-radius: 16px;
+  display: grid; place-items: center; color: #d6ff62;
+  font: 700 22px/1 "Courier New", monospace;
+  animation: bootPulse 1.6s ease-in-out infinite;
+}
+@keyframes bootPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214,255,98,.35); transform: rotate(0deg); }
+  50% { box-shadow: 0 0 0 14px rgba(214,255,98,0); transform: rotate(90deg); }
+}
+.boot-name {
+  margin: 0; color: #efeee8; letter-spacing: .12em;
+  font: 700 clamp(22px, 5vw, 44px)/1.1 "Courier New", monospace;
+  text-align: center; min-height: 1.1em;
+}
+.boot-name .glyph { color: #d6ff62; }
+.boot-role {
+  margin: 0; color: #85877f; font: 700 11px/1.6 "Courier New", monospace;
+  letter-spacing: .22em; text-transform: uppercase; text-align: center;
+  border-right: 2px solid #d6ff62; padding-right: 4px; white-space: nowrap;
+  overflow: hidden; max-width: 92vw;
+}
+.boot-bar {
+  width: min(360px, 72vw); height: 3px; background: rgba(239,238,232,.14);
+  border-radius: 99px; overflow: hidden;
+}
+#boot-bar-fill {
+  display: block; height: 100%; width: 0%;
+  background: linear-gradient(90deg, #d6ff62, #b8a2ff);
+  border-radius: 99px;
+}
+.boot-meta {
+  display: flex; justify-content: space-between; width: min(360px, 72vw);
+  color: #85877f; font: 700 10px/1 "Courier New", monospace; letter-spacing: .18em;
+}
+#boot-hint { color: #5c5e56; font: 700 10px/1 "Courier New", monospace; letter-spacing: .18em; margin: 6px 0 0; }
+
+/* hero entrance stagger after curtain lift */
+body.booted .hero-copy > * { animation: heroUp .9s cubic-bezier(.22,1,.36,1) both; }
+body.booted .hero-copy > *:nth-child(1) { animation-delay: .05s; }
+body.booted .hero-copy > *:nth-child(2) { animation-delay: .12s; }
+body.booted .hero-copy > *:nth-child(3) { animation-delay: .19s; }
+body.booted .hero-copy > *:nth-child(4) { animation-delay: .26s; }
+body.booted .hero-copy > *:nth-child(5) { animation-delay: .33s; }
+body.booted .hero-copy > *:nth-child(6) { animation-delay: .40s; }
+body.booted .scene-wrap { animation: heroUp 1.1s .25s cubic-bezier(.22,1,.36,1) both; }
+body.booted .ticker { animation: heroUp 1.1s .45s cubic-bezier(.22,1,.36,1) both; }
+@keyframes heroUp {
+  from { opacity: 0; transform: translateY(34px) scale(.985); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* ---------- CUSTOM CURSOR ---------- */
+#fx-cursor, #fx-cursor-ring {
+  position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99995;
+  border-radius: 50%; opacity: 0; transition: opacity .25s ease;
+  will-change: transform;
+}
+#fx-cursor { width: 7px; height: 7px; background: #d6ff62; margin: -3.5px 0 0 -3.5px; }
+#fx-cursor-ring {
+  width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  border: 1.5px solid rgba(23,24,22,.55);
+  transition: opacity .25s ease, width .2s ease, height .2s ease, margin .2s ease, border-color .2s ease;
+}
+#fx-cursor-ring.hot {
+  width: 54px; height: 54px; margin: -27px 0 0 -27px;
+  border-color: #d6ff62; border-style: dashed;
+  animation: ringSpin 4s linear infinite;
+}
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+body.fx-cursor-on #fx-cursor, body.fx-cursor-on #fx-cursor-ring { opacity: 1; }
+@media (pointer: fine) {
+  body.fx-cursor-on, body.fx-cursor-on a, body.fx-cursor-on button { cursor: none; }
+}
+@media (pointer: coarse) { #fx-cursor, #fx-cursor-ring { display: none; } }
+
+/* ---------- KEYCAP HUD ---------- */
+#keycap-hud {
+  position: fixed; left: 18px; bottom: 18px; z-index: 99930;
+  display: flex; align-items: center; gap: 8px; pointer-events: none;
+}
+#keycap-hud .cap {
+  min-width: 46px; height: 46px; padding: 0 12px;
+  display: grid; place-items: center;
+  background: #171816; color: #d6ff62; border-radius: 10px;
+  border: 1px solid rgba(214,255,98,.4);
+  box-shadow: 0 4px 0 rgba(214,255,98,.28), 0 12px 30px rgba(0,0,0,.35);
+  font: 700 15px/1 "Courier New", monospace;
+}
+#keycap-hud .cap.pop { animation: capPop .3s cubic-bezier(.22,1,.36,1); }
+@keyframes capPop {
+  0% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(6px) scale(.94); box-shadow: 0 1px 0 rgba(214,255,98,.28); }
+  100% { transform: translateY(0) scale(1); }
+}
+#keycap-hud .trail { display: flex; gap: 5px; }
+#keycap-hud .trail span {
+  min-width: 26px; height: 26px; padding: 0 6px; display: grid; place-items: center;
+  background: rgba(23,24,22,.85); color: rgba(239,238,232,.6); border-radius: 7px;
+  font: 700 10px/1 "Courier New", monospace;
+  border: 1px solid rgba(239,238,232,.14);
+}
+@media (pointer: coarse) { #keycap-hud { display: none; } }
+
+/* ---------- TOASTS ---------- */
+#toast-stack {
+  position: fixed; top: 96px; right: 20px; z-index: 99980;
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+  max-width: min(340px, calc(100vw - 40px));
+}
+.ax-toast {
+  display: flex; align-items: center; gap: 10px;
+  background: #171816; color: #efeee8; border-radius: 14px;
+  border: 1px solid rgba(214,255,98,.35);
+  padding: 12px 16px; font: 700 12px/1.4 "Courier New", monospace; letter-spacing: .04em;
+  box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  animation: toastIn .45s cubic-bezier(.22,1,.36,1);
+}
+.ax-toast.out { animation: toastOut .35s ease forwards; }
+.ax-toast .ico { font-size: 17px; }
+@keyframes toastIn { from { opacity: 0; transform: translateX(40px) scale(.9); } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(40px) scale(.9); } }
+
+/* ---------- COMMAND PALETTE ---------- */
+#cmdk {
+  position: fixed; inset: 0; z-index: 99970; display: none;
+  background: rgba(12,13,11,.55); backdrop-filter: blur(6px);
+  padding: 12vh 20px 20px;
+}
+#cmdk.open { display: block; }
+.cmdk-box {
+  width: min(600px, 100%); margin: 0 auto; background: #efeee8; border-radius: 20px;
+  border: 1px solid rgba(23,24,22,.2); overflow: hidden;
+  box-shadow: 0 40px 90px rgba(0,0,0,.45);
+  animation: cmdIn .3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes cmdIn { from { opacity: 0; transform: translateY(-16px) scale(.97); } }
+.cmdk-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-bottom: 1px solid rgba(23,24,22,.12); }
+.cmdk-head .prompt { color: #8061f2; font: 700 14px/1 "Courier New", monospace; }
+#cmdk-input {
+  flex: 1; border: 0; background: transparent; outline: none; color: #171816;
+  font: 700 15px/1.2 "Courier New", monospace;
+}
+#cmdk-list { list-style: none; margin: 0; padding: 8px; max-height: 46vh; overflow: auto; }
+#cmdk-list li {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 14px; border-radius: 12px; cursor: pointer;
+  font: 700 13px/1.3 "Courier New", monospace; color: #171816;
+}
+#cmdk-list li .kbd {
+  background: #171816; color: #d6ff62; border-radius: 6px; padding: 4px 8px;
+  font-size: 10px; letter-spacing: .08em;
+}
+#cmdk-list li[aria-selected="true"] { background: #d6ff62; }
+#cmdk-list li .grp { color: #85877f; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+.cmdk-foot {
+  display: flex; gap: 14px; padding: 10px 18px; border-top: 1px solid rgba(23,24,22,.12);
+  color: #85877f; font: 700 10px/1 "Courier New", monospace; letter-spacing: .12em;
+}
+
+/* ---------- HELP OVERLAY ---------- */
+#keys-help {
+  position: fixed; inset: 0; z-index: 99970; display: none;
+  background: rgba(12,13,11,.72); backdrop-filter: blur(8px);
+  overflow: auto; padding: 6vh 20px;
+}
+#keys-help.open { display: block; }
+.help-box {
+  width: min(860px, 100%); margin: 0 auto; background: #efeee8; border-radius: 24px;
+  padding: clamp(22px, 4vw, 40px);
+  border: 1px solid rgba(23,24,22,.2); box-shadow: 0 40px 90px rgba(0,0,0,.5);
+  animation: cmdIn .3s cubic-bezier(.22,1,.36,1);
+}
+.help-box h3 {
+  margin: 0 0 4px; font: 700 clamp(20px, 3.4vw, 30px)/1.15 "Courier New", monospace;
+  color: #171816; letter-spacing: .02em;
+}
+.help-box .sub { color: #85877f; font: 700 11px/1.6 "Courier New", monospace; letter-spacing: .16em; text-transform: uppercase; margin: 0 0 22px; }
+.help-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.krow {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border: 1px solid rgba(23,24,22,.14); border-radius: 14px; background: rgba(255,255,255,.4);
+}
+.krow .key {
+  min-width: 34px; height: 34px; padding: 0 9px; display: grid; place-items: center;
+  background: #171816; color: #d6ff62; border-radius: 9px;
+  font: 700 13px/1 "Courier New", monospace;
+  box-shadow: 0 3px 0 rgba(214,255,98,.35);
+}
+.krow .what { font: 700 12px/1.4 "Courier New", monospace; color: #171816; }
+.krow .what small { display: block; color: #85877f; font-size: 10px; letter-spacing: .06em; }
+.help-secret {
+  margin-top: 18px; padding: 14px 16px; border-radius: 14px;
+  background: #171816; color: #b8a2ff;
+  font: 700 11px/1.7 "Courier New", monospace; letter-spacing: .08em;
+}
+.help-close {
+  margin-top: 20px; background: #d6ff62; color: #171816; border: 0; border-radius: 99px;
+  padding: 13px 22px; font: 700 12px/1 "Courier New", monospace; letter-spacing: .1em;
+}
+
+/* ---------- FX LAYERS ---------- */
+#warp-canvas, #confetti-canvas {
+  position: fixed; inset: 0; pointer-events: none; display: none;
+}
+#warp-canvas { z-index: 99940; }
+#confetti-canvas { z-index: 99990; display: block; }
+#crt-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 99950; display: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.5) 100%);
+  mix-blend-mode: multiply;
+}
+body.crt #crt-overlay { display: block; animation: crtFlicker 3.5s steps(2) infinite; }
+body.crt { text-shadow: .5px 0 rgba(255,0,60,.35), -.5px 0 rgba(0,255,255,.35); }
+@keyframes crtFlicker { 0%,100% { opacity: 1; } 50% { opacity: .86; } }
+#spotlight {
+  position: fixed; inset: 0; pointer-events: none; z-index: 99960; display: none;
+  background: radial-gradient(420px circle at var(--mx, 50vw) var(--my, 50vh), transparent 0%, rgba(5,6,4,.94) 62%);
+}
+body.spotlight #spotlight { display: block; }
+body.party #party-overlay { display: block; }
+#party-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 99945; display: none;
+  background: linear-gradient(120deg, #ff754d33, #d6ff6233, #b8a2ff33, #ff754d33);
+  background-size: 300% 300%;
+  animation: partyFlow 5s linear infinite;
+}
+@keyframes partyFlow { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+
+/* ---------- LIGHTS-OUT (DARK) MODE ---------- */
+html.lights-out { filter: invert(1) hue-rotate(180deg) brightness(.96) contrast(.96); }
+html.lights-out img, html.lights-out video, html.lights-out iframe, html.lights-out .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+html.lights-out { color-scheme: dark; }
+
+/* ---------- AVATAR RAIN ---------- */
+.ax-rain {
+  position: fixed; top: -120px; z-index: 99985; pointer-events: none;
+  animation: axFall linear forwards;
+}
+.ax-rain img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+@keyframes axFall { to { transform: translateY(120vh) rotate(var(--spin, 360deg)); } }
+
+/* ---------- IDLE HINT + FAB ---------- */
+#idle-hint {
+  position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 80px);
+  z-index: 99920; pointer-events: none;
+  background: #171816; color: #efeee8; border: 1px solid rgba(214,255,98,.4);
+  border-radius: 99px; padding: 11px 18px;
+  font: 700 11px/1 "Courier New", monospace; letter-spacing: .12em;
+  transition: transform .5s cubic-bezier(.22,1,.36,1);
+}
+#idle-hint.show { transform: translate(-50%, 0); }
+#idle-hint b { color: #d6ff62; }
+#help-fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 99925;
+  width: 52px; height: 52px; border-radius: 50%; border: 0;
+  background: #d6ff62; color: #171816; display: none; place-items: center;
+  font: 700 20px/1 "Courier New", monospace; box-shadow: 0 12px 30px rgba(0,0,0,.3);
+}
+@media (pointer: coarse) { #help-fab { display: grid; } }
+
+/* tilt cards */
+.project-card { transform-style: preserve-3d; will-change: transform; }
+
+@media (max-width: 640px) {
+  #toast-stack { top: auto; bottom: 78px; right: 12px; }
+  .help-grid { grid-template-columns: 1fr; }
+  #cmdk { padding-top: 8vh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #boot .boot-panel, body.booted .hero-copy > *, body.booted .scene-wrap, body.booted .ticker { animation: none !important; transition: none !important; }
+  .ax-rain, #party-overlay, body.crt #crt-overlay { animation: none !important; }
+}
+</style>
+
+<!-- FX layers + overlays -->
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
+<canvas id="warp-canvas" aria-hidden="true"></canvas>
+<div id="crt-overlay" aria-hidden="true"></div>
+<div id="party-overlay" aria-hidden="true"></div>
+<div id="spotlight" aria-hidden="true"></div>
+<div id="fx-cursor" aria-hidden="true"></div>
+<div id="fx-cursor-ring" aria-hidden="true"></div>
+
+<div id="keycap-hud" aria-hidden="true">
+  <div class="trail" id="keycap-trail"></div>
+  <div class="cap" id="keycap-main">⌨</div>
+</div>
+
+<div id="toast-stack" role="status" aria-live="polite"></div>
+
+<div id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk-box">
+    <div class="cmdk-head">
+      <span class="prompt">❯</span>
+      <input id="cmdk-input" type="text" placeholder="Type a command or section… (try “matrix”)" autocomplete="off" spellcheck="false" aria-label="Command input" />
+      <span class="mono muted" style="font-size:10px">ESC</span>
+    </div>
+    <ul id="cmdk-list" role="listbox" aria-label="Commands"></ul>
+    <div class="cmdk-foot"><span>↑↓ NAVIGATE</span><span>↵ RUN</span><span>ESC CLOSE</span></div>
+  </div>
+</div>
+
+<div id="keys-help" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div class="help-box">
+    <h3>AX-OS · Keyboard Control Deck</h3>
+    <p class="sub">This portfolio is a keyboard-first instrument. Play it.</p>
+    <div class="help-grid" id="help-grid"></div>
+    <div class="help-secret">✦ SECRET LAYER — Konami code (↑ ↑ ↓ ↓ ← → ← → B A) triggers a supernova. So does G. Now you know.</div>
+    <button type="button" class="help-close" id="help-close">CLOSE DECK ✕</button>
+  </div>
+</div>
+
+<div id="idle-hint">PSST… PRESS <b>?</b> FOR THE SECRET DECK</div>
+<button type="button" id="help-fab" aria-label="Open keyboard shortcuts">?</button>
+
+<div id="boot" role="presentation">
+  <div class="boot-panel top"></div>
+  <div class="boot-panel bottom"></div>
+  <div class="boot-core">
+    <div class="boot-mark">AX</div>
+    <h1 class="boot-name" id="boot-name"></h1>
+    <p class="boot-role" id="boot-role"></p>
+    <div class="boot-bar"><span id="boot-bar-fill"></span></div>
+    <div class="boot-meta"><span>AX-OS v2.0 · LOADING PORTFOLIO</span><span id="boot-pct">0%</span></div>
+    <p id="boot-hint">PRESS ANY KEY TO SKIP</p>
+  </div>
+</div>
+
+<script>
+(function () {
+"use strict";
+
+var doc = document, win = window;
+var reduceMotion = false;
+try { reduceMotion = win.matchMedia && win.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+var finePointer = true;
+try { finePointer = !win.matchMedia || !win.matchMedia("(pointer: coarse)").matches; } catch (e) {}
+var raf = win.requestAnimationFrame ? win.requestAnimationFrame.bind(win) : function (cb) { return setTimeout(cb, 16); };
+var caf = win.cancelAnimationFrame ? win.cancelAnimationFrame.bind(win) : clearTimeout;
+
+function $(id) { return doc.getElementById(id); }
+function typing() {
+  var el = doc.activeElement;
+  if (!el) return false;
+  var tag = (el.tagName || "").toLowerCase();
+  return tag === "input" || tag === "textarea" || el.isContentEditable;
+}
+
+/* ============ TOASTS ============ */
+var toastStack = $("toast-stack");
+function axToast(msg, icon) {
+  if (!toastStack) return;
+  var t = doc.createElement("div");
+  t.className = "ax-toast";
+  t.innerHTML = '<span class="ico">' + (icon || "✦") + '</span><span></span>';
+  t.lastChild.textContent = msg;
+  toastStack.appendChild(t);
+  while (toastStack.children.length > 4) toastStack.removeChild(toastStack.firstChild);
+  setTimeout(function () {
+    t.classList.add("out");
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+  }, 2600);
+}
+
+/* ============ KEYCAP HUD ============ */
+var keycapMain = $("keycap-main"), keycapTrail = $("keycap-trail");
+var KEY_LABELS = { ArrowUp: "↑", ArrowDown: "↓", ArrowLeft: "←", ArrowRight: "→", Escape: "ESC", Enter: "↵", " ": "SPACE", Control: "CTRL", Meta: "⌘", Shift: "⇧", Alt: "ALT", "?": "?" };
+function keyLabel(k) { return KEY_LABELS[k] || (k && k.length === 1 ? k.toUpperCase() : (k || "").toUpperCase().slice(0, 5)); }
+function showKeycap(k) {
+  if (!keycapMain) return;
+  keycapMain.textContent = keyLabel(k);
+  keycapMain.classList.remove("pop");
+  void keycapMain.offsetWidth;
+  keycapMain.classList.add("pop");
+  if (keycapTrail) {
+    var s = doc.createElement("span");
+    s.textContent = keyLabel(k);
+    keycapTrail.appendChild(s);
+    while (keycapTrail.children.length > 4) keycapTrail.removeChild(keycapTrail.firstChild);
+  }
+}
+
+/* ============ SOUND BLIPS ============ */
+var soundOn = false, audioCtx = null;
+function beep(freq, dur) {
+  if (!soundOn) return;
+  try {
+    if (!audioCtx) audioCtx = new (win.AudioContext || win.webkitAudioContext)();
+    var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = "square"; o.frequency.value = freq || 660;
+    g.gain.setValueAtTime(0.035, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + (dur || 0.07));
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + (dur || 0.07) + 0.02);
+  } catch (e) {}
+}
+
+/* ============ CONFETTI + CLICK SPARKS ============ */
+var confCanvas = $("confetti-canvas"), confCtx = confCanvas ? confCanvas.getContext("2d") : null;
+var confParts = [], confRunning = false;
+var CONF_COLORS = ["#d6ff62", "#b8a2ff", "#ff754d", "#171816", "#8061f2", "#efeee8"];
+function sizeConf() {
+  if (!confCanvas) return;
+  confCanvas.width = win.innerWidth; confCanvas.height = win.innerHeight;
+}
+sizeConf();
+win.addEventListener("resize", sizeConf);
+function confLoop() {
+  if (!confCtx) return;
+  confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
+  for (var i = confParts.length - 1; i >= 0; i--) {
+    var p = confParts[i];
+    p.vy += 0.12; p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life--;
+    if (p.life <= 0 || p.y > confCanvas.height + 40) { confParts.splice(i, 1); continue; }
+    confCtx.save();
+    confCtx.translate(p.x, p.y); confCtx.rotate(p.rot);
+    confCtx.fillStyle = p.color; confCtx.globalAlpha = Math.min(1, p.life / 30);
+    confCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+    confCtx.restore();
+  }
+  if (confParts.length) { confRunning = true; raf(confLoop); }
+  else { confRunning = false; confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height); }
+}
+function startConf() { if (!confRunning) { confRunning = true; raf(confLoop); } }
+function confettiBurst(x, y, n) {
+  if (reduceMotion) return;
+  x = x == null ? win.innerWidth / 2 : x; y = y == null ? win.innerHeight / 3 : y;
+  for (var i = 0; i < (n || 90); i++) {
+    var a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 8;
+    confParts.push({
+      x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 4,
+      w: 4 + Math.random() * 7, h: 6 + Math.random() * 9,
+      rot: Math.random() * 6.3, vr: (Math.random() - .5) * .3,
+      color: CONF_COLORS[(Math.random() * CONF_COLORS.length) | 0],
+      life: 90 + Math.random() * 60
+    });
+  }
+  startConf();
+}
+doc.addEventListener("pointerdown", function (e) {
+  if (reduceMotion) return;
+  for (var i = 0; i < 8; i++) {
+    var a = Math.random() * Math.PI * 2, sp = 1.5 + Math.random() * 3;
+    confParts.push({ x: e.clientX, y: e.clientY, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1.5, w: 3, h: 4, rot: Math.random() * 6.3, vr: (Math.random() - .5) * .4, color: CONF_COLORS[(Math.random() * CONF_COLORS.length) | 0], life: 34 });
+  }
+  startConf();
+});
+
+/* ============ WARP STARFIELD ============ */
+var warpCanvas = $("warp-canvas"), warpCtx = warpCanvas ? warpCanvas.getContext("2d") : null;
+var warpOn = false, warpStars = [], warpAnim = 0, warpSpeed = 2;
+function sizeWarp() { if (warpCanvas) { warpCanvas.width = win.innerWidth; warpCanvas.height = win.innerHeight; } }
+sizeWarp(); win.addEventListener("resize", sizeWarp);
+function warpLoop() {
+  if (!warpOn || !warpCtx) return;
+  var w = warpCanvas.width, h = warpCanvas.height, cx = w / 2, cy = h / 2;
+  warpCtx.fillStyle = "rgba(10,11,9,.35)"; warpCtx.fillRect(0, 0, w, h);
+  warpSpeed = Math.min(28, warpSpeed + 0.12);
+  for (var i = 0; i < warpStars.length; i++) {
+    var s = warpStars[i];
+    var pz = s.z; s.z -= warpSpeed;
+    if (s.z <= 1) { s.x = (Math.random() - .5) * w * 2; s.y = (Math.random() - .5) * h * 2; s.z = w; pz = s.z; }
+    var k = 128 / s.z, pk = 128 / pz;
+    var x = cx + s.x * k, y = cy + s.y * k, px = cx + s.x * pk, py = cy + s.y * pk;
+    warpCtx.strokeStyle = "rgba(214,255,98," + Math.min(1, (1 - s.z / w) + .2) + ")";
+    warpCtx.lineWidth = Math.max(1, 2.2 * k);
+    warpCtx.beginPath(); warpCtx.moveTo(px, py); warpCtx.lineTo(x, y); warpCtx.stroke();
+  }
+  warpAnim = raf(warpLoop);
+}
+function toggleWarp() {
+  warpOn = !warpOn;
+  if (warpOn) {
+    warpCanvas.style.display = "block";
+    warpStars = [];
+    for (var i = 0; i < 320; i++) warpStars.push({ x: (Math.random() - .5) * win.innerWidth * 2, y: (Math.random() - .5) * win.innerHeight * 2, z: 1 + Math.random() * win.innerWidth });
+    warpSpeed = 2;
+    warpLoop();
+    axToast("Warp drive engaged — hold on.", "🚀");
+  } else {
+    caf(warpAnim);
+    warpCanvas.style.display = "none";
+    if (warpCtx) warpCtx.clearRect(0, 0, warpCanvas.width, warpCanvas.height);
+    axToast("Dropped out of warp.", "🛬");
+  }
+  beep(warpOn ? 880 : 320, .12);
+}
+
+/* ============ MODE TOGGLES ============ */
+function toggleLights() {
+  var on = doc.documentElement.classList.toggle("lights-out");
+  axToast(on ? "Lights out. Dark mode engaged." : "Lights on. Paper mode restored.", on ? "🌙" : "☀️");
+  beep(on ? 240 : 720);
+}
+function toggleCRT() {
+  var on = doc.body.classList.toggle("crt");
+  axToast(on ? "CRT terminal mode: 1984 activated." : "CRT mode off. Screen pristine.", on ? "📺" : "🖥️");
+  beep(on ? 200 : 600);
+}
+function toggleSpotlight() {
+  var on = doc.body.classList.toggle("spotlight");
+  axToast(on ? "Spotlight on. The stage is yours." : "Spotlight off. House lights up.", "🔦");
+  beep(on ? 500 : 400);
+}
+function toggleParty() {
+  var on = doc.body.classList.toggle("party");
+  axToast(on ? "Party protocol: initiated. 🪩" : "Party protocol: cooled down.", on ? "🪩" : "🧊");
+  if (on) confettiBurst(win.innerWidth / 2, win.innerHeight / 2, 130);
+  beep(on ? 990 : 300, .1);
+}
+function toggleSound() {
+  soundOn = !soundOn;
+  axToast(soundOn ? "Key blips ON — every press sings." : "Key blips muted.", soundOn ? "🔊" : "🔇");
+  beep(760);
+}
+function toggleFullscreen() {
+  if (!doc.fullscreenElement) {
+    (doc.documentElement.requestFullscreen ? doc.documentElement.requestFullscreen() : Promise.reject()).catch(function () { axToast("Fullscreen blocked by browser.", "⚠️"); });
+    axToast("Fullscreen: edge to edge.", "⛶");
+  } else {
+    doc.exitFullscreen && doc.exitFullscreen();
+    axToast("Fullscreen exited.", "");
+  }
+}
+function avatarRain() {
+  if (reduceMotion) { axToast("Avatar rain skipped (reduced motion).", "️"); return; }
+  for (var i = 0; i < 22; i++) {
+    (function (i) {
+      setTimeout(function () {
+        var d = doc.createElement("div");
+        d.className = "ax-rain";
+        var size = 42 + Math.random() * 60;
+        d.style.width = size + "px"; d.style.height = size + "px";
+        d.style.left = Math.random() * 96 + "vw";
+        d.style.animationDuration = (2.4 + Math.random() * 2.2) + "s";
+        d.style.setProperty("--spin", ((Math.random() - .5) * 900) + "deg");
+        var img = doc.createElement("img");
+        img.src = "images/antriksh-avatar-head.png"; img.alt = "";
+        d.appendChild(img);
+        doc.body.appendChild(d);
+        setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 5200);
+      }, i * 90);
+    })(i);
+  }
+  axToast("Avatar rain! Because why not.", "🌧️");
+  beep(1040, .12);
+}
+function goTo(sel, label) {
+  var el = typeof sel === "string" ? doc.querySelector(sel) : sel;
+  if (el) { el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }); axToast("Jumping → " + label, "🧭"); }
+}
+
+/* ============ MATRIX (re-exports existing engine) ============ */
+function toggleMatrix() {
+  if (typeof win.toggleMatrixDigitalRain === "function") win.toggleMatrixDigitalRain();
+  var c = $("matrix-rain-canvas");
+  var on = c && c.classList.contains("active");
+  axToast(on ? "Matrix digital rain: follow the white rabbit." : "Matrix rain stopped. Welcome back to reality.", on ? "🐇" : "💊");
+  beep(on ? 520 : 260, .1);
+}
+
+/* ============ OVERLAYS: HELP + PALETTE ============ */
+var helpEl = $("keys-help"), cmdkEl = $("cmdk"), cmdkInput = $("cmdk-input"), cmdkList = $("cmdk-list");
+var SECTIONS = [
+  ["#work", "Work · The experiment shelf", "1"],
+  ["#apex", "Apex Intelligence studio", "2"],
+  ["#credentials", "Credential Book", "3"],
+  ["#about", "About Antriksh", "4"],
+  ["#playground", "Playground · particle lab", "5"],
+  [".contact-section", "Contact · start a conversation", "6"]
+];
+var ACTIONS = [
+  ["matrix", "Toggle Matrix digital rain", "M", toggleMatrix],
+  ["lights", "Lights-out dark mode", "T", toggleLights],
+  ["confetti", "Confetti cannon", "C", function () { confettiBurst(); axToast("Confetti cannon fired!", "🎉"); }],
+  ["warp", "Warp-speed starfield", "W", toggleWarp],
+  ["crt", "Retro CRT terminal mode", "R", toggleCRT],
+  ["spotlight", "Spotlight cursor mode", "S", toggleSpotlight],
+  ["party", "Party protocol", "P", toggleParty],
+  ["avatar", "Avatar rain", "A", avatarRain],
+  ["sound", "Key blips on/off", "U", toggleSound],
+  ["fullscreen", "Toggle fullscreen", "F", toggleFullscreen],
+  ["supernova", "Trigger supernova", "G", function () { win.dispatchEvent(new KeyboardEvent("keydown", { key: "g", bubbles: true })); }],
+  ["help", "Open this shortcut deck", "?", function () { openHelp(); }]
+];
+function overlayOpen() { return (helpEl && helpEl.classList.contains("open")) || (cmdkEl && cmdkEl.classList.contains("open")); }
+function openHelp() {
+  if (!helpEl) return;
+  closeCmdk();
+  helpEl.classList.add("open");
+  doc.body.classList.add("modal-open");
+  var btn = $("help-close"); if (btn) btn.focus();
+}
+function closeHelp() {
+  if (!helpEl) return;
+  helpEl.classList.remove("open");
+  if (!cmdkEl.classList.contains("open")) doc.body.classList.remove("modal-open");
+}
+function openCmdk() {
+  if (!cmdkEl) return;
+  closeHelp();
+  cmdkEl.classList.add("open");
+  doc.body.classList.add("modal-open");
+  cmdkInput.value = "";
+  renderCmdk("");
+  setTimeout(function () { cmdkInput.focus(); }, 30);
+}
+function closeCmdk() {
+  if (!cmdkEl) return;
+  cmdkEl.classList.remove("open");
+  if (!helpEl.classList.contains("open")) doc.body.classList.remove("modal-open");
+}
+function closeOverlays() { closeHelp(); closeCmdk(); }
+
+/* build help grid */
+(function buildHelp() {
+  var grid = $("help-grid"); if (!grid) return;
+  var rows = [];
+  ACTIONS.forEach(function (a) { rows.push([a[2], a[1], "action"]); });
+  SECTIONS.forEach(function (s) { rows.push([s[2], "Jump to " + s[1], "nav"]); });
+  rows.push(["K", "Command palette (Ctrl/⌘+K too)", "system"]);
+  rows.push(["?", "This shortcut deck", "system"]);
+  rows.push(["ESC", "Close any overlay", "system"]);
+  grid.innerHTML = rows.map(function (r) {
+    return '<div class="krow"><span class="key">' + r[0] + '</span><span class="what">' + r[1] + '<small>' + r[2].toUpperCase() + '</small></span></div>';
+  }).join("");
+})();
+
+/* palette rendering */
+var cmdkItems = [], cmdkSel = 0;
+function renderCmdk(q) {
+  if (!cmdkList) return;
+  q = (q || "").trim().toLowerCase();
+  cmdkItems = [];
+  SECTIONS.forEach(function (s) { cmdkItems.push({ label: s[1], grp: "GO TO", kbd: s[2], run: function () { goTo(s[0], s[1]); } }); });
+  ACTIONS.forEach(function (a) { cmdkItems.push({ label: a[1], grp: "ACTION", kbd: a[2], run: a[3] }); });
+  cmdkItems.push({ label: "GitHub · Antriksh-Lab", grp: "LINK", kbd: "↗", run: function () { win.open("https://github.com/Antriksh-Lab", "_blank"); } });
+  cmdkItems.push({ label: "LinkedIn", grp: "LINK", kbd: "↗", run: function () { win.open("https://www.linkedin.com/in/antrikshyadav97", "_blank"); } });
+  cmdkItems.push({ label: "Email Antriksh", grp: "LINK", kbd: "↗", run: function () { win.location.href = "mailto:antrikshyadav97@gmail.com"; } });
+  if (q) cmdkItems = cmdkItems.filter(function (it) { return (it.label + " " + it.grp).toLowerCase().indexOf(q) !== -1; });
+  cmdkSel = 0;
+  cmdkList.innerHTML = cmdkItems.length ? cmdkItems.map(function (it, i) {
+    return '<li role="option" aria-selected="' + (i === 0) + '" data-i="' + i + '"><span>' + it.label + ' <span class="grp">· ' + it.grp + '</span></span><span class="kbd">' + it.kbd + '</span></li>';
+  }).join("") : '<li aria-selected="false"><span>No match. The machine shrugs.</span><span class="kbd">∅</span></li>';
+}
+function cmdkMove(d) {
+  var lis = cmdkList.querySelectorAll("li"); if (!lis.length) return;
+  cmdkSel = (cmdkSel + d + lis.length) % lis.length;
+  lis.forEach(function (li, i) { li.setAttribute("aria-selected", String(i === cmdkSel)); });
+  lis[cmdkSel].scrollIntoView({ block: "nearest" });
+}
+function cmdkRun() {
+  var it = cmdkItems[cmdkSel]; if (!it) return;
+  closeCmdk();
+  setTimeout(it.run, 60);
+}
+if (cmdkInput) {
+  cmdkInput.addEventListener("input", function () { renderCmdk(cmdkInput.value); });
+  cmdkInput.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowDown") { e.preventDefault(); cmdkMove(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); cmdkMove(-1); }
+    else if (e.key === "Enter") { e.preventDefault(); cmdkRun(); }
+  });
+}
+if (cmdkList) cmdkList.addEventListener("click", function (e) {
+  var li = e.target.closest("li"); if (!li) return;
+  cmdkSel = Number(li.dataset.i || 0); cmdkRun();
+});
+if (cmdkEl) cmdkEl.addEventListener("pointerdown", function (e) { if (e.target === cmdkEl) closeCmdk(); });
+if (helpEl) helpEl.addEventListener("pointerdown", function (e) { if (e.target === helpEl) closeHelp(); });
+var helpCloseBtn = $("help-close"); if (helpCloseBtn) helpCloseBtn.addEventListener("click", closeHelp);
+var fab = $("help-fab"); if (fab) fab.addEventListener("click", openHelp);
+
+/* ============ MASTER KEY MANAGER ============ */
+var KEY_ACTIONS = {
+  m: toggleMatrix, t: toggleLights, c: function () { confettiBurst(); axToast("Confetti cannon fired!", "🎉"); },
+  w: toggleWarp, r: toggleCRT, s: toggleSpotlight, p: toggleParty, a: avatarRain,
+  u: toggleSound, f: toggleFullscreen,
+  "1": function () { goTo("#work", "Work"); }, "2": function () { goTo("#apex", "Apex"); },
+  "3": function () { goTo("#credentials", "Credential Book"); }, "4": function () { goTo("#about", "About"); },
+  "5": function () { goTo("#playground", "Playground"); }, "6": function () { goTo(".contact-section", "Contact"); }
+};
+doc.addEventListener("keydown", function (e) {
+  showKeycap(e.key);
+  idleReset();
+  if (soundOn && e.key.length === 1) beep(500 + Math.random() * 400, .05);
+
+  if (e.key === "Escape") { closeOverlays(); return; }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); overlayOpen() ? closeCmdk() : openCmdk(); return; }
+  if (typing()) return;
+
+  if (e.key === "?" ) { overlayOpen() ? closeOverlays() : openHelp(); return; }
+  if (e.key.toLowerCase() === "h" && !overlayOpen()) { openHelp(); return; }
+  if (e.key.toLowerCase() === "k" && !overlayOpen()) { openCmdk(); return; }
+  if (overlayOpen()) return;
+
+  var fn = KEY_ACTIONS[e.key.toLowerCase()];
+  if (fn && !e.ctrlKey && !e.metaKey && !e.altKey) { fn(); }
+}, true);
+
+/* ============ SPOTLIGHT POINTER TRACKING ============ */
+doc.addEventListener("pointermove", function (e) {
+  doc.body.style.setProperty("--mx", e.clientX + "px");
+  doc.body.style.setProperty("--my", e.clientY + "px");
+  var sp = $("spotlight");
+  if (sp) { sp.style.setProperty("--mx", e.clientX + "px"); sp.style.setProperty("--my", e.clientY + "px"); }
+  cursorMove(e.clientX, e.clientY);
+}, { passive: true });
+
+/* ============ CUSTOM CURSOR ============ */
+var curDot = $("fx-cursor"), curRing = $("fx-cursor-ring");
+var cx = -100, cy = -100, rx = -100, ry = -100, cursorSeen = false;
+function cursorMove(x, y) {
+  if (!finePointer || reduceMotion) return;
+  cx = x; cy = y;
+  if (!cursorSeen) { cursorSeen = true; doc.body.classList.add("fx-cursor-on"); rx = x; ry = y; cursorLoop(); }
+}
+function cursorLoop() {
+  rx += (cx - rx) * 0.16; ry += (cy - ry) * 0.16;
+  if (curDot) curDot.style.transform = "translate(" + cx + "px," + cy + "px)";
+  if (curRing) curRing.style.transform = "translate(" + rx + "px," + ry + "px)";
+  raf(cursorLoop);
+}
+doc.addEventListener("pointerover", function (e) {
+  if (!curRing) return;
+  var hot = e.target.closest && e.target.closest("a, button, .project-card, input, [role='option']");
+  curRing.classList.toggle("hot", !!hot);
+});
+
+/* ============ 3D TILT ON PROJECT CARDS ============ */
+if (finePointer && !reduceMotion) {
+  var tiltCard = null;
+  doc.addEventListener("pointermove", function (e) {
+    var card = e.target.closest ? e.target.closest(".project-card") : null;
+    if (card !== tiltCard) {
+      if (tiltCard) tiltCard.style.transform = "";
+      tiltCard = card;
+    }
+    if (!card) return;
+    var r = card.getBoundingClientRect();
+    var px = (e.clientX - r.left) / r.width - .5, py = (e.clientY - r.top) / r.height - .5;
+    card.style.transform = "perspective(800px) rotateX(" + (-py * 7).toFixed(2) + "deg) rotateY(" + (px * 9).toFixed(2) + "deg) translateY(-3px)";
+  }, { passive: true });
+  doc.addEventListener("pointerout", function (e) {
+    if (tiltCard && !e.relatedTarget) { tiltCard.style.transform = ""; tiltCard = null; }
+    else if (tiltCard && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest(".project-card"))) { tiltCard.style.transform = ""; tiltCard = null; }
+  });
+}
+
+/* ============ SCRAMBLE-DECODE SECTION TITLES ============ */
+var SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#01";
+function scrambleEl(el, dur) {
+  var final = el.textContent, len = final.length, start = null;
+  dur = dur || 750;
+  function frame(ts) {
+    if (!start) start = ts;
+    var p = Math.min(1, (ts - start) / dur), out = "";
+    for (var i = 0; i < len; i++) {
+      if (final[i] === " ") { out += " "; continue; }
+      out += (i / len < p) ? final[i] : SCRAMBLE_CHARS[(Math.random() * SCRAMBLE_CHARS.length) | 0];
+    }
+    el.textContent = out;
+    if (p < 1) raf(frame); else el.textContent = final;
+  }
+  raf(frame);
+}
+if ("IntersectionObserver" in win && !reduceMotion) {
+  var scrObs = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (en.isIntersecting) { scrambleEl(en.target); scrObs.unobserve(en.target); }
+    });
+  }, { threshold: 0.6 });
+  ["work-title", "apex-title", "cred-title", "about-title", "lab-title"].forEach(function (id) {
+    var el = $(id); if (el) scrObs.observe(el);
+  });
+}
+
+/* ============ IDLE HINT ============ */
+var idleTimer = null, idleHint = $("idle-hint");
+function idleReset() {
+  if (idleHint) idleHint.classList.remove("show");
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(function () { if (idleHint && !overlayOpen()) idleHint.classList.add("show"); }, 12000);
+}
+idleReset();
+
+/* ============ BOOT SEQUENCE ============ */
+var bootEl = $("boot"), bootName = $("boot-name"), bootRole = $("boot-role"),
+    bootFill = $("boot-bar-fill"), bootPct = $("boot-pct");
+var BOOT_NAME = "ANTRIKSH YADAV", BOOT_ROLE = "AI/ML ENGINEER · FOUNDER, APEX INTELLIGENCE";
+var bootFinished = false;
+function finishBoot(instant) {
+  if (bootFinished || !bootEl) return;
+  bootFinished = true;
+  doc.documentElement.classList.remove("booting");
+  doc.body.classList.add("booted");
+  bootEl.classList.add("done");
+  setTimeout(function () { if (bootEl && bootEl.parentNode) bootEl.parentNode.removeChild(bootEl); }, instant ? 60 : 1000);
+}
+function runBoot() {
+  if (!bootEl) { doc.documentElement.classList.remove("booting"); return; }
+  var revisit = false;
+  try { revisit = win.sessionStorage && win.sessionStorage.getItem("ax-booted") === "1"; } catch (e) {}
+  try { win.sessionStorage && win.sessionStorage.setItem("ax-booted", "1"); } catch (e) {}
+  if (reduceMotion) { finishBoot(true); return; }
+  var total = revisit ? 700 : 1900, start = null;
+  var roleLen = 0;
+  function frame(ts) {
+    if (bootFinished) return;
+    if (!start) start = ts;
+    var p = Math.min(1, (ts - start) / total);
+    var eased = 1 - Math.pow(1 - p, 3);
+    if (bootFill) bootFill.style.width = (eased * 100).toFixed(1) + "%";
+    if (bootPct) bootPct.textContent = Math.round(eased * 100) + "%";
+    var reveal = Math.floor(eased * BOOT_NAME.length);
+    if (bootName) {
+      var s = "";
+      for (var i = 0; i < BOOT_NAME.length; i++) {
+        if (BOOT_NAME[i] === " ") { s += " "; continue; }
+        s += i < reveal ? BOOT_NAME[i] : '<span class="glyph">' + SCRAMBLE_CHARS[(Math.random() * SCRAMBLE_CHARS.length) | 0] + "</span>";
+      }
+      bootName.innerHTML = s;
+    }
+    if (bootRole) {
+      var rl = Math.floor(eased * BOOT_ROLE.length);
+      if (rl !== roleLen) { roleLen = rl; bootRole.textContent = BOOT_ROLE.slice(0, rl); }
+    }
+    if (p < 1) raf(frame);
+    else setTimeout(function () { finishBoot(false); }, 220);
+  }
+  raf(frame);
+  var skip = function () { finishBoot(false); };
+  win.addEventListener("keydown", skip, { once: true });
+  win.addEventListener("pointerdown", skip, { once: true });
+}
+/* failsafe: never trap the user behind the curtain */
+setTimeout(function () { finishBoot(true); }, 6000);
+runBoot();
+
+/* welcome toast once booted */
+setTimeout(function () {
+  if (bootFinished) axToast("Welcome. Press ? to open the control deck.", "⌨️");
+}, 2600);
+
+})();
+</script>

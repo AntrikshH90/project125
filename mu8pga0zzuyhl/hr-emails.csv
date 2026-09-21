@@ -1,0 +1,11 @@
+email,source,type
+hr@google.com,pattern:google.com,pattern (verify)
+careers@google.com,pattern:google.com,pattern (verify)
+jobs@google.com,pattern:google.com,pattern (verify)
+talent@google.com,pattern:google.com,pattern (verify)
+hiring@google.com,pattern:google.com,pattern (verify)
+jobs-apply@google.com,pattern:google.com,pattern (verify)
+hr-team@google.com,pattern:google.com,pattern (verify)
+talent-acquisition@google.com,pattern:google.com,pattern (verify)
+recruiter@google.com,pattern:google.com,pattern (verify)
+recruiting@google.com,pattern:google.com,pattern (verify)
