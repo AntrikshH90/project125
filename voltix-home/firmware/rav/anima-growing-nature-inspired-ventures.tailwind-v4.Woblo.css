@@ -1,0 +1,40 @@
+/* Design system extracted from Anima - Growing nature-inspired ventures */
+@theme {
+
+    /* Colors */
+    --color-neutral-50: oklch(0.9701 0.0085 197);
+    --color-neutral-100: oklch(0.9403 0.0087 205.9);
+    --color-neutral-200: oklch(0.9001 0.0098 204.9);
+    --color-neutral-300: oklch(0.8305 0.0121 196.9);
+    --color-neutral-400: oklch(0.7392 0.0125 203.4);
+    --color-neutral-500: oklch(0.6306 0.0141 202.8);
+    --color-neutral-600: oklch(0.5196 0.0123 204);
+    --color-neutral-700: oklch(0.4199 0.0117 204.8);
+    --color-neutral-800: oklch(0.3188 0.0098 207.1);
+    --color-neutral-900: oklch(0.2203 0.0089 196.5);
+    --color-neutral-950: oklch(0.13 0.0065 196.4);
+
+    /* Spacing */
+    --spacing-1: 0.0625rem;
+    --spacing-11: 0.6875rem;
+    --spacing-22.5: 1.4063rem;
+    --spacing-33.5: 2.0938rem;
+    --spacing-46.5: 2.9063rem;
+    --spacing-56: 3.5rem;
+    --spacing-112.5: 7.0313rem;
+
+    /* Border Radius */
+    --radius-md: 0.3511rem;
+    --radius-xl: 0.7022rem;
+
+    /* Typography */
+    --text-11.2344px: 0.7022rem;
+    --text-15.7281px: 0.983rem;
+    --text-20.2219px: 1.2639rem;
+    --text-31.4562px: 1.966rem;
+    --text-35.95px: 2.2469rem;
+    --text-44.9375px: 2.8086rem;
+    --text-71.9px: 4.4938rem;
+    --text-143.8px: 8.9875rem;
+    --text-168.516px: 10.5322rem;
+}

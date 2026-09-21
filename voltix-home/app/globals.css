@@ -1,0 +1,290 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-display: swap;
+  font-family: 'Parabole';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/Parabole.b980a9.woff2') format('woff2'),
+       url('/fonts/Parabole.7a888d.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/HelveticaNeue-Bold.890665.woff2') format('woff2'),
+       url('/fonts/HelveticaNeue-Bold.a80b06.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Helvetica Neue';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/HelveticaNeue-Light.2ef193.woff2') format('woff2'),
+       url('/fonts/HelveticaNeue-Light.cb2304.woff') format('woff');
+}
+
+@font-face {
+  font-display: swap;
+  font-family: 'Martian Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/MartianMono-Regular.2276a0.woff2') format('woff2'),
+       url('/fonts/MartianMono-Regular.d9e996.woff') format('woff');
+}
+
+:root {
+  --color-beige: 244 215 172;
+  --color-black: 2 2 2;
+  --color-grid: 230 230 230;
+  --color-light-gray: 189 201 202;
+  --color-light-green: 218 228 175;
+  --color-light-yellow: 245 248 184;
+  --color-lavender: 200 192 222;
+  --color-orange: 255 198 135;
+  --color-peach: 248 212 199;
+  --color-pink: 255 226 255;
+  --color-sage: 193 205 190;
+  --color-very-light-gray: 221 222 222;
+  --color-white: 255 255 255;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+body {
+  background-color: #f5f6f6;
+  color: #020202;
+  font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Authentic Noise Grain Texture from Anima */
+.noise {
+  animation: grain 10s steps(10) infinite;
+  background-image: url('/images/noise.aca613c2fc26de4f.webp');
+  background-repeat: repeat;
+}
+
+@keyframes grain {
+  0% { transform: translate(0); }
+  10% { transform: translate(-5%, -10%); }
+  20% { transform: translate(-15%, 5%); }
+  30% { transform: translate(7%, -25%); }
+  40% { transform: translate(-5%, 25%); }
+  50% { transform: translate(-15%, 10%); }
+  60% { transform: translate(15%); }
+  70% { transform: translateY(15%); }
+  80% { transform: translate(3%, 35%); }
+  to { transform: translate(-10%, 10%); }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f6f6;
+}
+::-webkit-scrollbar-thumb {
+  background: #dae4af;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #bed06c;
+}
+
+/* Marquee Running Ticker */
+@keyframes marqueeAnimation {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeAnimation 25s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@layer components {
+  /* Anima Signature Typography */
+  .font-parabole {
+    font-family: 'Parabole', 'Playfair Display', serif;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .font-mono-tag {
+    font-family: 'Martian Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Anima Precision Corner Lines */
+  .corner-lines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .corner-lines__top-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1rem;
+    background: rgba(2, 2, 2, 0.2);
+  }
+  .corner-lines__top-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 1px;
+    height: 1rem;
+    background: rgba(2, 2, 2, 0.2);
+  }
+  .corner-lines__bottom-left {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1rem;
+    background: rgba(2, 2, 2, 0.2);
+  }
+  .corner-lines__bottom-right {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 1px;
+    height: 1rem;
+    background: rgba(2, 2, 2, 0.2);
+  }
+
+  /* Anima Authentic Interactive Pill Button */
+  .anima-btn-primary {
+    position: relative;
+    height: 3.25rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    color: #020202;
+    font-family: 'Martian Mono', monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s var(--ease-out);
+  }
+  .anima-btn-primary .btn-body {
+    height: 100%;
+    background-color: #dae4af;
+    border-radius: 1rem 0 0 1rem;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    transition: background-color 0.3s ease;
+  }
+  .anima-btn-primary .btn-icon-box {
+    position: relative;
+    width: 3.25rem;
+    height: 100%;
+    background-color: #dae4af;
+    border-radius: 0 1rem 1rem 0;
+    border-left: 1px solid rgba(2, 2, 2, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  .anima-btn-primary:hover .btn-body,
+  .anima-btn-primary:hover .btn-icon-box {
+    background-color: #cddb9b;
+  }
+  .anima-btn-primary:hover .btn-icon-box svg {
+    transform: rotate(45deg);
+  }
+  .anima-btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  /* Anima Secondary Button */
+  .anima-btn-secondary {
+    position: relative;
+    height: 3.25rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 1rem;
+    color: #020202;
+    font-family: 'Martian Mono', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  .anima-btn-secondary:hover {
+    background-color: #f0f0f0;
+    border-color: #020202;
+  }
+
+  /* Anima Card Container */
+  .anima-panel {
+    position: relative;
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s var(--ease-out);
+  }
+  .anima-panel:hover {
+    border-color: #c2c2c2;
+    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.07);
+  }
+
+  .anima-panel-dark {
+    position: relative;
+    background-color: #020202;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Anima Input */
+  .anima-field {
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-family: 'Martian Mono', monospace;
+    font-size: 0.8rem;
+    color: #020202;
+    outline: none;
+    transition: all 0.2s ease;
+  }
+  .anima-field:focus {
+    border-color: #020202;
+    box-shadow: 0 0 0 2px rgba(218, 228, 175, 0.5);
+  }
+}

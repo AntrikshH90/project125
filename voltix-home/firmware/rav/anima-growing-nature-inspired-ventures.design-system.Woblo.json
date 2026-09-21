@@ -1,0 +1,116 @@
+{
+  "name": "Anima - Growing nature-inspired ventures",
+  "description": "Anima is the fast-track partner for nature-inspired projects. We partner with researchers, designers, engineers and entrepreneurs to turn breakthrough ideas into market-ready ventures with real-world impact.",
+  "ogImage": "https://www.anima.ai/wp-content/uploads/2024/11/anima-og-image.jpg",
+  "colors": {
+    "primary": {
+      "50": "#fafbf4",
+      "100": "#f4f7e9",
+      "200": "#e5ebcb",
+      "300": "#dae4af",
+      "400": "#bed06c",
+      "500": "#a7bf40",
+      "600": "#8da036",
+      "700": "#72822c",
+      "800": "#576321",
+      "900": "#41481e",
+      "950": "#2a2f13"
+    },
+    "secondary": {
+      "50": "#fafbf4",
+      "100": "#f4f7e9",
+      "200": "#e5ebcb",
+      "300": "#dae4af",
+      "400": "#bed06c",
+      "500": "#a7bf40",
+      "600": "#8da036",
+      "700": "#72822c",
+      "800": "#576321",
+      "900": "#41481e",
+      "950": "#2a2f13"
+    },
+    "accent": {
+      "50": "#fef9f1",
+      "100": "#fcf3e3",
+      "200": "#f9e3be",
+      "300": "#fad189",
+      "400": "#fcb740",
+      "500": "#f59e0b",
+      "600": "#ce8508",
+      "700": "#a76c07",
+      "800": "#7f5305",
+      "900": "#5b3e0b",
+      "950": "#3b2807"
+    },
+    "neutral": {
+      "50": "#f7f7f7",
+      "100": "#f0f0f0",
+      "200": "#dbdbdb",
+      "300": "#c2c2c2",
+      "400": "#9e9e9e",
+      "500": "#808080",
+      "600": "#6b6b6b",
+      "700": "#575757",
+      "800": "#424242",
+      "900": "#333333",
+      "950": "#020202"
+    },
+    "success": "#22c55e",
+    "warning": "#f59e0b",
+    "error": "#ef4444"
+  },
+  "typography": {
+    "fontFamily": {
+      "sans": "Helvetica Neue",
+      "mono": "Martian Mono"
+    },
+    "fontSize": {
+      "xs": "0.702rem",
+      "sm": "0.983rem",
+      "base": "1.264rem",
+      "xl": "1.966rem",
+      "2xl": "2.247rem",
+      "3xl": "2.809rem",
+      "4xl": "4.494rem",
+      "lg": "1.615rem"
+    },
+    "fontWeight": {
+      "light": "300",
+      "normal": "400",
+      "bold": "700"
+    },
+    "lineHeight": {
+      "tight": "1.25",
+      "normal": "1.5",
+      "relaxed": "1.75"
+    }
+  },
+  "spacing": {
+    "0": "0",
+    "1": "0.125rem",
+    "3": "0.75rem",
+    "6": "1.375rem",
+    "9": "2.125rem",
+    "12": "2.875rem",
+    "14": "3.5rem",
+    "28": "7rem"
+  },
+  "borderRadius": {
+    "none": "0",
+    "sm": "0.3511rem",
+    "md": "0.7022rem",
+    "lg": "100%",
+    "xl": "0.75rem",
+    "2xl": "1rem",
+    "full": "9999px"
+  },
+  "shadows": {
+    "sm": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    "md": "0 4px 6px -1px rgb(0 0 0 / 0.1)",
+    "lg": "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+    "xl": "0 20px 25px -5px rgb(0 0 0 / 0.1)"
+  },
+  "gradients": {
+    "brand-1": "linear-gradient(to top, rgb(218, 228, 175), rgba(218, 228, 175, 0))"
+  }
+}

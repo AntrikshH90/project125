@@ -1,0 +1,477 @@
+/* ============================================================
+   EMERGENCY MITRA - ANTI-FAKE REPORTING & CREDIBILITY LAYER
+   (css/trust.css)
+   ============================================================
+   Styles ONLY for the new trust/verification features:
+     1. Legal deterrent banner (BNS false-report warning)
+     2. Evidence capture panel (camera / GPS / audio chips)
+     3. Bystander identity verification modal (OTP/DigiLocker)
+     4. Credibility risk-tier badges (admin dashboard)
+     5. Live Ops Feed (on-screen demo console for judging)
+
+   Nothing here overrides existing styles.css rules - every
+   selector is namespaced under .trust-* or #trust-*.
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   1. LEGAL DETERRENT BANNER
+   Non-intrusive strip shown inside the emergency wizard and
+   bystander verification modal. Warns of penalties under
+   Bharatiya Nyaya Sanhita (BNS) for false reporting.
+   ------------------------------------------------------------ */
+.trust-legal-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: linear-gradient(135deg, #fff8e1, #ffecb3);
+    border: 1.5px solid #f59e0b;
+    border-left: 5px solid #d97706;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #78350f;
+}
+
+.trust-legal-banner .material-symbols-outlined {
+    font-size: 20px;
+    color: #b45309;
+    flex-shrink: 0;
+}
+
+.trust-legal-banner strong {
+    color: #92400e;
+}
+
+/* ------------------------------------------------------------
+   2. EVIDENCE CAPTURE PANEL (Conscious Person Mode)
+   Injected at the top of Emergency Wizard Step 4. Shows three
+   verifiable-evidence cards: LIVE PHOTO, GPS LOCK, VOICE MEMO.
+   ------------------------------------------------------------ */
+.trust-evidence-panel {
+    background: #f8fafc;
+    border: 2px dashed #94a3b8;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.trust-evidence-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.trust-evidence-panel-title {
+    font-weight: 800;
+    font-size: 14px;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.trust-evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.trust-ev-card {
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trust-ev-card.captured {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+}
+
+.trust-ev-icon {
+    font-size: 26px;
+    line-height: 1;
+    margin-bottom: 6px;
+}
+
+.trust-ev-label {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    color: #334155;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.trust-ev-status {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    min-height: 28px;
+}
+
+.trust-ev-status.ok {
+    color: #15803d;
+}
+
+.trust-ev-btn {
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 6px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    color: #fff;
+    background: #00453d;
+    margin-top: 6px;
+    transition: opacity 0.2s ease;
+}
+
+.trust-ev-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.trust-ev-btn.recording {
+    background: #ba1a1a;
+    animation: trustPulse 1s infinite;
+}
+
+.trust-cam-preview {
+    width: 100%;
+    height: 84px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #0f172a;
+    margin-bottom: 6px;
+    transform: scaleX(-1); /* mirror preview like a selfie/emergency cam */
+}
+
+
+/* ------------------------------------------------------------
+   3. BYSTANDER IDENTITY VERIFICATION MODAL (Unconscious Mode)
+   Fullscreen overlay shown before the SOS sequence runs.
+   OTP mock + DigiLocker badge verification.
+   ------------------------------------------------------------ */
+#trust-bystander-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.trust-bv-card {
+    background: #ffffff;
+    border-radius: 18px;
+    max-width: 420px;
+    width: 100%;
+    padding: 22px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+.trust-bv-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 17px;
+    color: #131b2e;
+    margin-bottom: 4px;
+}
+
+.trust-bv-sub {
+    font-size: 12.5px;
+    color: #64748b;
+    margin-bottom: 14px;
+}
+
+.trust-otp-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 12px 0;
+}
+
+.trust-otp-input {
+    width: 44px;
+    height: 52px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    outline: none;
+}
+
+.trust-otp-input:focus {
+    border-color: #00453d;
+    box-shadow: 0 0 0 3px rgba(0, 69, 61, 0.15);
+}
+
+.trust-btn-primary {
+    width: 100%;
+    background: #00453d;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.trust-btn-primary:hover { background: #075e54; }
+
+/* Legal rules list shown inside the bystander modal */
+.trust-rules-list {
+    list-style: none;
+    margin: 12px 0 4px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.trust-rules-list li {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: #334155;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 12px;
+}
+
+.trust-btn-skip {
+    width: 100%;
+    background: transparent;
+    color: #64748b;
+    border: none;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.trust-badge-digilocker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ecfdf5;
+    border: 1.5px solid #10b981;
+    color: #047857;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11.5px;
+    font-weight: 800;
+}
+
+/* ------------------------------------------------------------
+   4. CREDIBILITY RISK-TIER BADGES (Admin Dashboard)
+   Appended next to the priority badge of any case that has a
+   trust assessment attached.
+   ------------------------------------------------------------ */
+.trust-score-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+}
+
+.trust-score-chip.tier-high   { background: #dcfce7; color: #166534; border: 1.5px solid #16a34a; }
+.trust-score-chip.tier-medium { background: #fef9c3; color: #854d0e; border: 1.5px solid #ca8a04; }
+.trust-score-chip.tier-low    { background: #fee2e2; color: #991b1b; border: 1.5px solid #dc2626; }
+
+/* ------------------------------------------------------------
+   5. LIVE OPS FEED (on-screen demo console)
+   Floating panel bottom-right that surfaces every trust-engine
+   decision in real time - built for SIH live judging visibility.
+   ------------------------------------------------------------ */
+#trust-ops-feed {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    width: 330px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: rgba(15, 23, 42, 0.94);
+    border: 1.5px solid #334155;
+    border-radius: 14px;
+    color: #e2e8f0;
+    font-family: 'Consolas', monospace;
+    font-size: 11.5px;
+    z-index: 13000;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.45);
+    display: none;
+}
+
+#trust-ops-feed .ops-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(0, 69, 61, 0.9);
+    border-radius: 12px 12px 0 0;
+    font-weight: 800;
+    font-size: 11px;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+}
+
+#trust-ops-feed .ops-head button {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+}
+
+#trust-ops-feed .ops-entry {
+    padding: 5px 12px;
+    border-top: 1px solid rgba(148, 163, 184, 0.15);
+    line-height: 1.5;
+}
+
+#trust-ops-feed .ops-time { color: #38bdf8; margin-right: 6px; }
+#trust-ops-feed .ops-ok   { color: #4ade80; }
+#trust-ops-feed .ops-warn { color: #fbbf24; }
+#trust-ops-feed .ops-err  { color: #f87171; }
+#trust-ops-feed .ops-info { color: #e2e8f0; }
+
+/* ------------------------------------------------------------
+   6. USER ACCOUNT & PRE-VERIFICATION HUB
+   Overlay reuses #trust-bv-card sizing; these are its inner
+   form components.
+   ------------------------------------------------------------ */
+#account-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.acct-section {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 12px 14px 14px;
+    margin-top: 12px;
+    background: #fbfcfe;
+}
+
+.acct-section-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 800;
+    font-size: 13px;
+    color: #00453d;
+    letter-spacing: 0.3px;
+    margin-bottom: 10px;
+}
+
+.acct-section-title .material-symbols-outlined { font-size: 19px; }
+
+.acct-grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+@media (max-width: 480px) {
+    .acct-grid2 { grid-template-columns: 1fr; }
+}
+
+.acct-label {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.acct-input {
+    width: 100%;
+    border: 2px solid #cbd5e1;
+    border-radius: 9px;
+    padding: 8px 10px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    outline: none;
+    background: #fff;
+}
+
+.acct-input:focus {
+    border-color: #00453d;
+    box-shadow: 0 0 0 3px rgba(0, 69, 61, 0.12);
+}
+
+.acct-btn-sm {
+    margin-top: 10px;
+    padding: 10px !important;
+    font-size: 13px !important;
+}
+
+.acct-badge-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef9c3;
+    border: 1.5px solid #ca8a04;
+    color: #854d0e;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11.5px;
+    font-weight: 800;
+}
+
+/* Identity strength meter */
+.acct-strength-wrap {
+    background: #f1f5f9;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    color: #334155;
+}
+
+.acct-strength-bar {
+    height: 10px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.acct-strength-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #f59e0b, #16a34a);
+    transition: width 0.5s ease;
+}

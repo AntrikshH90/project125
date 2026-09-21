@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String          @id @default(cuid())
+  email        String          @unique
+  passwordHash String
+  role         String          @default("ADMIN") // ADMIN, VIEWER
+  createdAt    DateTime        @default(now())
+}
+
+model AuthorizedPerson {
+  id                 String      @id @default(cuid())
+  name               String
+  embedding          String      // JSON stringified 128-d float array
+  referenceImagePath String      // /public/snapshots/ref/...
+  createdAt          DateTime    @default(now())
+
+  accessLogs         AccessLog[]
+}
+
+model AccessLog {
+  id            String            @id @default(cuid())
+  timestamp     DateTime          @default(now())
+  personId      String?
+  person        AuthorizedPerson? @relation(fields: [personId], references: [id])
+  status        String            // GRANTED, DENIED_UNKNOWN, DENIED_LOW_CONFIDENCE
+  confidence    Float             @default(0)
+  snapshotUrl   String            // /snapshots/1690000000-frame.jpg
+  triggerSource String            @default("FACE_SCAN") // FACE_SCAN, MANUAL_OVERRIDE
+
+  @@index([timestamp(sort: Desc)])
+}
+
+model Appliance {
+  id              String       @id @default(cuid())
+  deviceId        String       // e.g. "voltix-relay-01"
+  relayChannel    Int          // 0–7 pin map index
+  name            String
+  room            String       // LIVING_ROOM, KITCHEN, BEDROOM, GARAGE, OUTDOOR
+  currentState    Boolean      @default(false) // ON/OFF
+  online          Boolean      @default(false)
+  powerWatts      Float        @default(0)     // rated consumption metadata
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([deviceId, relayChannel])
+}

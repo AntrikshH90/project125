@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  regression-tests:
+    name: Regression suites (33 tests)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Trust engine tests
+        run: node test/test-credibility-engine.js
+
+      - name: Facilities tests
+        run: node test/test-facilities.js
+
+      - name: Tutorial tests
+        run: node test/test-tutorial.js
+
+      - name: Syntax check all JS modules
+        run: |
+          for f in $(git ls-files 'js/**/*.js' 'js/*.js' 'test/*.js'); do
+            node --check "$f"
+          done

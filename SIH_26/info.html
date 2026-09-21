@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <meta content="#00453d" name="theme-color">
+    <title>Information — Emergency Mitra</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/trust.css">
+    <script src="js/tailwind-config.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/text-size.js"></script>
+</head>
+
+<!-- ========================================================================== -->
+<!-- INFO PAGES (info.html) — working legal / help content for footer links    -->
+<!--   ?page=privacy | terms | help | accessibility | outreach                 -->
+<!-- ========================================================================== -->
+
+<body
+    class="bg-surface-container-lowest text-on-background font-body-md text-base antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="bg-[#00453d] text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex justify-between items-center w-full px-4 lg:px-8 max-w-[1400px] mx-auto h-16 gap-3">
+            <a href="index.html" class="flex items-center gap-3 min-w-0 group">
+                <img src="logo.png" alt="Emergency Mitra" class="w-10 h-10 object-contain">
+                <div class="min-w-0">
+                    <div class="font-bold text-base lg:text-lg leading-tight truncate">Emergency Mitra</div>
+                    <div class="text-[11px] lg:text-xs text-white/70 leading-tight">Maharashtra Government Health
+                        Network</div>
+                </div>
+            </a>
+            <div class="flex items-center gap-2">
+                <span id="ts-mount" class="inline-flex"></span>
+                <a href="index.html"
+                    class="bg-[#71f8e4] text-[#00201c] text-xs sm:text-sm font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-white transition-all">
+                    <span class="material-symbols-outlined text-[18px]">home</span>
+                    <span class="hidden sm:inline">Home</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow w-full px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-1.5 text-xs text-on-surface-variant mb-4" aria-label="Breadcrumb">
+                <a href="index.html" class="hover:text-primary font-bold">Home</a>
+                <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                <span id="info-crumb" class="font-bold text-on-surface">Information</span>
+            </nav>
+
+            <!-- Title -->
+            <div class="flex items-center gap-3 mb-6">
+                <div class="bg-primary-container text-on-primary-container p-3 rounded-xl">
+                    <span class="material-symbols-outlined text-[32px]" id="info-icon">article</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-on-background leading-tight" id="info-title">
+                        Information</h1>
+                    <p class="text-sm text-on-surface-variant mt-0.5" id="info-sub">Emergency Mitra • Government of
+                        Maharashtra</p>
+                </div>
+            </div>
+
+            <div
+                class="bg-amber-500/10 border border-amber-500 text-amber-800 text-xs font-semibold p-3 rounded-lg mb-6 flex items-start gap-2">
+                <span class="material-symbols-outlined text-[18px]">info</span>
+                <span>Prototype documentation for the Emergency Mitra SIH demo build. Replace with officially
+                    notified policies before production deployment.</span>
+            </div>
+
+            <!-- Body -->
+            <article id="info-body"
+                class="bg-surface rounded-2xl border border-outline-variant shadow-sm p-5 lg:p-8 space-y-5 text-[15px] leading-relaxed text-[#37493f]">
+            </article>
+
+            <!-- In-page nav -->
+            <div class="flex flex-wrap gap-2 mt-8" id="info-nav"></div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/footer.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            var PAGES = {
+                privacy: {
+                    icon: 'privacy_tip', title: 'Privacy Policy',
+                    html:
+                        '<h3 class="font-extrabold text-on-surface">1. Information we collect</h3>' +
+                        '<p>Emergency Mitra collects only what is required to route help: your name (optional), ' +
+                        'mobile number for OTP verification, GPS location at the moment of an emergency report, ' +
+                        'the emergency type and symptom answers you provide, any photo/voice evidence you attach, ' +
+                        'and your medical profile (blood group, allergies, emergency contact) if you choose to ' +
+                        'save it in your Offline Passport.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">2. On-device first</h3>' +
+                        '<p>Your medical profile, symptom analyses and case evidence are stored locally on your ' +
+                        'device (localStorage / device sensors). Nothing is uploaded to any third-party cloud in ' +
+                        'this prototype. The AI symptom engine runs <b>fully on-device</b> and works without internet.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">3. Who sees your emergency report</h3>' +
+                        '<p>When you file a case, the report (type, location, trust score and your chosen medical ' +
+                        'profile) is shared only with the assigned government facility — District Hospital Wardha ' +
+                        'or the nearest capable PHC — and the 108 emergency response gateway.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">4. What we never do</h3>' +
+                        '<p>We never sell your data. We never use your health information for advertising. ' +
+                        'We never track your location when no emergency is active.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">5. Retention &amp; deletion</h3>' +
+                        '<p>Offline Passport data stays on your device until you clear it. Emergency case records ' +
+                        'are retained by the facility as per government health-record norms. Clearing your browser ' +
+                        'storage removes all locally held information in this prototype.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">6. Contact</h3>' +
+                        '<p>Data protection questions: <b>dpo@emergencymitra.gov.in</b> (prototype address).</p>'
+                },
+                terms: {
+                    icon: 'gavel', title: 'Terms of Service',
+                    html:
+                        '<h3 class="font-extrabold text-on-surface">1. Nature of this build</h3>' +
+                        '<p>Emergency Mitra is a Smart India Hackathon <b>prototype</b>. It demonstrates emergency ' +
+                        'routing, pre-arrival hospital handshake, AI triage and trust scoring. It is not a ' +
+                        'certified medical device and does not replace professional diagnosis.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">2. AI decision support</h3>' +
+                        '<p>All AI guidance (symptom checker, Mitra AI chat) is <b>decision support only</b>. ' +
+                        'In any life-threatening situation, call <b>108</b> immediately and reach the nearest ' +
+                        'government facility. The AI never prescribes prescription-only medication.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">3. False reporting is a punishable offence</h3>' +
+                        '<p>Every report carries geo-stamp, device fingerprint and a credibility score. Deliberately ' +
+                        'filing false emergency information attracts penal action under <b>BNS §54 / IPC §182</b> ' +
+                        '(false information to public servants).</p>' +
+                        '<h3 class="font-extrabold text-on-surface">4. Demo mode</h3>' +
+                        '<p>During the guided tour, Demo Mode suppresses all real case filing so users can explore ' +
+                        'safely. Cases filed outside Demo Mode in this prototype are simulated locally and reach ' +
+                        'the demo Command Center only.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">5. Officer access</h3>' +
+                        '<p>The Command Center is restricted to authorized duty officers. Prototype credentials ' +
+                        '(admin / mitra123) are for evaluation only and must be replaced with state SSO before ' +
+                        'any real deployment.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">6. Governing law</h3>' +
+                        '<p>These terms are governed by the laws of India; jurisdiction: courts at Nagpur, Maharashtra.</p>'
+                },
+                help: {
+                    icon: 'support_agent', title: 'Help Desk',
+                    html:
+                        '<h3 class="font-extrabold text-on-surface">Emergency? Call now</h3>' +
+                        '<p><b>108</b> — Ambulance &nbsp;•&nbsp; <b>112</b> — National Emergency ' +
+                        '&nbsp;•&nbsp; <b>1091</b> — Women Helpline &nbsp;•&nbsp; <b>1098</b> — Child Helpline</p>' +
+                        '<h3 class="font-extrabold text-on-surface">Using the app</h3>' +
+                        '<ul class="list-disc pl-6 space-y-1.5">' +
+                        '<li><b>Unconscious patient?</b> Press the red <b>SOS</b> button — zero typing needed.</li>' +
+                        '<li><b>Conscious patient?</b> Use <b>Start Emergency</b> — the wizard asks 3 quick steps.</li>' +
+                        '<li><b>Need a facility?</b> Use <b>Find Facilities</b> — beds, blood, antivenom, open hours.</li>' +
+                        '<li><b>Not sure how serious?</b> Use <b>AI Preliminary Triage</b> — tap symptoms or ask Mitra AI.</li>' +
+                        '</ul>' +
+                        '<h3 class="font-extrabold text-on-surface">Low connectivity?</h3>' +
+                        '<p>Emergency Mitra is offline-first: reports are queued on your device and auto-sync when ' +
+                        'network returns. SMS fallback is available for feature phones, and the AI triage works ' +
+                        'with zero internet.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">Reach the project team</h3>' +
+                        '<p>Help Desk (prototype): <b>help@emergencymitra.gov.in</b> • Toll-free: <b>1800-XXX-XXXX</b> ' +
+                        '• Hours: 24×7</p>'
+                },
+                accessibility: {
+                    icon: 'accessibility_new', title: 'Accessibility Statement',
+                    html:
+                        '<h3 class="font-extrabold text-on-surface">Our commitment</h3>' +
+                        '<p>Emergency Mitra is built for every citizen, including the elderly, low-literacy users ' +
+                        'and persons with disabilities — because in an emergency, nobody can be left behind.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">Built-in accessibility features</h3>' +
+                        '<ul class="list-disc pl-6 space-y-1.5">' +
+                        '<li><b>Text size controls</b> — A− / A / A+ / A++ in the header, remembered across pages.</li>' +
+                        '<li><b>Three languages</b> — English, &#2361;&#2367;&#2306;&#2342;&#2368;, &#2350;&#2352;&#2366;&#2336;&#2368; across the entire portal, switchable anytime.</li>' +
+                        '<li><b>Voice-first reporting</b> — speak your emergency; no typing required (IVR + speech recognition).</li>' +
+                        '<li><b>Screen-reader friendly</b> — semantic headings, ARIA labels on controls, <code>lang</code> attribute switching.</li>' +
+                        '<li><b>High-contrast medical colours</b> — status colours follow accessibility-safe palettes.</li>' +
+                        '<li><b>Keyboard support</b> — Enter/Escape/arrow navigation in the wizard, modals and tour.</li>' +
+                        '</ul>' +
+                        '<h3 class="font-extrabold text-on-surface">Standards</h3>' +
+                        '<p>The portal targets <b>WCAG 2.1 AA</b> and GIGW (Government of India) guidelines. Report ' +
+                        'any barrier to <b>accessibility@emergencymitra.gov.in</b> and we will fix it on priority.</p>'
+                },
+                outreach: {
+                    icon: 'diversity_3', title: 'Rural Outreach',
+                    html:
+                        '<h3 class="font-extrabold text-on-surface">Why rural first</h3>' +
+                        '<p>District Wardha has 150+ villages where the nearest antivenom stock can be 20+ km away. ' +
+                        'Emergency Mitra is designed for exactly these conditions: 2G networks, shared phones, ' +
+                        'voice-first usage and local languages.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">ASHA &amp; ANM integration</h3>' +
+                        '<p>ASHA and ANM workers can file cases on behalf of villagers, use the Offline Passport ' +
+                        'during field visits, and receive trust-scored cases on the same Command Center used by ' +
+                        'the district hospital.</p>' +
+                        '<h3 class="font-extrabold text-on-surface">Awareness drives</h3>' +
+                        '<ul class="list-disc pl-6 space-y-1.5">' +
+                        '<li>Village-level demos of the SOS and voice reporting flows</li>' +
+                        '<li>Snakebite season camps with antivenom facility mapping</li>' +
+                        '<li>Printed QR posters at PHCs linking straight to the portal</li>' +
+                        '<li>IVR reporting for feature-phone users (no smartphone needed)</li>' +
+                        '</ul>' +
+                        '<h3 class="font-extrabold text-on-surface">Partner with us</h3>' +
+                        '<p>Panchayats, NGOs and district health societies: ' +
+                        '<b>outreach@emergencymitra.gov.in</b></p>'
+                }
+            };
+
+            var order = ['privacy', 'terms', 'help', 'accessibility', 'outreach'];
+            var params = new URLSearchParams(window.location.search);
+            var page = params.get('page') || 'privacy';
+            if (!PAGES[page]) page = 'privacy';
+            var data = PAGES[page];
+
+            document.title = data.title + ' — Emergency Mitra';
+            document.getElementById('info-title').textContent = data.title;
+            document.getElementById('info-icon').textContent = data.icon;
+            document.getElementById('info-body').innerHTML = data.html;
+            document.getElementById('info-crumb').textContent = data.title;
+
+            var nav = document.getElementById('info-nav');
+            nav.innerHTML = order.map(function (p) {
+                var active = p === page;
+                return '<a href="info.html?page=' + p + '" class="px-3 py-2 rounded-lg text-xs font-bold border ' +
+                    (active ? 'bg-primary text-on-primary border-primary' : 'bg-surface border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary') +
+                    ' transition-colors">' + PAGES[p].title + '</a>';
+            }).join('');
+        })();
+    </script>
+</body>
+
+</html>

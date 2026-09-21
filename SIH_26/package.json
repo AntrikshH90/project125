@@ -1,0 +1,33 @@
+{
+  "name": "emergency-mitra",
+  "version": "1.0.0",
+  "description": "Trust-scored emergency routing network for rural India - Smart India Hackathon 2026 (PS-26133)",
+  "private": true,
+  "scripts": {
+    "test": "node test/test-credibility-engine.js && node test/test-facilities.js && node test/test-tutorial.js",
+    "test:trust": "node test/test-credibility-engine.js",
+    "test:facilities": "node test/test-facilities.js",
+    "test:tutorial": "node test/test-tutorial.js",
+    "start": "python -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apex-intelligence-ai/SIH_26.git"
+  },
+  "keywords": [
+    "sih",
+    "sih2026",
+    "emergency",
+    "healthcare",
+    "triage",
+    "pwa",
+    "rural-india"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "docx": "^9.7.1"
+  }
+}

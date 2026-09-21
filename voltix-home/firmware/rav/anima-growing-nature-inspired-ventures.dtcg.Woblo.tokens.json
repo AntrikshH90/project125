@@ -1,0 +1,396 @@
+{
+  "$schema": "https://designtokens.org/schemas/2025.10/tokens.json",
+  "$description": "Anima is the fast-track partner for nature-inspired projects. We partner with researchers, designers, engineers and entrepreneurs to turn breakthrough ideas into market-ready ventures with real-world impact.",
+  "color": {
+    "neutral": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9701,
+            0.0085,
+            197
+          ],
+          "alpha": 1,
+          "hex": "#eff7f7"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "100": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9403,
+            0.0087,
+            205.9
+          ],
+          "alpha": 1,
+          "hex": "#e5edee"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "200": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9001,
+            0.0098,
+            204.9
+          ],
+          "alpha": 1,
+          "hex": "#d7e0e1"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "300": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.8305,
+            0.0121,
+            196.9
+          ],
+          "alpha": 1,
+          "hex": "#bfcaca"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "400": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.7392,
+            0.0125,
+            203.4
+          ],
+          "alpha": 1,
+          "hex": "#a2adae"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "500": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.6306,
+            0.0141,
+            202.8
+          ],
+          "alpha": 1,
+          "hex": "#808c8d"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "600": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.5196,
+            0.0123,
+            204
+          ],
+          "alpha": 1,
+          "hex": "#616b6c"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "700": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.4199,
+            0.0117,
+            204.8
+          ],
+          "alpha": 1,
+          "hex": "#464f50"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "800": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.3188,
+            0.0098,
+            207.1
+          ],
+          "alpha": 1,
+          "hex": "#2d3435"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "900": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.2203,
+            0.0089,
+            196.5
+          ],
+          "alpha": 1,
+          "hex": "#161c1c"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.13,
+            0.0065,
+            196.4
+          ],
+          "alpha": 1,
+          "hex": "#050808"
+        },
+        "$extensions": {
+          "com.tikki.source": "neutralRamp"
+        }
+      }
+    },
+    "brand": {
+      "tertiary-1": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.8981,
+            0.0704,
+            116.5
+          ],
+          "alpha": 1,
+          "hex": "#dae4af"
+        },
+        "$extensions": {
+          "com.tikki.cluster-id": "oklch-898-70-1165",
+          "com.tikki.usage-count": 21,
+          "com.tikki.weight": 1.112,
+          "com.tikki.weight-share": 0.0029,
+          "com.tikki.confidence": 0.004,
+          "com.tikki.sources": {
+            "background": 1.112313100131813
+          },
+          "com.tikki.css-properties": [
+            "background-color"
+          ],
+          "com.tikki.element-tags": [
+            "DIV",
+            "A"
+          ]
+        }
+      }
+    }
+  },
+  "dimension": {
+    "spacing": {
+      "1": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "11": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "56": {
+        "$type": "dimension",
+        "$value": {
+          "value": 56,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "22.5": {
+        "$type": "dimension",
+        "$value": {
+          "value": 22.5,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "33.5": {
+        "$type": "dimension",
+        "$value": {
+          "value": 33.5,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "46.5": {
+        "$type": "dimension",
+        "$value": {
+          "value": 46.5,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      },
+      "112.5": {
+        "$type": "dimension",
+        "$value": {
+          "value": 112.5,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.tikki.scale-base": null,
+          "com.tikki.scale-fit": "custom"
+        }
+      }
+    },
+    "radius": {
+      "md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 5.61719,
+          "unit": "px"
+        }
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11.2344,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "typography": {
+    "size": {
+      "11.2344px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11.2344,
+          "unit": "px"
+        }
+      },
+      "15.7281px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 15.7281,
+          "unit": "px"
+        }
+      },
+      "20.2219px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20.2219,
+          "unit": "px"
+        }
+      },
+      "31.4562px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 31.4562,
+          "unit": "px"
+        }
+      },
+      "35.95px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 35.95,
+          "unit": "px"
+        }
+      },
+      "44.9375px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 44.9375,
+          "unit": "px"
+        }
+      },
+      "71.9px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 71.9,
+          "unit": "px"
+        }
+      },
+      "143.8px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 143.8,
+          "unit": "px"
+        }
+      },
+      "168.516px": {
+        "$type": "dimension",
+        "$value": {
+          "value": 168.516,
+          "unit": "px"
+        }
+      }
+    }
+  },
+  "semantic": {
+    "color": {
+      "text": {
+        "primary": {
+          "$type": "color",
+          "$value": "{color.neutral.fg}"
+        }
+      },
+      "surface": {
+        "canvas": {
+          "$type": "color",
+          "$value": "{color.neutral.bg}"
+        }
+      }
+    }
+  }
+}

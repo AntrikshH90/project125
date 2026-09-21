@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <meta content="#00453d" name="theme-color">
+    <meta content="telephone=no" name="format-detection">
+    <title>Officer Login — Emergency Mitra Command Center</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/trust.css">
+    <script src="js/tailwind-config.js"></script>
+    <!-- i18n engine: honors the language chosen anywhere in the portal -->
+    <script src="js/translations.js"></script>
+    <!-- Accessibility: A− / A / A+ / A++ text-size controls (govt style) -->
+    <script src="js/text-size.js"></script>
+
+    <!-- Shared credential gate (demo creds + sessionStorage session) -->
+    <script src="js/admin-auth.js"></script>
+    <script>
+        // Already holding a valid session on this tab? Skip the form.
+        if (window.AdminAuth && AdminAuth.isAuthenticated()) {
+            window.location.replace('admin.html');
+        }
+    </script>
+</head>
+
+<!-- ========================================================================== -->
+<!-- ADMIN LOGIN (admin-login.html) — credential gate to the Command Center     -->
+<!-- Prototype credentials live in js/admin-auth.js:                            -->
+<!--     admin / mitra123        (Duty Officer console)                         -->
+<!--     officer / wardha108     (Control Room console)                         -->
+<!-- Swap AdminAuth.login() for a real backend call before production.          -->
+<!-- ========================================================================== -->
+
+<body
+    class="bg-surface-container-lowest text-on-background font-body-md text-base antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <section class="w-full max-w-md mx-auto my-auto py-10">
+
+            <!-- Header -->
+            <div class="text-center mb-7">
+                <img src="logo.png" alt="Emergency Mitra"
+                    class="w-16 h-16 mx-auto object-contain mb-3">
+                <h1 class="text-2xl lg:text-3xl font-bold text-on-background">Duty Officer Sign-In</h1>
+                <p class="text-on-surface-variant text-sm mt-2 flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[18px] text-error">gpp_maybe</span>
+                    Restricted area — Emergency Mitra Command Center
+                </p>
+            </div>
+
+            <!-- Login card -->
+            <form id="admin-login-form" novalidate
+                class="bg-surface rounded-2xl border-2 border-outline-variant shadow-xl p-6 lg:p-8 space-y-5">
+                <div id="admin-login-shake" class="space-y-5">
+                    <!-- Officer ID -->
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-1.5"
+                            for="admin-user">Officer ID</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">account_circle</span>
+                            <input
+                                class="w-full pl-11 pr-4 py-3 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm font-medium"
+                                type="text" id="admin-user" name="admin-user" autocomplete="username"
+                                placeholder="e.g. admin" required />
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wide mb-1.5"
+                            for="admin-pass">Password</label>
+                        <div class="relative">
+                            <span
+                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">lock</span>
+                            <input
+                                class="w-full pl-11 pr-12 py-3 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm font-medium"
+                                type="password" id="admin-pass" name="admin-pass" autocomplete="current-password"
+                                placeholder="••••••••" required />
+                            <button type="button" id="toggle-pass" aria-label="Show / hide password"
+                                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors">
+                                <span class="material-symbols-outlined text-[20px]">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error -->
+                <p id="admin-login-error" class="hidden items-center gap-2 text-xs font-bold text-error bg-error-container text-on-error-container px-3 py-2.5 rounded-lg">
+                    <span class="material-symbols-outlined text-[16px]">error</span>
+                    <span id="admin-login-error-text">Invalid credentials.</span>
+                </p>
+
+                <!-- Submit -->
+                <button type="submit" id="admin-login-btn"
+                    class="w-full bg-[#00453d] text-white py-3.5 rounded-xl font-bold hover:bg-[#0b6b5d] transition-colors flex items-center justify-center gap-2 min-h-[52px]">
+                    <span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+                    <span id="admin-login-btn-label">Enter Command Center</span>
+                </button>
+
+                <!-- Demo hint -->
+                <div class="bg-surface-container rounded-lg border border-outline-variant p-3">
+                    <p class="text-[11px] leading-relaxed text-on-surface-variant flex items-start gap-1.5">
+                        <span class="material-symbols-outlined text-[15px] text-primary">key</span>
+                        <span>
+                            <b class="text-on-surface">Prototype credentials:</b>
+                            <code class="font-mono font-bold text-primary">admin / mitra123</code> or
+                            <code class="font-mono font-bold text-primary">officer / wardha108</code>.
+                            Replace js/admin-auth.js with real ABAC/SSO before production.
+                        </span>
+                    </p>
+                </div>
+            </form>
+
+            <!-- Back -->
+            <div class="text-center mt-6 flex items-center justify-center gap-4">
+                <a href="index.html"
+                    class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:underline">
+                    <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+                    Back to portal
+                </a>
+            </div>
+
+            <!-- Language switcher + text size -->
+            <div class="flex justify-center items-center gap-2 mt-4 flex-wrap">
+                <span class="material-symbols-outlined text-[18px] text-on-surface-variant">language</span>
+                <button type="button" onclick="translatePage('en')" id="mob-lang-en"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-primary bg-primary text-on-primary">EN</button>
+                <button type="button" onclick="translatePage('hi')" id="mob-lang-hi"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">&#2361;&#2367;&#2306;</button>
+                <button type="button" onclick="translatePage('mr')" id="mob-lang-mr"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">&#2350;&#2352;</button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-primary text-on-primary w-full">
+        <div class="w-full py-lg px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto text-center">
+            <p class="text-xs lg:text-sm opacity-80">© 2026 Emergency Mitra • Sessions expire automatically after 8
+                hours</p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            'use strict';
+
+            var form = document.getElementById('admin-login-form');
+            var shake = document.getElementById('admin-login-shake');
+            var errBox = document.getElementById('admin-login-error');
+            var errText = document.getElementById('admin-login-error-text');
+            var btn = document.getElementById('admin-login-btn');
+            var btnLabel = document.getElementById('admin-login-btn-label');
+
+            function fail(msg) {
+                errText.textContent = msg;
+                errBox.classList.remove('hidden');
+                errBox.classList.add('flex');
+                shake.classList.remove('login-shake');
+                void shake.offsetWidth;                    // restart animation
+                shake.classList.add('login-shake');
+            }
+
+            // Password visibility toggle
+            document.getElementById('toggle-pass').addEventListener('click', function () {
+                var input = document.getElementById('admin-pass');
+                var icon = this.querySelector('.material-symbols-outlined');
+                var show = input.type === 'password';
+                input.type = show ? 'text' : 'password';
+                icon.textContent = show ? 'visibility_off' : 'visibility';
+            });
+
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var u = document.getElementById('admin-user').value.trim();
+                var p = document.getElementById('admin-pass').value;
+
+                if (!u || !p) { fail('Enter both Officer ID and password.'); return; }
+
+                btn.disabled = true;
+                btnLabel.textContent = 'Verifying…';
+
+                // Small artificial latency: mirrors a real auth round-trip
+                // and prevents rapid brute-force clicking in the prototype.
+                setTimeout(function () {
+                    var res = window.AdminAuth.login(u, p);
+                    if (res.ok) {
+                        btnLabel.textContent = 'Access granted — opening…';
+                        setTimeout(function () {
+                            window.location.replace('admin.html');
+                        }, 350);
+                    } else {
+                        btn.disabled = false;
+                        btnLabel.textContent = 'Enter Command Center';
+                        fail('Invalid credentials. Access attempt denied.');
+                    }
+                }, 450);
+            });
+        })();
+    </script>
+    <style>
+        @keyframes loginShake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(4px); }
+            30%, 50%, 70% { transform: translateX(-6px); }
+            40%, 60% { transform: translateX(6px); }
+        }
+        .login-shake { animation: loginShake .5s ease both; }
+    </style>
+    <div id="footer-root"></div>
+    <script src="js/footer.js"></script>
+</body>
+
+</html>

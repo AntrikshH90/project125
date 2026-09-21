@@ -1,0 +1,23 @@
+/* shadcn theme generated from Anima - Growing nature-inspired ventures */
+:root {
+    --background: #fcfcfc;
+    --foreground: #020202;
+    --card: #fcfcfc;
+    --card-foreground: #020202;
+    --popover: #fcfcfc;
+    --popover-foreground: #020202;
+    --primary: #161c1c;
+    --primary-foreground: #eff7f7;
+    --ring: #161c1c;
+    --secondary: #e5edee;
+    --secondary-foreground: #161c1c;
+    --muted: #e5edee;
+    --muted-foreground: #808c8d;
+    --accent: #e5edee;
+    --accent-foreground: #161c1c;
+    --destructive: #ef4444;
+    --destructive-foreground: #eff7f7;
+    --border: #bdc9ca;
+    --input: #bdc9ca;
+    --radius: 0.3511rem;
+}

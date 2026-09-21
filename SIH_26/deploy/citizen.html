@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <meta content="#00453d" name="theme-color">
+    <meta content="telephone=no" name="format-detection">
+    <title>Emergency Mitra — Citizen Portal | Right Care. Right Facility. Right Now.</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- ============================================================ -->
+    <!-- STYLESHEET: all custom CSS lives in css/styles.css           -->
+    <!-- (animations, hero buttons, modals, dashboard widgets)        -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- ============================================================ -->
+    <!-- TRUST LAYER STYLES: anti-fake reporting & credibility UI     -->
+    <!-- (legal banner, evidence panel, OTP modal, risk badges)       -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="css/trust.css">
+
+    <!-- ============================================================ -->
+    <!-- TAILWIND THEME: colors / spacing / font design tokens        -->
+    <!-- must load right after the Tailwind CDN script above          -->
+    <!-- ============================================================ -->
+    <script src="js/tailwind-config.js"></script>
+</head>
+
+<!-- ========================================================================== -->
+<!-- CITIZEN PORTAL (citizen.html) — patients & the general public              -->
+<!-- Page sections, in order:                                                   -->
+<!--   1. TopNavBar (header)   - logo, nav links, language dropdown             -->
+<!--   2. Mobile slide-in menu                                                  -->
+<!--   3. Hero section         - headline, CTA buttons, trust badges            -->
+<!--   4. Emergency advisory   - rotating first-aid guidance cards              -->
+<!--   5. How-it-works         - workflow steps + network capability cards      -->
+<!--   6. Modals               - triage wizard, find-facility, SOS,             -->
+<!--                             emergency-type picker                          -->
+<!-- The ADMIN COMMAND CENTER is NOT part of this page: duty officers sign in  -->
+<!-- from the Officer Login link (admin-login.html) and use admin.html only.   -->
+<!-- Behaviour for this markup lives in js/app.js + js/*.js (see script list). -->
+<!-- ========================================================================== -->
+<body
+    class="bg-background text-on-background font-body-md text-lg antialiased min-h-screen flex flex-col overflow-x-hidden"
+    data-mode="connect" style="overflow: auto;">
+    <!-- TopNavBar component -->
+    <header class="bg-surface border-b border-outline-variant sticky top-0 z-50 h-[64px] lg:h-[72px]">
+        <div
+            class="flex justify-between items-center w-full px-margin-mobile lg:px-margin-desktop max-w-container-max mx-auto h-full relative z-20 bg-surface">
+            <button aria-label="Menu"
+                class="p-xs rounded-lg hover:bg-surface-container-high hover:text-primary text-on-surface-variant flex lg:hidden items-center justify-center transition-colors h-[44px] w-[44px]"
+                onclick="toggleMobileMenu()">
+                <span class="material-symbols-outlined text-[28px]" id="menu-icon">menu</span>
+            </button>
+            <div class="flex items-center gap-sm cursor-pointer min-w-0"
+    onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+
+    <img src="logo.png"
+         alt="Emergency Mitra"
+         class="w-[44px] h-[44px] object-contain flex-shrink-0">
+
+    <span class="text-xl lg:text-2xl font-bold text-primary whitespace-nowrap truncate">
+        Emergency Mitra
+    </span>
+</div>
+            <nav class="hidden lg:flex gap-lg items-center h-full"><a
+                    class="h-full flex flex-col items-center justify-center text-primary border-b-2 border-primary pb-1 font-bold text-[15px] hover:bg-surface-container-high transition-colors px-xs gap-xs"
+                    href="#">
+                    <span class="material-symbols-outlined text-[24px]"
+                        style="font-variation-settings: &quot;FILL&quot; 1;">home</span>
+                    Home
+                </a>
+                <a class="h-full flex flex-col items-center justify-center text-on-surface-variant text-[15px] font-medium hover:bg-surface-container-high hover:text-primary transition-colors px-xs gap-xs"
+                    href="javascript:void(0)" onclick="startEmergencySequence()">
+                    <span class="material-symbols-outlined text-[24px] text-error">emergency</span>
+                    Emergency
+                </a>
+                <button
+                    class="h-full flex flex-col items-center justify-center text-on-surface-variant text-[15px] font-medium hover:bg-surface-container-high hover:text-primary transition-colors px-xs gap-xs"
+                    onclick="openFindFacilityModal()">
+                    <span class="material-symbols-outlined text-[24px]">domain</span>
+                    Facilities
+                </button>
+                <a
+                    class="h-full flex flex-col items-center justify-center text-on-surface-variant text-[15px] font-medium hover:bg-surface-container-high hover:text-primary transition-colors px-xs gap-xs relative group"
+                    href="admin-login.html" title="Duty Officer / Admin sign-in">
+                    <span class="material-symbols-outlined text-[24px]">admin_panel_settings</span>
+                    <span class="font-bold">Officer Login</span>
+                    <span class="w-2 h-2 bg-secondary rounded-full absolute top-2 right-1"></span>
+                </a>
+            </nav>
+            <div class="flex items-center gap-xs lg:gap-md">
+                <!-- ================================================== -->
+                <!-- USER ACCOUNT: pre-verified identity (OTP / ABHA /  -->
+                <!-- DigiLocker). Opens the account & verification hub. -->
+                <!-- Green dot = citizen fully pre-verified.            -->
+                <!-- ================================================== -->
+                <span id="ts-mount"
+                    class="inline-flex items-center h-[44px] lg:h-[40px] mr-1"></span>
+                <button aria-label="User Account" id="account-menu-btn"
+                    onclick="AccountUI.toggle()"
+                    class="p-xs px-2.5 rounded-lg hover:bg-surface-container-high hover:text-primary text-on-surface-variant flex items-center justify-center gap-1.5 transition-colors h-[44px] lg:h-[40px] border border-outline-variant bg-surface relative">
+                    <span class="material-symbols-outlined text-[20px] text-primary">account_circle</span>
+                    <span id="account-btn-label" class="text-xs lg:text-sm font-bold hidden sm:inline">Sign&nbsp;In</span>
+                    <span id="account-verify-dot"
+                        class="hidden w-2 h-2 bg-secondary rounded-full absolute top-1 right-1 animate-pulse"></span>
+                </button>
+                <div class="relative group" id="lang-dropdown-wrapper">
+                    <button aria-label="Select Language" id="lang-menu-btn"
+                        class="p-xs px-2.5 rounded-lg hover:bg-surface-container-high hover:text-primary text-on-surface-variant flex items-center justify-center gap-1.5 transition-colors h-[44px] lg:h-[40px] border border-outline-variant bg-surface">
+                        <span class="material-symbols-outlined text-[20px] text-primary">language</span>
+                        <span id="current-lang-code" class="text-xs lg:text-sm font-bold uppercase">EN</span>
+                        <span class="material-symbols-outlined text-[16px] opacity-70">expand_more</span>
+                    </button>
+                    <div
+                        class="absolute right-0 mt-1 w-36 bg-surface border border-outline-variant rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                        <button onclick="translatePage('en')" id="btn-lang-en"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium border-b border-outline-variant flex items-center justify-between transition-colors bg-primary/5 font-bold text-primary">
+                            <span>English (EN)</span>
+                            <span class="material-symbols-outlined text-sm" id="check-en">check</span>
+                        </button>
+                        <button onclick="translatePage('hi')" id="btn-lang-hi"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium border-b border-outline-variant flex items-center justify-between transition-colors">
+                            <span>&#2361;&#2367;&#2306;&#2342;&#2368; (HI)</span>
+                            <span class="material-symbols-outlined text-sm hidden" id="check-hi">check</span>
+                        </button>
+                        <button onclick="translatePage('mr')" id="btn-lang-mr"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium flex items-center justify-between transition-colors">
+                            <span>&#2350;&#2352;&#2366;&#2336;&#2368; (MR)</span>
+                            <span class="material-symbols-outlined text-sm hidden" id="check-mr">check</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Drawer -->
+        <div class="absolute top-[64px] left-0 w-full bg-surface border-b border-outline-variant shadow-lg z-10 lg:hidden flex flex-col"
+            id="mobile-drawer">
+            <nav class="flex flex-col p-4 gap-2">
+                <div
+                    class="flex items-center justify-between p-3 bg-surface-container rounded-lg border border-outline-variant mb-1">
+                    <div class="flex items-center gap-2 text-primary font-bold text-sm">
+                        <span class="material-symbols-outlined text-[20px]">language</span>
+                        <span>Language / &#2349;&#2366;&#2359;&#2366;:</span>
+                    </div>
+                    <div class="flex gap-1 items-center">
+                        <button onclick="translatePage('en')" id="mob-lang-en"
+                            class="px-2.5 py-1 text-xs font-bold rounded border border-primary bg-primary text-on-primary">EN</button>
+                        <button onclick="translatePage('hi')" id="mob-lang-hi"
+                            class="px-2.5 py-1 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">HI</button>
+                        <button onclick="translatePage('mr')" id="mob-lang-mr"
+                            class="px-2.5 py-1 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">MR</button>
+                        <span class="ts-mount inline-flex"></span>
+                    </div>
+                </div>
+                <a class="flex items-center gap-3 text-primary font-bold text-lg p-3 rounded-lg bg-surface-container-high"
+                    href="#">
+                    <span class="material-symbols-outlined"
+                        style="font-variation-settings: &quot;FILL&quot; 1;">home</span> Home
+                </a>
+                <a class="flex items-center gap-3 text-on-surface-variant font-medium text-lg p-3 rounded-lg hover:bg-surface-container-high hover:text-primary transition-colors"
+                    href="javascript:void(0)" onclick="startEmergencySequence(); toggleMobileMenu();">
+                    <span class="material-symbols-outlined text-error">emergency</span> Emergency
+                </a>
+                <button
+                    class="flex items-center gap-3 text-on-surface-variant font-medium text-lg p-3 rounded-lg hover:bg-surface-container-high hover:text-primary transition-colors text-left"
+                    onclick="openFindFacilityModalMobile()">
+                    <span class="material-symbols-outlined">domain</span>Find Facilities
+                </button>
+                <a
+                    class="flex items-center gap-3 text-on-surface-variant font-medium text-lg p-3 rounded-lg hover:bg-surface-container-high hover:text-primary transition-colors text-left w-full"
+                    href="admin-login.html" title="Duty Officer / Admin sign-in">
+                    <span class="material-symbols-outlined">admin_panel_settings</span> Officer Login
+                </a>
+            </nav>
+        </div>
+    </header>
+    <main class="flex-grow">
+        <!-- Hero Section -->
+        <section
+            class="w-full px-margin-mobile lg:px-margin-desktop py-lg lg:py-xl max-w-container-max mx-auto relative bg-grid-pattern scroll-reveal visible">
+            <div
+                class="grid grid-cols-1 lg:grid-cols-2 gap-lg lg:gap-xl items-center relative z-10 flex-col overflow-visible">
+                <div class="flex flex-col gap-md items-start order-1 lg:order-none">
+                    <div class="flex flex-col gap-sm">
+                        <span
+                            class="text-secondary font-label-sm text-sm lg:text-base tracking-wider uppercase flex items-center gap-xs font-bold stagger-1">
+                            <span
+                                class="material-symbols-outlined text-[18px] lg:text-[20px]">verified</span>&nbsp;Maharashtra
+                            Government Health Network
+                        </span>
+                        <h1
+                            class="text-[36px] md:text-[42px] lg:text-display-lg font-headline-lg-mobile lg:font-display-lg text-on-background leading-tight">
+                            <span class="block stagger-2">Right Care.</span>
+                            <span class="block stagger-3">Right Facility.</span>
+                            <span class="block text-primary stagger-4">Right Now.</span>
+                        </h1>
+                        <p
+                            class="text-body-md lg:text-body-lg font-body-lg text-on-surface-variant max-w-lg mt-sm leading-relaxed text-base lg:text-lg stagger-5">
+                            Emergency Mitra connects rural communities with the most suitable nearby government
+                            healthcare facility during emergencies, ensuring timely and appropriate care.
+                        </p>
+                    </div>
+                    <div class="flex flex-col lg:flex-row gap-md w-full mt-sm stagger-5 flex-wrap">
+                        <button
+                            class="btn-start-emergency bg-error text-on-error px-xl py-md rounded-lg font-title-md text-title-md shadow-md flex items-center justify-center gap-sm min-h-[52px] lg:min-h-[64px] w-full lg:flex-1 text-base lg:text-lg pulse-soft"
+                            onclick="startEmergencySequence()">
+                            <span
+                                class="material-symbols-outlined text-[24px] lg:text-[28px] transition-transform">emergency</span>
+                            Start Emergency
+                        </button>
+                        <button
+                            class="btn-sos bg-[#93000a] text-white px-xl py-md rounded-lg font-title-md shadow-md flex flex-col items-center justify-center gap-1 min-h-[52px] lg:min-h-[64px] w-full lg:flex-1 relative overflow-visible"
+                            onclick="startSosSequence()">
+                            <div class="flex items-center gap-sm text-lg lg:text-xl font-bold tracking-wider">
+                                <span class="material-symbols-outlined text-[24px] lg:text-[28px]">my_location</span>
+                                SOS — SEND LOCATION
+                            </div>
+                            <span class="text-xs lg:text-sm opacity-90 font-medium">For unconscious / unresponsive
+                                patient</span>
+                        </button>
+                        <button
+                            class="btn-find-facility border-2 border-primary text-primary px-xl py-md rounded-lg font-title-md text-title-md transition-all flex items-center justify-center gap-sm min-h-[52px] lg:min-h-[64px] w-full lg:flex-1 text-base lg:text-lg"
+                            onclick="openFindFacilityModal()">
+                            <span class="material-symbols-outlined text-[24px] lg:text-[28px]">local_hospital</span>
+                            Find Facilities</button>
+                    </div>
+                    <!-- Trust Strip -->
+                    <div
+                        class="flex flex-col lg:flex-row flex-wrap items-start lg:items-center gap-sm lg:gap-md mt-md pt-md border-t border-outline-variant w-full stagger-5">
+                        <div
+                            class="flex items-center gap-xs text-on-surface-variant font-label-sm text-sm lg:text-base">
+                            <span
+                                class="material-symbols-outlined text-[18px] lg:text-[20px] text-secondary">check_circle</span>
+                            Govt Healthcare Network
+                        </div>
+                        <div
+                            class="flex items-center gap-xs text-on-surface-variant font-label-sm text-sm lg:text-base">
+                            <span
+                                class="material-symbols-outlined text-[18px] lg:text-[20px] text-secondary">check_circle</span>
+                            Low-Connectivity Support
+                        </div>
+                        <div class="flex flex-row gap-4 lg:gap-md">
+                            <div
+                                class="flex items-center gap-xs text-on-surface-variant font-label-sm text-sm lg:text-base">
+                                <span
+                                    class="material-symbols-outlined text-[18px] lg:text-[20px] text-secondary">check_circle</span>
+                                SMS Fallback
+                            </div>
+                            <div
+                                class="flex items-center gap-xs text-on-surface-variant font-label-sm text-sm lg:text-base">
+                                <span
+                                    class="material-symbols-outlined text-[18px] lg:text-[20px] text-secondary">check_circle</span>
+                                &#2361;&#2367;&#2344;&#2381;&#2342;&#2368; + English + &#2350;&#2352;&#2366;&#2336;&#2368;
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Emergency Health Advisory Panel -->
+                <div
+                    class="relative w-full sm:h-[320px] lg:h-[500px] bg-[#eef0ff]/50 rounded-2xl shadow-sm border border-outline-variant flex flex-col order-2 lg:order-last stagger-3 bg-grid-pattern mt-md lg:mt-0 p-4 lg:p-6 block h-auto min-h-[260px] overflow-visible pb-lg">
+                    <div class="flex justify-between items-center mb-4 relative z-10 border-b border-primary/20 pb-2">
+                        <h2 class="text-base lg:text-xl font-bold text-primary flex items-center gap-2">
+                            <span class="text-2xl">⚕</span> Emergency Health Advisory
+                        </h2>
+                        <span
+                            class="bg-secondary text-white text-[10px] lg:text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1 pulse-soft">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full"></span> LIVE GUIDANCE
+                        </span>
+                    </div>
+                    <div class="relative flex-grow flex items-center justify-center z-10" id="advisory-carousel">
+                        <!-- Snakebite -->
+                        <div
+                            class="advisory-slide w-full max-w-sm mx-auto bg-white p-4 lg:p-5 rounded-xl border border-outline-variant shadow-md h-auto min-h-[140px] min-h-[120px] overflow-visible">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="bg-error-container text-on-error-container p-2 rounded-lg">
+                                    <span class="material-symbols-outlined text-[28px]">pest_control</span>
+                                </div>
+                                <span
+                                    class="text-error text-xs font-bold px-2 py-1 bg-error-container rounded uppercase tracking-wider">CRITICAL</span>
+                            </div>
+                            <h3 class="font-title-md text-xl font-bold mb-2">Snakebite</h3>
+                            <p class="text-[13px] lg:text-base text-on-surface-variant leading-relaxed">Do not cut or
+                                suck the wound. Keep the patient still and reach antivenom-equipped care immediately.
+                            </p>
+                        </div>
+                        <!-- Cardiac -->
+                        <div
+                            class="advisory-slide w-full max-w-sm mx-auto bg-white p-4 lg:p-5 rounded-xl border border-outline-variant shadow-md h-auto min-h-[140px] min-h-[120px] overflow-visible">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="bg-primary-container text-on-primary-container p-2 rounded-lg">
+                                    <span class="material-symbols-outlined text-[28px]"
+                                        style="font-variation-settings: &quot;FILL&quot; 1;">ecg_heart</span>
+                                </div>
+                                <span
+                                    class="text-error text-xs font-bold px-2 py-1 bg-error-container rounded uppercase tracking-wider">CRITICAL</span>
+                            </div>
+                            <h3 class="font-title-md text-xl font-bold mb-2">Cardiac Emergency</h3>
+                            <p class="text-[13px] lg:text-base text-on-surface-variant leading-relaxed">If the person is
+                                unresponsive and not breathing normally, begin CPR and seek emergency help immediately.
+                            </p>
+                        </div>
+                        <!-- Bleeding -->
+                        <div
+                            class="advisory-slide w-full max-w-sm mx-auto bg-white p-4 lg:p-5 rounded-xl border border-outline-variant shadow-md h-auto min-h-[140px] min-h-[120px] overflow-visible active">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="bg-primary-container text-on-primary-container p-2 rounded-lg">
+                                    <span class="material-symbols-outlined text-[28px]">water_drop</span>
+                                </div>
+                                <span
+                                    class="text-error text-xs font-bold px-2 py-1 bg-error-container rounded uppercase tracking-wider">URGENT</span>
+                            </div>
+                            <h3 class="font-title-md text-xl font-bold mb-2">Severe Bleeding</h3>
+                            <p class="text-[13px] lg:text-base text-on-surface-variant leading-relaxed">Apply firm,
+                                continuous pressure with a clean cloth and seek emergency medical care.</p>
+                        </div>
+                        <!-- Trauma -->
+                        <div
+                            class="advisory-slide w-full max-w-sm mx-auto bg-white p-4 lg:p-5 rounded-xl border border-outline-variant shadow-md h-auto min-h-[140px] min-h-[120px] overflow-visible">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="bg-primary-container text-on-primary-container p-2 rounded-lg">
+                                    <span class="material-symbols-outlined text-[28px]">car_crash</span>
+                                </div>
+                                <span
+                                    class="text-error text-xs font-bold px-2 py-1 bg-error-container rounded uppercase tracking-wider">URGENT</span>
+                            </div>
+                            <h3 class="font-title-md text-xl font-bold mb-2">Accident &amp; Trauma</h3>
+                            <p class="text-[13px] lg:text-base text-on-surface-variant leading-relaxed">Avoid
+                                unnecessary movement if a spinal or major injury is suspected. Call emergency services.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-auto relative z-10 flex flex-col items-center gap-3">
+                        <div class="flex gap-2" id="advisory-dots">
+                            <div class="w-2 h-2 rounded-full transition-all duration-300 dot-active bg-outline-variant">
+                            </div>
+                            <div class="w-2 h-2 rounded-full transition-all duration-300 bg-outline-variant"></div>
+                            <div class="w-2 h-2 rounded-full transition-all duration-300 bg-primary"></div>
+                            <div class="w-2 h-2 rounded-full transition-all duration-300 bg-outline-variant"></div>
+                        </div>
+                        <p class="text-[11px] lg:text-xs text-on-surface-variant opacity-70">Emergency guidance • Not a
+                            diagnosis</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Floating Offline Indicator -->
+            <button
+                class="fixed bottom-[80px] lg:bottom-margin-mobile right-margin-mobile z-40 bg-surface-container-highest text-on-surface-variant px-md py-sm rounded-lg shadow-md border border-outline-variant flex items-center gap-sm font-label-sm text-sm lg:text-base hover:bg-surface-variant transition-colors group min-h-[44px] lg:min-h-[56px] px-lg"
+                onclick="openOfflinePanel()" id="offline-pill">
+                <span class="w-3 h-3 rounded-lg bg-secondary transition-colors" style="background:#16a34a;"></span>
+                <span id="offline-pill-label">Online</span>
+                <span
+                    class="material-symbols-outlined text-[18px] lg:text-[20px] text-outline hidden lg:block opacity-0 group-hover:opacity-100 transition-opacity">info</span>
+            </button>
+        </section>
+        <!-- Emergency Assistance Section (5-Column Grid) -->
+        <section
+            class="w-full px-margin-mobile lg:px-margin-desktop py-lg bg-surface-container-lowest max-w-container-max mx-auto border-t border-outline-variant scroll-reveal visible">
+            <div class="flex flex-col gap-sm mb-lg text-center lg:text-left">
+                <h2 class="text-title-md font-title-md text-on-background text-2xl font-bold">Immediate Emergency
+                    Assistance</h2>
+                <p class="text-body-md font-body-md text-on-surface-variant text-base lg:text-lg">Select the type of
+                    emergency for rapid protocol activation.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-md auto-rows-fr">
+                <!-- Flagship Card: Snakebite -->
+                <div class="col-span-1 bg-surface rounded-lg p-md border-2 border-error shadow-[0_0_15px_rgba(186,26,26,0.1)] relative overflow-hidden flex flex-col justify-between card-hover group cursor-pointer"
+                    onclick="openTriageModal('snakebite')">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-error"></div>
+                    <div class="flex items-start justify-between mb-sm relative z-10">
+                        <div
+                            class="bg-error-container text-on-error-container p-sm rounded-lg icon-scale transition-transform duration-300">
+                            <span class="material-symbols-outlined text-[32px]">pest_control</span>
+                        </div>
+                        <span
+                            class="bg-error text-on-error text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider pulse-soft">CRITICAL</span>
+                    </div>
+                    <div class="relative z-10 flex-grow">
+                        <h3
+                            class="text-title-md font-title-md text-on-background mb-xs flex items-center gap-1 text-xl">
+                            Snakebite Protocol <span class="text-[20px]">🐍</span></h3>
+                        <p class="text-body-md font-body-md text-on-surface-variant text-base mb-md">Find
+                            antivenom-equipped care.</p>
+                    </div>
+                    <button
+                        class="w-full bg-error text-on-error py-md rounded-lg font-label-sm text-lg font-bold flex items-center justify-center gap-xs mt-auto hover:bg-[#93000a] transition-colors min-h-[48px] lg:min-h-[56px]">
+                        CRITICAL <span class="material-symbols-outlined text-[24px]">arrow_forward</span>
+                    </button>
+                </div>
+                <!-- Accident Card -->
+                <div class="col-span-1 bg-surface rounded-lg p-md border-2 border-error shadow-[0_0_15px_rgba(186,26,26,0.1)] card-hover flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                    onclick="openTriageModal('accident')">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-error"></div>
+                    <div class="flex items-start justify-between mb-sm relative z-10">
+                        <div
+                            class="bg-primary-container text-on-primary-container p-sm rounded-lg icon-scale transition-transform duration-300">
+                            <span class="material-symbols-outlined text-[32px]">car_crash</span>
+                        </div><span
+                            class="bg-error text-on-error text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider pulse-soft">CRITICAL</span>
+                    </div>
+                    <div class="relative z-10 flex-grow">
+                        <h3 class="text-title-md font-title-md text-on-background mb-xs text-primary text-xl font-bold">
+                            Accident &amp; Trauma</h3>
+                        <p class="text-body-md font-body-md text-on-surface-variant text-base mb-md">Trauma routing +
+                            first aid.</p>
+                    </div><button
+                        class="w-full bg-error text-on-error py-md rounded-lg font-label-sm text-lg font-bold flex items-center justify-center gap-xs mt-auto hover:bg-[#93000a] transition-colors min-h-[48px] lg:min-h-[56px]">CRITICAL
+                        <span class="material-symbols-outlined text-[24px]">arrow_forward</span></button>
+                </div>
+                <!-- Cardiac Card -->
+                <div class="col-span-1 bg-surface rounded-lg p-md border-2 border-error shadow-[0_0_15px_rgba(186,26,26,0.1)] card-hover flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                    onclick="openTriageModal('cardiac')">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-error"></div>
+                    <div class="flex items-start justify-between mb-sm relative z-10">
+                        <div
+                            class="bg-primary-container text-on-primary-container p-sm rounded-lg icon-scale transition-transform duration-300">
+                            <span class="material-symbols-outlined text-[32px]"
+                                style="font-variation-settings: &quot;FILL&quot; 1;">ecg_heart</span>
+                        </div><span
+                            class="bg-error text-on-error text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider pulse-soft">CRITICAL</span>
+                    </div>
+                    <div class="relative z-10 flex-grow">
+                        <h3 class="text-title-md font-title-md text-on-background mb-xs text-primary text-xl font-bold">
+                            Cardiac Arrest</h3>
+                        <p class="text-body-md font-body-md text-on-surface-variant text-base mb-md">CPR + AED
+                            assistance.</p>
+                    </div><button
+                        class="w-full bg-error text-on-error py-md rounded-lg font-label-sm text-lg font-bold flex items-center justify-center gap-xs mt-auto hover:bg-[#93000a] transition-colors min-h-[48px] lg:min-h-[56px]">CRITICAL
+                        <span class="material-symbols-outlined text-[24px]">arrow_forward</span></button>
+                </div>
+                <!-- Severe Bleeding Card -->
+                <div class="col-span-1 bg-surface rounded-lg p-md border-2 border-error shadow-[0_0_15px_rgba(186,26,26,0.1)] card-hover flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                    onclick="openTriageModal('bleeding')">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-error"></div>
+                    <div class="flex items-start justify-between mb-sm relative z-10">
+                        <div
+                            class="bg-primary-container text-on-primary-container p-sm rounded-lg icon-scale transition-transform duration-300">
+                            <span class="material-symbols-outlined text-[32px]">water_drop</span>
+                        </div><span
+                            class="bg-error text-on-error text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider pulse-soft">CRITICAL</span>
+                    </div>
+                    <div class="relative z-10 flex-grow">
+                        <h3 class="text-title-md font-title-md text-on-background mb-xs text-primary text-xl font-bold">
+                            Severe Bleeding</h3>
+                        <p class="text-body-md font-body-md text-on-surface-variant text-base mb-md">Emergency bleeding
+                            support.</p>
+                    </div><button
+                        class="w-full bg-error text-on-error py-md rounded-lg font-label-sm text-lg font-bold flex items-center justify-center gap-xs mt-auto hover:bg-[#93000a] transition-colors min-h-[48px] lg:min-h-[56px]">CRITICAL
+                        <span class="material-symbols-outlined text-[24px]">arrow_forward</span></button>
+                </div>
+                <!-- Breathing Emergency Card -->
+                <div class="col-span-1 bg-surface rounded-lg p-md border-2 border-error shadow-[0_0_15px_rgba(186,26,26,0.1)] card-hover flex flex-col justify-between group cursor-pointer relative overflow-hidden"
+                    onclick="openTriageModal('breathing')">
+                    <div class="absolute top-0 left-0 w-full h-2 bg-error"></div>
+                    <div class="flex items-start justify-between mb-sm relative z-10">
+                        <div
+                            class="bg-primary-container text-on-primary-container p-sm rounded-lg icon-scale transition-transform duration-300">
+                            <span class="material-symbols-outlined text-[32px]">airwave</span>
+                        </div><span
+                            class="bg-error text-on-error text-xs font-bold px-2 py-1 rounded-lg uppercase tracking-wider pulse-soft">CRITICAL</span>
+                    </div>
+                    <div class="relative z-10 flex-grow">
+                        <h3 class="text-title-md font-title-md text-on-background mb-xs text-primary text-xl font-bold">
+                            Breathing Issue</h3>
+                        <p class="text-body-md font-body-md text-on-surface-variant text-base mb-md">Airway emergency
+                            support.</p>
+                    </div><button
+                        class="w-full bg-error text-on-error py-md rounded-lg font-label-sm text-lg font-bold flex items-center justify-center gap-xs mt-auto hover:bg-[#93000a] transition-colors min-h-[48px] lg:min-h-[56px]">CRITICAL
+                        <span class="material-symbols-outlined text-[24px]">arrow_forward</span></button>
+                </div>
+            </div>
+        </section>
+        <!-- New How it Works Section -->
+        <section
+            class="w-full px-margin-mobile lg:px-margin-desktop py-lg bg-surface max-w-container-max mx-auto border-t border-outline-variant scroll-reveal visible">
+            <div class="flex flex-col gap-sm mb-lg text-center">
+                <h2 class="text-title-md font-title-md text-on-background text-2xl font-bold">How Emergency Mitra Works
+                </h2>
+            </div>
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center relative gap-md timeline-loop active-1 active-2"
+                id="how-it-works-timeline">
+                <div
+                    class="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-outline-variant -z-10 -translate-y-1/2">
+                </div>
+                <div class="absolute left-[39px] top-0 h-full w-1 bg-outline-variant -z-10 lg:hidden"></div>
+                <div class="timeline-line hidden lg:block" id="timeline-progress" style="width: 33%;"></div>
+                <div
+                    class="flex flex-row lg:flex-col items-center gap-sm bg-surface p-4 z-10 w-full lg:w-1/4 rounded-lg stagger-1">
+                    <div
+                        class="circle circle-1 bg-surface-container text-on-surface-variant rounded-lg w-12 h-12 flex items-center justify-center font-bold text-lg shrink-0 shadow-md border-2 border-outline-variant relative z-10">
+                        01</div>
+                    <div class="text-left lg:text-center">
+                        <div class="font-title-md text-lg font-bold">Select Emergency</div>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-row lg:flex-col items-center gap-sm bg-surface p-4 z-10 w-full lg:w-1/4 rounded-lg stagger-2">
+                    <div
+                        class="circle circle-2 bg-surface-container text-on-surface-variant rounded-lg w-12 h-12 flex items-center justify-center font-bold text-lg shrink-0 shadow-md border-2 border-outline-variant relative z-10">
+                        02</div>
+                    <div class="text-left lg:text-center">
+                        <div class="font-title-md text-lg font-bold">Share Location</div>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-row lg:flex-col items-center gap-sm bg-surface p-4 z-10 w-full lg:w-1/4 rounded-lg stagger-3">
+                    <div
+                        class="circle circle-3 bg-surface-container text-on-surface-variant rounded-lg w-12 h-12 flex items-center justify-center font-bold text-lg shrink-0 shadow-md border-2 border-outline-variant relative z-10">
+                        03</div>
+                    <div class="text-left lg:text-center">
+                        <div class="font-title-md text-lg font-bold">Smart Facility Matching</div>
+                    </div>
+                </div>
+                <div
+                    class="flex flex-row lg:flex-col items-center gap-sm bg-surface p-4 z-10 w-full lg:w-1/4 rounded-lg stagger-4">
+                    <div
+                        class="circle circle-4 bg-surface-container text-on-surface-variant rounded-lg w-12 h-12 flex items-center justify-center font-bold text-lg shrink-0 shadow-md border-2 border-outline-variant relative z-10">
+                        04</div>
+                    <div class="text-left lg:text-center">
+                        <div class="font-title-md text-lg font-bold">Navigate &amp; Share</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Advanced Emergency Network Section -->
+        <section
+            class="w-full px-margin-mobile lg:px-margin-desktop py-lg bg-surface border-t border-outline-variant max-w-container-max mx-auto mb-xl scroll-reveal visible">
+            <div class="flex flex-col gap-sm mb-lg text-center">
+                <h2 class="text-headline-lg font-headline-lg text-on-background text-2xl lg:text-3xl font-bold">Advanced
+                    Emergency Network</h2>
+                <p
+                    class="text-body-lg font-body-lg text-on-surface-variant max-w-3xl mx-auto text-base lg:text-lg leading-relaxed">
+                    From emergency detection to hospital readiness, Emergency Mitra connects the complete response
+                    chain.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md lg:gap-lg mt-md">
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-1">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">handshake</span>
+                        </div>
+                        <span
+                            class="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-lg uppercase">READY</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">Pre-Arrival Handshake</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Alerts the destination
+                            hospital before arrival, ensuring staff and beds are ready.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.handshakeOpen()">Explore</button>
+                </div>
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-2">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">psychology</span>
+                        </div>
+                        <span class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded-lg uppercase">AI
+                            SUPPORT</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">AI Preliminary Triage</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Intelligent symptom
+                            analysis prioritizes critical cases automatically.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.aiOpen()">Explore</button>
+                </div>
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-3">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">ambulance</span>
+                        </div>
+                        <span
+                            class="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-lg uppercase">DEMO</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">Ambulance Dispatch</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Automated dispatch of
+                            the nearest available emergency transport.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.dispatchOpen()">Explore</button>
+                </div>
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-4">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">inventory</span>
+                        </div>
+                        <span
+                            class="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded-lg uppercase">READY</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">Resource Inventory</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Real-time tracking of
+                            critical supplies across the healthcare network.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.invOpen()">Explore</button>
+                </div>
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-5">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">record_voice_over</span>
+                        </div>
+                        <span
+                            class="bg-secondary text-white text-xs font-bold px-2 py-1 rounded-lg uppercase">PROTOTYPE</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">Audio-First IVR</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Accessible voice-guided
+                            emergency reporting in local languages.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.ivrOpen()">Explore</button>
+                </div>
+                <div
+                    class="bg-surface-container p-md lg:p-lg rounded-lg border border-outline-variant flex flex-col gap-md hover-scale shadow-sm stagger-5">
+                    <div class="flex justify-between items-start">
+                        <div class="bg-primary-container text-on-primary-container p-sm rounded-lg">
+                            <span class="material-symbols-outlined text-[28px]">badge</span>
+                        </div>
+                        <span
+                            class="bg-outline text-white text-xs font-bold px-2 py-1 rounded-lg uppercase">OFFLINE</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg lg:text-xl font-bold text-on-background mb-1">Offline Passport</h3>
+                        <p class="text-sm lg:text-base text-on-surface-variant leading-relaxed">Locally stored critical
+                            medical history available instantly without internet.</p>
+                    </div>
+                    <button
+                        class="mt-auto border-2 border-primary text-primary py-sm rounded-lg font-bold text-base hover:bg-primary hover:text-on-primary transition-colors min-h-[48px]"
+                        onclick="Network.passportOpen()">Explore</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer component (full responsive footer, injected by js/footer.js) -->
+    <div id="footer-root"></div>
+    <script src="js/footer.js"></script>
+
+
+
+
+    <!-- Offline Status Panel -->
+    <div class="modal items-center justify-center p-4 z-[120]" id="modal-offline-panel">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-outline-variant">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">cloud_sync</span> Offline Status
+                </h3>
+                <button onclick="closeModal('modal-offline-panel')" class="text-on-surface-variant hover:text-error p-1 rounded-lg hover:bg-error-container">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="offline-panel-body"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="dash-toast">
+        <span class="material-symbols-outlined" id="toast-icon">check_circle</span>
+        <span id="toast-msg">Operation completed successfully.</span>
+    </div>
+
+    <!-- Find Facility Modal -->
+    <div class="modal items-center justify-center p-4" id="modal-find-facility">
+        <div
+            class="bg-surface rounded-xl p-0 max-w-5xl w-full shadow-2xl relative max-h-[95vh] overflow-hidden flex flex-col border border-outline-variant">
+            <div
+                class="bg-surface border-b border-outline-variant p-4 lg:p-6 flex justify-between items-center sticky top-0 z-20">
+                <h3 class="text-xl lg:text-2xl font-bold flex items-center gap-2 text-primary"><span
+                        class="material-symbols-outlined">local_hospital</span> Find Healthcare Facilities</h3>
+                <button
+                    class="text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors"
+                    onclick="closeModal('modal-find-facility')"><span
+                        class="material-symbols-outlined text-2xl">close</span></button>
+            </div>
+            <div
+                class="p-4 lg:p-6 bg-surface-container-lowest border-b border-outline-variant flex flex-col lg:flex-row gap-4 items-center z-10 sticky top-[77px] lg:top-[85px]">
+                <div class="relative w-full lg:flex-1">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input
+                        class="w-full pl-10 pr-4 py-3 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                        id="ff-search" oninput="Facilities.setQuery(this.value)"
+                        placeholder="Search hospitals, blood, services..." type="text">
+                </div>
+                <div class="flex gap-3 w-full lg:w-auto">
+                    <select
+                        class="px-4 py-3 rounded-lg border border-outline-variant bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none flex-1 lg:flex-none" id="ff-dist" onchange="Facilities.setDistance(this.value)">
+                        <option>All Distances</option>
+                        <option>&lt; 5 km</option>
+                        <option>&lt; 10 km</option>
+                        <option>&lt; 25 km</option>
+                    </select>
+                    <button
+                        class="bg-secondary text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-primary-container transition-colors whitespace-nowrap flex-1 lg:flex-none" id="ff-loc" onclick="Facilities.useMyLocation()">
+                        <span class="material-symbols-outlined text-[20px]">my_location</span> Use My Location
+                    </button>
+                </div>
+            </div>
+            <div class="px-4 lg:px-6 pt-4 bg-surface">
+                <div id="ff-chips" class="ff-chips" aria-label="Filter facilities"></div>
+            </div>
+            <div id="facility-results" class="overflow-y-auto p-4 lg:p-6 bg-surface">
+                <!-- Populated dynamically by js/facilities.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cinematic Sequence Screen -->
+    <div id="sequence-screen" style="display: none;">
+        <div class="flex flex-col items-center justify-center h-full max-w-2xl mx-auto space-y-8 px-4">
+            <div class="text-2xl sm:text-4xl md:text-5xl font-bold text-white text-center animate-pulse"
+                id="seq-step-1">🚨 EMERGENCY ACTIVATED</div>
+            <div class="text-lg sm:text-2xl md:text-3xl font-medium text-white/80 flex items-center gap-4 opacity-0 transition-opacity duration-500 text-center opacity-100"
+                id="seq-step-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[40px] animate-bounce">location_on</span>
+                LOCATION DETECTED: Wardha Rural District
+            </div>
+            <div class="text-lg sm:text-2xl md:text-3xl font-medium text-white/80 flex items-center gap-4 opacity-0 transition-opacity duration-500 text-center opacity-100"
+                id="seq-step-3">
+                <span class="material-symbols-outlined text-[32px] sm:text-[40px] animate-spin">radar</span> FINDING
+                SUITABLE FACILITIES...
+            </div>
+            <div class="text-lg sm:text-2xl md:text-3xl font-medium text-white/80 flex items-center gap-4 opacity-0 transition-opacity duration-500 text-center opacity-100"
+                id="seq-step-4">
+                <span class="material-symbols-outlined text-[32px] sm:text-[40px]">vaccines</span> CHECKING CRITICAL
+                RESOURCES... Antivenom ✓
+            </div>
+            <div class="text-xl sm:text-3xl md:text-4xl font-bold text-white bg-black/20 p-4 sm:p-6 rounded-xl border-2 border-white/30 shadow-2xl transition-all duration-700 transform flex flex-col sm:flex-row items-center gap-4 text-center opacity-100 scale-100"
+                id="seq-step-5">
+                <span class="material-symbols-outlined text-[40px] sm:text-[48px] text-yellow-400">star</span> BEST
+                MITRA FOUND: District Hospital Wardha (94% MATCH)
+            </div>
+        </div>
+    </div>
+    <!-- SOS Sequence Screen -->
+    <div id="sos-sequence-screen"
+        style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); color: white; align-items: center; justify-content: center; flex-direction: column; text-align: center; padding: 2rem;">
+        <div class="flex flex-col items-center justify-center h-full max-w-2xl mx-auto space-y-8 px-4"
+            id="sos-content-container">
+            <div class="text-2xl sm:text-4xl font-bold text-error animate-pulse flex items-center gap-2"
+                id="sos-step-1"><span class="material-symbols-outlined text-[32px] sm:text-[48px]">my_location</span>
+                Detecting current location...</div>
+            <div class="text-lg sm:text-2xl font-medium text-white/80 flex items-center gap-4 opacity-0 transition-opacity duration-500 text-center"
+                id="sos-step-2">
+                <span class="material-symbols-outlined text-[32px] sm:text-[40px] text-secondary">check_circle</span>
+                Location Detected: Wardha Rural District
+            </div>
+            <div class="text-lg sm:text-2xl font-medium text-white/80 flex items-center gap-4 opacity-0 transition-opacity duration-500 text-center"
+                id="sos-step-3">
+                <span
+                    class="material-symbols-outlined text-[32px] sm:text-[40px] animate-pulse text-error">sensors</span>
+                Sending emergency location...
+            </div>
+            <div class="bg-surface rounded-xl border-2 border-primary shadow-2xl p-6 md:p-8 flex flex-col items-center gap-4 text-center opacity-0 scale-95 transition-all duration-700 mt-8 w-full max-w-md mx-auto"
+                id="sos-step-4">
+                <h3 class="text-xl md:text-2xl font-bold text-primary mb-2 flex items-center gap-2"><span
+                        class="material-symbols-outlined">verified</span> SOS Sent Successfully</h3>
+                <p class="text-on-surface font-medium text-lg mb-1">Location shared with: <br><strong
+                        class="text-primary text-xl">District Hospital Wardha</strong></p>
+                <div
+                    class="bg-surface-container py-2 px-4 rounded-lg flex items-center justify-center gap-3 w-full mb-4">
+                    <span class="material-symbols-outlined text-secondary">route</span>
+                    <span class="font-bold text-on-surface">4.2 km • 12 min ETA</span>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4 w-full">
+                    <button
+                        class="bg-error text-on-error px-4 py-3 rounded-lg font-bold flex-1 flex items-center justify-center gap-2 hover:bg-[#93000a] transition-colors"
+                        onclick="document.getElementById('sos-sequence-screen').style.display='none'; document.body.style.overflow='auto';">
+                        <span class="material-symbols-outlined">call</span> Call 108
+                    </button>
+                    <button
+                        class="bg-primary text-on-primary px-4 py-3 rounded-lg font-bold flex-1 flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-colors"
+                        onclick="document.getElementById('sos-sequence-screen').style.display='none'; document.body.style.overflow='auto';">
+                        <span class="material-symbols-outlined">navigation</span> Navigate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Emergency Triage Modal -->
+    <div class="modal items-center justify-center p-4" id="modal-triage-flow">
+        <div
+            class="bg-surface rounded-xl p-0 max-w-2xl w-full shadow-2xl relative max-h-[95vh] overflow-hidden flex flex-col border border-outline-variant">
+            <!-- Sticky Header -->
+            <div
+                class="bg-surface border-b border-outline-variant p-4 lg:p-6 flex justify-between items-center sticky top-0 z-20">
+                <div>
+                    <h3 class="text-xl lg:text-2xl font-bold flex items-center gap-2 text-primary"
+                        id="triage-modal-title">Emergency Protocol</h3>
+                    <p class="text-sm text-on-surface-variant font-medium mt-1" id="triage-step-indicator">Step 1 of 3:
+                        Assessment</p>
+                </div>
+                <div class="flex gap-2">
+                    <button
+                        class="bg-error text-on-error px-4 py-2 rounded-lg font-bold hover:bg-[#93000a] transition-colors flex items-center gap-2"
+                        onclick="window.location.href='tel:108'">
+                        <span class="material-symbols-outlined">call</span> <span class="hidden sm:inline">Bypass: Call
+                            108</span>
+                    </button>
+                    <button
+                        class="text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center rounded-lg hover:bg-surface-container-high transition-colors"
+                        onclick="closeModal('modal-triage-flow')"><span
+                            class="material-symbols-outlined text-2xl">close</span></button>
+                </div>
+            </div>
+            <div class="overflow-y-auto p-4 lg:p-6 bg-surface flex-grow">
+                <!-- Step 1: Assessment -->
+                <div class="space-y-6" id="triage-step-1">
+                    <div
+                        class="bg-error-container text-on-error-container p-4 rounded-lg mb-4 text-sm font-bold flex items-start gap-2">
+                        <span class="material-symbols-outlined">warning</span>
+                        <p class="">Answer quickly to determine triage priority.</p>
+                    </div>
+                    <div class="space-y-4" id="triage-questions">
+                        <!-- Questions will be injected here by JS -->
+                    </div>
+                </div>
+                <!-- Step 2: Hospital Handshake -->
+                <div class="space-y-6 hidden" id="triage-step-2">
+                    <div class="text-center mb-6">
+                        <div class="inline-block px-4 py-2 rounded-lg text-lg font-bold tracking-wider mb-2"
+                            id="triage-level-badge">CRITICAL</div>
+                        <p class="text-on-surface-variant font-medium">Alerting nearest suitable facility...</p>
+                    </div>
+                    <div
+                        class="bg-surface-container rounded-lg border border-outline-variant overflow-hidden mb-4 relative">
+                        <div class="absolute inset-0 bg-primary/5 flex items-center justify-center pulse-soft pointer-events-none"
+                            id="handshake-pulse">
+                            <span class="material-symbols-outlined text-primary text-[64px] opacity-20">sensors</span>
+                        </div>
+                        <div class="bg-primary text-on-primary px-4 py-2 text-sm font-bold font-mono">API Payload
+                            Generated</div>
+                        <pre class="p-4 text-xs sm:text-sm font-mono text-on-surface-variant overflow-x-auto relative z-10"
+                            id="triage-payload-code">{
+  "event": "dispatch_request",
+  "priority": "CRITICAL",
+  "type": "snakebite",
+  "requirements": ["antivenom", "icu_bed"],
+  "patient_status": "unresponsive"
+}
+                    </pre>
+                    </div>
+                </div>
+                <!-- Step 3: First Aid -->
+                <div class="space-y-6 hidden" id="triage-step-3">
+                    <div id="first-aid-content">
+                        <!-- First aid content injected here -->
+                    </div>
+                </div>
+            </div>
+            <!-- Sticky Footer -->
+            <div
+                class="bg-surface border-t border-outline-variant p-4 lg:p-6 flex justify-between items-center sticky bottom-0 z-20">
+                <button
+                    class="border border-outline-variant text-on-surface-variant px-6 py-3 rounded-lg font-bold hover:bg-surface-container transition-colors hidden"
+                    id="triage-btn-back" onclick="prevTriageStep()">Back</button>
+                <div class="flex-grow"></div>
+                <button
+                    class="bg-primary text-on-primary px-8 py-3 rounded-lg font-bold hover:bg-primary-container hover:text-on-primary-container transition-colors"
+                    id="triage-btn-next" onclick="nextTriageStep()">Next Step</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modals for Explore Buttons (all interactive — see js/network-cards.js) -->
+    <!-- Handshake Modal -->
+    <div class="modal items-center justify-center p-4" id="modal-handshake">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-handshake')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">handshake</span> Pre-Arrival Hospital Handshake</h3>
+            <div id="handshake-body"></div>
+        </div>
+    </div>
+    <!-- AI Triage Modal v2 — Symptom Checker + Ask Mitra AI chatbot -->
+    <div class="modal items-center justify-center p-4" id="modal-triage">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-triage')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-1 flex items-center gap-2 pr-12"><span
+                    class="material-symbols-outlined text-primary">psychology</span> AI Preliminary Triage</h3>
+
+            <!-- Language pills -->
+            <div class="flex items-center gap-2 mt-2 mb-1 flex-wrap">
+                <button type="button" class="at-lang-pill on" id="at-lang-en"
+                    onclick="MitraTriage.setLang('en'); document.getElementById('at-lang-en').classList.add('on'); document.getElementById('at-lang-hi').classList.remove('on'); document.getElementById('at-lang-mr').classList.remove('on');">English</button>
+                <button type="button" class="at-lang-pill" id="at-lang-hi"
+                    onclick="MitraTriage.setLang('hi'); document.getElementById('at-lang-hi').classList.add('on'); document.getElementById('at-lang-en').classList.remove('on'); document.getElementById('at-lang-mr').classList.remove('on');">&#2361;&#2367;&#2306;&#2342;&#2368;</button>
+                <button type="button" class="at-lang-pill" id="at-lang-mr"
+                    onclick="MitraTriage.setLang('mr'); document.getElementById('at-lang-mr').classList.add('on'); document.getElementById('at-lang-en').classList.remove('on'); document.getElementById('at-lang-hi').classList.remove('on');">&#2350;&#2352;&#2366;&#2336;&#2368;</button>
+                <span class="at-badge" style="margin-left:auto"><span
+                        class="material-symbols-outlined" style="font-size:13px">offline_bolt</span> WORKS OFFLINE</span>
+            </div>
+
+            <div
+                class="bg-error-container text-on-error-container p-sm rounded-lg mb-2 text-xs font-medium flex items-start gap-2 mt-2">
+                <span class="material-symbols-outlined text-[20px]">warning</span>
+                <p class="">AI is for decision support only and does not replace professional medical diagnosis.</p>
+            </div>
+
+            <!-- Tabs -->
+            <div style="border-bottom:1.5px solid #d9e5e0;display:flex;gap:2px">
+                <button type="button" class="at-tab active" id="at-tab-checker" onclick="MitraTriage.tab('checker')">
+                    <span class="material-symbols-outlined">checklist</span>Symptom Checker</button>
+                <button type="button" class="at-tab" id="at-tab-chat" onclick="MitraTriage.tab('chat')">
+                    <span class="material-symbols-outlined">forum</span>Ask Mitra AI</button>
+            </div>
+
+            <!-- TAB 1: Symptom Checker -->
+            <div id="at-panel-checker" style="margin-top:4px"></div>
+
+            <!-- TAB 2: Ask Mitra AI -->
+            <div id="at-panel-chat" style="display:none;margin-top:10px">
+                <div class="at-chat-log" id="at-chat-log"></div>
+                <div class="at-chat-chips" id="at-chat-chips"></div>
+                <div class="at-chat-row">
+                    <input type="text" id="at-chat-input" autocomplete="off"
+                        onkeydown="MitraChat.key(event)">
+                    <button type="button" class="at-send" id="at-send" onclick="MitraChat.submit()"
+                        aria-label="Send message">
+                        <span class="material-symbols-outlined">send</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Ambulance Dispatch Modal (nearest-unit engine) -->
+    <div class="modal items-center justify-center p-4" id="modal-ambulance">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-ambulance')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">ambulance</span> Smart Ambulance Dispatch</h3>
+            <div id="dispatch-body"></div>
+        </div>
+    </div>
+    <!-- Inventory Modal (editable stock) -->
+    <div class="modal items-center justify-center p-4" id="modal-inventory">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-inventory')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">inventory</span> Resource Inventory</h3>
+            <div id="inventory-body"></div>
+        </div>
+    </div>
+    <!-- IVR Modal (real TTS call simulator) -->
+    <div class="modal items-center justify-center p-4" id="modal-ivr">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-ivr')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">record_voice_over</span> Audio-First IVR Simulator</h3>
+            <div id="ivr-body"></div>
+        </div>
+    </div>
+    <!-- Passport Modal (live citizen data) -->
+    <div class="modal items-center justify-center p-4" id="modal-passport">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-passport')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">badge</span> Offline Emergency Passport</h3>
+            <div id="passport-body"></div>
+        </div>
+    </div>
+
+    <!-- ==========================================  -->
+    <!-- EMERGENCY WIZARD MODAL (Start Emergency Button) -->
+    <!-- ==========================================  -->
+    <div id="emergency-wizard-modal" style="display:none; position:fixed; inset:0; z-index:20000; background:rgba(0,0,0,0.75); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:1rem; overflow-y:auto;">
+      <div style="background:#fff; border-radius:20px; width:100%; max-width:680px; margin:auto; box-shadow:0 25px 60px rgba(0,0,0,0.4); overflow:hidden; display:flex; flex-direction:column; max-height:95vh;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#ba1a1a 0%,#93000a 100%); padding:20px 24px; display:flex; align-items:center; justify-content:space-between;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span class="material-symbols-outlined" style="color:#fff; font-size:32px; animation:pulse 2s infinite;">emergency</span>
+            <div>
+              <div style="color:#fff; font-size:20px; font-weight:800; letter-spacing:-0.3px;">Emergency Assistance</div>
+              <div id="ew-step-label" style="color:rgba(255,255,255,0.8); font-size:13px; font-weight:500;">Step 1 of 4: Select Emergency Type</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <a href="tel:108" style="background:rgba(255,255,255,0.2); color:#fff; border:2px solid rgba(255,255,255,0.5); padding:8px 14px; border-radius:10px; font-weight:800; font-size:13px; text-decoration:none; display:flex; align-items:center; gap:6px;"><span class="material-symbols-outlined" style="font-size:18px;">call</span>Call 108</a>
+            <button onclick="closeEmergencyWizard()" style="background:rgba(255,255,255,0.15); border:none; border-radius:10px; width:40px; height:40px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+              <span class="material-symbols-outlined" style="color:#fff; font-size:24px;">close</span>
+            </button>
+          </div>
+        </div>
+        <!-- Progress Bar -->
+        <div style="background:#f0f0f0; height:5px;">
+          <div id="ew-progress-bar" style="height:100%; background:linear-gradient(90deg,#ba1a1a,#e53935); border-radius:3px; transition:width 0.4s ease; width:25%;"></div>
+        </div>
+        <!-- Body -->
+        <div id="ew-body" style="padding:24px; overflow-y:auto; flex-grow:1;">
+          <!-- Step 1: Emergency Type -->
+          <div id="ew-step1">
+            <p style="font-weight:700; font-size:17px; color:#131b2e; margin-bottom:18px;">What type of emergency are you facing?</p>
+            <button id="ew-voice-btn" onclick="ewToggleVoice()" style="width:100%; margin-bottom:18px; background:linear-gradient(135deg,#00453d,#0b6b5d); color:#fff; border:none; border-radius:14px; padding:16px; font-size:15px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 4px 14px rgba(0,69,61,.3);">
+              <span class="material-symbols-outlined" id="ew-voice-icon" style="font-size:22px;">mic</span>
+              <span id="ew-voice-text">Speak Your Emergency — &#2348;&#2379;&#2354;&#2325;&#2352; &#2348;&#2340;&#2366;&#2319;&#2306;</span>
+            </button>
+            <div id="ew-voice-result" style="display:none; margin:-8px 0 18px; background:#eff6ff; border:2px solid #93c5fd; border-radius:12px; padding:12px 14px;">
+              <div style="font-size:11px; font-weight:800; color:#1e40af; letter-spacing:.5px; margin-bottom:4px;">VOICE DETECTED</div>
+              <div id="ew-voice-transcript" style="font-size:14px; color:#1e3a8a; font-weight:700;"></div>
+              <div id="ew-voice-match" style="font-size:12px; color:#374151; margin-top:4px;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <button class="ew-type-btn" onclick="ewSelectType('animal_bite')" style="background:#fff0f0; border:2px solid #fca5a5; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">🐾</div>
+                <div style="font-weight:800; color:#991b1b; font-size:15px;">Animal Bite</div>
+                <div style="color:#7f1d1d; font-size:12px; margin-top:3px;">Dog, Cat, Snake, Insect...</div>
+              </button>
+              <button class="ew-type-btn" onclick="ewSelectType('accident')" style="background:#fff7ed; border:2px solid #fdba74; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">🚗</div>
+                <div style="font-weight:800; color:#c2410c; font-size:15px;">Accident / Trauma</div>
+                <div style="color:#7c2d12; font-size:12px; margin-top:3px;">Road, fall, collision...</div>
+              </button>
+              <button class="ew-type-btn" onclick="ewSelectType('chemical')" style="background:#fefce8; border:2px solid #fde047; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">☣️</div>
+                <div style="font-weight:800; color:#713f12; font-size:15px;">Chemical Exposure</div>
+                <div style="color:#78350f; font-size:12px; margin-top:3px;">Acid, pesticide, gas leak...</div>
+              </button>
+              <button class="ew-type-btn" onclick="ewSelectType('cardiac')" style="background:#fdf2f8; border:2px solid #f9a8d4; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">💔</div>
+                <div style="font-weight:800; color:#9d174d; font-size:15px;">Cardiac / Chest</div>
+                <div style="color:#831843; font-size:12px; margin-top:3px;">Heart attack, chest pain...</div>
+              </button>
+              <button class="ew-type-btn" onclick="ewSelectType('bleeding')" style="background:#fef2f2; border:2px solid #fca5a5; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">🩸</div>
+                <div style="font-weight:800; color:#991b1b; font-size:15px;">Severe Bleeding</div>
+                <div style="color:#7f1d1d; font-size:12px; margin-top:3px;">Cuts, wounds, haemorrhage...</div>
+              </button>
+              <button class="ew-type-btn" onclick="ewSelectType('other')" style="background:#f0f9ff; border:2px solid #7dd3fc; border-radius:14px; padding:18px 14px; cursor:pointer; text-align:left; transition:all 0.2s;">
+                <div style="font-size:28px; margin-bottom:8px;">🆘</div>
+                <div style="font-weight:800; color:#0c4a6e; font-size:15px;">Other Emergency</div>
+                <div style="color:#075985; font-size:12px; margin-top:3px;">Breathing, poisoning, burns...</div>
+              </button>
+            </div>
+          </div>
+          <!-- Step 2: Sub-type -->
+          <div id="ew-step2" style="display:none;">
+            <button onclick="ewGoBack(1)" style="background:none; border:none; color:#ba1a1a; font-weight:700; cursor:pointer; font-size:14px; margin-bottom:14px; display:flex; align-items:center; gap:4px;"><span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>Back</button>
+            <p id="ew-subtype-question" style="font-weight:700; font-size:17px; color:#131b2e; margin-bottom:18px;">Select sub-type:</p>
+            <div id="ew-subtype-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
+          </div>
+          <!-- Step 3: Symptoms -->
+          <div id="ew-step3" style="display:none;">
+            <button onclick="ewGoBack(2)" style="background:none; border:none; color:#ba1a1a; font-weight:700; cursor:pointer; font-size:14px; margin-bottom:14px; display:flex; align-items:center; gap:4px;"><span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>Back</button>
+            <p id="ew-symptom-title" style="font-weight:700; font-size:17px; color:#131b2e; margin-bottom:6px;">Check all symptoms present:</p>
+            <p style="color:#6b7280; font-size:13px; margin-bottom:16px;">Select all that apply to the patient right now.</p>
+            <div id="ew-symptom-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+            <button onclick="ewAnalyzeSymptoms()" style="margin-top:20px; width:100%; background:linear-gradient(135deg,#ba1a1a,#93000a); color:#fff; border:none; border-radius:12px; padding:14px; font-size:16px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+              <span class="material-symbols-outlined">analytics</span> Analyze &amp; Get Assistance
+            </button>
+          </div>
+          <!-- Step 4: Assistance -->
+          <div id="ew-step4" style="display:none;">
+            <div id="ew-severity-badge" style="text-align:center; margin-bottom:18px;"></div>
+            <button id="ew-speak-btn" onclick="ewSpeakFirstAid()" style="width:100%; margin-bottom:18px; background:linear-gradient(135deg,#1d4ed8,#2563eb); color:#fff; border:none; border-radius:12px; padding:13px; font-size:14px; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(37,99,235,.3);">
+              <span class="material-symbols-outlined" style="font-size:20px;">volume_up</span> Listen to First-Aid (Voice)
+            </button>
+            <div id="ew-dos-donts" style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px;"></div>
+            <div id="ew-first-aid-steps" style="margin-bottom:18px;"></div>
+            <div style="background:#f0fdf4; border:2px solid #4ade80; border-radius:14px; padding:18px; margin-bottom:14px;">
+              <div style="font-weight:800; color:#166534; font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:10px;"><span class="material-symbols-outlined">local_hospital</span>Hospital Notification Sent</div>
+              <div id="ew-hospital-info" style="color:#15803d; font-size:14px;"></div>
+            </div>
+            <div id="ew-trust-breakdown" style="margin-bottom:14px;"></div>
+            <button onclick="closeEmergencyWizard()" style="width:100%; background:#00453d; color:#fff; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:800; cursor:pointer;">Close &amp; Stay Safe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- EXTERNAL SCRIPTS (citizen portal - loaded in order):         -->
+    <!-- 1. js/toast.js        : shared toast (admin-free shim)       -->
+    <!-- 2. js/app.js          : core engine (triage, SOS, modals)    -->
+    <!-- 3. js/portal-bridge.js: citizen `adminCases` stand-in + case -->
+    <!--                         bus to the admin Command Center      -->
+    <!-- 4. js/translations.js : i18n dictionary + translatePage()    -->
+    <!-- ----------------------------------------------------------   -->
+    <!-- 5. TRUST LAYER (anti-fake reporting & credibility engine)    -->
+    <!--    Must load AFTER app.js because it wraps its functions     -->
+    <!--    non-destructively (zero-regression hooks).                -->
+    <!--    js/trust/device-trust.js       : F1 fingerprint + spam    -->
+    <!--    js/trust/evidence-capture.js   : F1 camera/GPS/audio      -->
+    <!--    js/trust/credibility-engine.js : F2+F3 scoring pipeline   -->
+    <!--    js/trust/trust-ui.js           : wiring + verification UI -->
+    <!-- NOTE: js/admin.js is deliberately NOT loaded here — citizens -->
+    <!-- never get the Command Center; their cases reach officers via -->
+    <!-- the portal bridge instead.                                   -->
+    <!-- ============================================================ -->
+    <script src="js/toast.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/portal-bridge.js"></script>
+    <script src="js/translations.js"></script>
+    <!-- Accessibility: A− / A / A+ / A++ text-size controls (govt style) -->
+    <script src="js/text-size.js"></script>
+    <!-- OFFLINE OUTBOX: offline-first queue + auto-sync -->
+    <script src="js/outbox.js"></script>
+    <!-- PRE-ARRIVAL HANDSHAKE STORE: shared bus — citizen files & watches,
+         the duty officer (admin.html) acknowledges/declines -->
+    <script src="js/handshake.js"></script>
+    <!-- ADVANCED NETWORK CARDS: interactive handshake/AI-triage/dispatch/inventory/IVR/passport -->
+    <script src="js/network-cards.js"></script>
+    <!-- AI TRIAGE v2: upgraded symptom checker + Ask Mitra AI chatbot   -->
+    <!-- (overrides Network.aiOpen non-destructively; offline engine +   -->
+    <!--  optional API key slot at top of js/mitra-chat.js)              -->
+    <script src="js/ai-triage.js"></script>
+    <script src="js/mitra-chat.js"></script>
+    <!-- USER ACCOUNT: pre-verification hub (OTP / ABHA / DigiLocker)  -->
+    <!-- loads BEFORE the trust layer so alerts inherit its badges     -->
+    <script src="js/account.js"></script>
+    <script src="js/facilities.js"></script>
+    <script src="js/trust/device-trust.js"></script>
+    <script src="js/trust/evidence-capture.js"></script>
+    <script src="js/trust/credibility-engine.js"></script>
+    <script src="js/trust/trust-ui.js"></script>
+    <script src="js/tutorial.js"></script>
+</body>
+
+</html>

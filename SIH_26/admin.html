@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en" style="">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <meta content="#00453d" name="theme-color">
+    <meta content="telephone=no" name="format-detection">
+    <title>Emergency Mitra — Command Center (Admin)</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- ============================================================ -->
+    <!-- STYLESHEET: all custom CSS lives in css/styles.css           -->
+    <!-- (animations, hero buttons, modals, dashboard widgets)        -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- ============================================================ -->
+    <!-- TRUST LAYER STYLES: anti-fake reporting & credibility UI     -->
+    <!-- (legal banner, evidence panel, OTP modal, risk badges)       -->
+    <!-- ============================================================ -->
+    <link rel="stylesheet" href="css/trust.css">
+
+    <!-- ============================================================ -->
+    <!-- TAILWIND THEME: colors / spacing / font design tokens        -->
+    <!-- must load right after the Tailwind CDN script above          -->
+    <!-- ============================================================ -->
+    <script src="js/tailwind-config.js"></script>
+    <!-- i18n engine: full-page language switching (EN/HI/MR), persisted -->
+    <script src="js/translations.js"></script>
+    <!-- Accessibility: A− / A / A+ / A++ text-size controls (govt style) -->
+    <script src="js/text-size.js"></script>
+
+    <!-- ============================================================ -->
+    <!-- ADMIN AUTH: shared credential gate (js/admin-auth.js).       -->
+    <!-- The guard below runs in <head> so an unauthenticated visitor -->
+    <!-- never sees a flash of the console before the redirect.       -->
+    <!-- ============================================================ -->
+    <script src="js/admin-auth.js"></script>
+    <script>
+        if (!(window.AdminAuth && AdminAuth.isAuthenticated())) {
+            window.location.replace('admin-login.html');
+        }
+    </script>
+</head>
+
+<!-- ========================================================================== -->
+<!-- ADMIN CONSOLE (admin.html) — duty-officer-only view                        -->
+<!--   1. Command Center header  - officer identity + logout                    -->
+<!--   2. Dashboard modal        - live cases, beds, patients, inventory,       -->
+<!--                               fleet GPS, district map, broadcasts          -->
+<!--   3. Support modals         - quick admission, case timeline, passport     -->
+<!-- Access is credential-gated via js/admin-auth.js — unauthenticated          -->
+<!-- visitors are bounced to admin-login.html before anything renders.          -->
+<!-- ========================================================================== -->
+<body
+    class="bg-surface-container-lowest text-on-background font-body-md text-base antialiased min-h-screen flex flex-col overflow-x-hidden"
+    data-portal="admin" style="overflow: auto;">
+    <!-- ============================================================ -->
+    <!-- ADMIN HEADER: command-center top bar (citizen nav removed)   -->
+    <!-- ============================================================ -->
+    <header class="bg-[#00453d] text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex justify-between items-center w-full px-4 lg:px-8 max-w-[1600px] mx-auto h-16 gap-3">
+            <div class="flex items-center gap-3 min-w-0">
+                <img src="logo.png" alt="Emergency Mitra" class="w-10 h-10 object-contain flex-shrink-0">
+                <div class="min-w-0">
+                    <div class="font-bold text-base lg:text-lg leading-tight truncate">Emergency Mitra — Command
+                        Center</div>
+                    <div class="text-[11px] lg:text-xs text-white/70 truncate" id="admin-officer-label">Duty Officer
+                        Console</div>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <!-- Language switcher -->
+                <div class="relative group" id="lang-dropdown-wrapper">
+                    <button aria-label="Select Language" id="lang-menu-btn"
+                        class="p-xs px-2.5 rounded-lg hover:bg-white/10 text-white/90 flex items-center justify-center gap-1.5 transition-colors h-[40px] border border-white/25">
+                        <span class="material-symbols-outlined text-[20px]">language</span>
+                        <span id="current-lang-code" class="text-xs font-bold uppercase">EN</span>
+                        <span class="material-symbols-outlined text-[16px] opacity-70">expand_more</span>
+                    </button>
+                    <div
+                        class="absolute right-0 mt-1 w-36 bg-surface border border-outline-variant rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
+                        <button onclick="translatePage('en')" id="btn-lang-en"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium border-b border-outline-variant flex items-center justify-between transition-colors bg-primary/5 font-bold text-primary">
+                            <span>English (EN)</span>
+                            <span class="material-symbols-outlined text-sm" id="check-en">check</span>
+                        </button>
+                        <button onclick="translatePage('hi')" id="btn-lang-hi"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium border-b border-outline-variant flex items-center justify-between transition-colors">
+                            <span>&#2361;&#2367;&#2306;&#2342;&#2368; (HI)</span>
+                            <span class="material-symbols-outlined text-sm hidden" id="check-hi">check</span>
+                        </button>
+                        <button onclick="translatePage('mr')" id="btn-lang-mr"
+                            class="w-full text-left px-4 py-2.5 hover:bg-primary/10 text-sm font-medium flex items-center justify-between transition-colors">
+                            <span>&#2350;&#2352;&#2366;&#2336;&#2368; (MR)</span>
+                            <span class="material-symbols-outlined text-sm hidden" id="check-mr">check</span>
+                        </button>
+                    </div>
+                </div>
+                <button onclick="openDashboardModal()"
+                    class="bg-[#71f8e4] text-[#00201c] text-xs sm:text-sm font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-white transition-all">
+                    <span class="material-symbols-outlined text-[18px]">dashboard</span>
+                    <span class="hidden sm:inline">Open Dashboard</span>
+                </button>
+                <button onclick="AdminAuth.logout(); window.location.href='admin-login.html';"
+                    class="border border-white/30 text-white text-xs sm:text-sm font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 hover:bg-white/10 transition-all">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                    <span class="hidden sm:inline">Logout</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="text-center text-on-surface-variant">
+            <span class="material-symbols-outlined text-[64px] text-primary/30">admin_panel_settings</span>
+            <p class="mt-2 font-bold text-on-surface text-lg">Command Center session active</p>
+            <p class="text-sm max-w-md mx-auto mt-1">Use <b>Open Dashboard</b> (top-right) to manage live cases, bed
+                availability, inventory, ambulance fleet, the district map and broadcasts. The dashboard reopens
+                automatically on every visit.</p>
+        </div>
+    </main>
+
+    <!-- ======================================================== -->
+    <!-- NEW: COMPREHENSIVE ADMIN DASHBOARD MODAL -->
+    <!-- ======================================================== -->
+    <div class="modal items-center justify-center p-2 sm:p-4" id="modal-dashboard">
+        <div class="bg-surface rounded-2xl p-0 max-w-7xl w-full shadow-2xl relative max-h-[96vh] overflow-hidden flex flex-col border-2 border-primary/30">
+            
+            <!-- Dashboard Top Header Bar -->
+            <div class="bg-[#00453d] text-white p-3 sm:p-5 flex flex-wrap justify-between items-center gap-3 sticky top-0 z-30 shadow-md">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/10 p-2 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[28px] text-[#71f8e4]">admin_panel_settings</span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg sm:text-2xl font-bold tracking-tight">Emergency Mitra Command Center</h2>
+                            <span class="bg-[#166534] text-[#dcfce7] text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span> LIVE SYNC
+                            </span>
+                        </div>
+                        <p class="text-xs text-white/80 hidden sm:block">Wardha District Apex Health Command • Duty Officer: Dr. S. Kulkarni (MD EM)</p>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center gap-2">
+                    <select id="dash-hospital-selector" onchange="switchHospitalView(this.value)" class="bg-white/15 border border-white/30 text-white text-xs sm:text-sm font-semibold rounded-lg px-2 sm:px-3 py-2 outline-none focus:ring-2 focus:ring-[#71f8e4]">
+                        <option value="all" class="text-black">All Network Facilities (8)</option>
+                        <option value="dh_wardha" selected class="text-black">District Hospital, Wardha</option>
+                        <option value="rh_sevagram" class="text-black">Rural Hospital, Sevagram</option>
+                        <option value="sdh_hinganghat" class="text-black">Sub-District Hospital, Hinganghat</option>
+                        <option value="phc_deoli" class="text-black">PHC Deoli</option>
+                    </select>
+
+                    <button onclick="triggerNewAdmissionModal()" class="bg-[#71f8e4] text-[#00201c] hover:bg-white text-xs sm:text-sm font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition-all shadow">
+                        <span class="material-symbols-outlined text-[18px]">add_circle</span>
+                        <span class="hidden sm:inline">New Admission</span>
+                    </button>
+
+                    <button onclick="closeModal('modal-dashboard')" class="text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-2xl">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Tabs Navigation -->
+            <div class="bg-surface-container-low border-b border-outline-variant px-3 sm:px-6 flex overflow-x-auto no-scrollbar gap-1 sticky top-[68px] z-20">
+                <button class="dash-tab active" onclick="switchDashTab('overview', this)">
+                    <span class="material-symbols-outlined text-[18px]">dashboard</span> Overview
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('cases', this)">
+                    <span class="material-symbols-outlined text-[18px]">emergency</span> Active Cases <span class="dash-badge red ml-1">4 Critical</span>
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('handshake', this)">
+                    <span class="material-symbols-outlined text-[18px]">handshake</span> Pre-Arrival Handshake <span class="dash-badge yellow ml-1" id="hs-pending-badge">0 New</span>
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('hospitals', this)">
+                    <span class="material-symbols-outlined text-[18px]">local_hospital</span> Bed Management
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('patients', this)">
+                    <span class="material-symbols-outlined text-[18px]">personal_injury</span> Patients
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('inventory', this)">
+                    <span class="material-symbols-outlined text-[18px]">inventory_2</span> Medical Inventory
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('ambulances', this)">
+                    <span class="material-symbols-outlined text-[18px]">ambulance</span> Fleet &amp; GPS
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('litemap', this)">
+                    <span class="material-symbols-outlined text-[18px]">map</span> Live Map
+                </button>
+                <button class="dash-tab" onclick="switchDashTab('broadcast', this)">
+                    <span class="material-symbols-outlined text-[18px]">podcasts</span> Broadcast Alert
+                </button>
+            </div>
+
+            <!-- Dashboard Content Panels Area -->
+            <div class="overflow-y-auto p-3 sm:p-6 bg-surface flex-grow space-y-6">
+
+                <!-- 1. OVERVIEW PANEL -->
+                <div id="dash-panel-overview" class="dash-panel active space-y-6">
+                    <!-- KPI Metric Cards Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <div class="dash-stat-card border-l-4 border-l-error">
+                            <span class="stat-label">Active Emergencies</span>
+                            <span class="stat-value text-error" id="stat-active-cases">12</span>
+                            <span class="text-[11px] text-error font-bold flex items-center gap-0.5">
+                                <span class="material-symbols-outlined text-[14px]">arrow_upward</span> +3 last hour
+                            </span>
+                            <span class="material-symbols-outlined stat-icon text-error">emergency</span>
+                        </div>
+                        <div class="dash-stat-card border-l-4 border-l-primary">
+                            <span class="stat-label">Available ICU Beds</span>
+                            <span class="stat-value text-primary" id="stat-icu-beds">6 <span class="text-sm font-normal text-on-surface-variant">/ 28</span></span>
+                            <span class="text-[11px] text-on-surface-variant">78% Occupancy</span>
+                            <span class="material-symbols-outlined stat-icon text-primary">bed</span>
+                        </div>
+                        <div class="dash-stat-card border-l-4 border-l-secondary">
+                            <span class="stat-label">Antivenom Stock</span>
+                            <span class="stat-value text-secondary" id="stat-antivenom">42 <span class="text-sm font-normal text-on-surface-variant">Vials</span></span>
+                            <span class="text-[11px] text-[#166534] font-bold">Adequate in 4 Hubs</span>
+                            <span class="material-symbols-outlined stat-icon text-secondary">medication</span>
+                        </div>
+                        <div class="dash-stat-card border-l-4 border-l-blue-600">
+                            <span class="stat-label">Ambulances En Route</span>
+                            <span class="stat-value text-blue-700" id="stat-ambulances">5 <span class="text-sm font-normal text-on-surface-variant">/ 14</span></span>
+                            <span class="text-[11px] text-on-surface-variant">Avg ETA: 11 mins</span>
+                            <span class="material-symbols-outlined stat-icon text-blue-600">ambulance</span>
+                        </div>
+                        <div class="dash-stat-card border-l-4 border-l-amber-500">
+                            <span class="stat-label">Pre-Arrival Handshakes</span>
+                            <span class="stat-value text-amber-700" id="stat-handshakes">8</span>
+                            <span class="text-[11px] text-amber-700 font-bold">OTs pre-notified</span>
+                            <span class="material-symbols-outlined stat-icon text-amber-500">handshake</span>
+                        </div>
+                        <div class="dash-stat-card border-l-4 border-l-purple-600">
+                            <span class="stat-label">Offline Sync Sessions</span>
+                            <span class="stat-value text-purple-700">142</span>
+                            <span class="text-[11px] text-[#166534] font-bold">SMS Engine: Active</span>
+                            <span class="material-symbols-outlined stat-icon text-purple-600">signal_cellular_alt</span>
+                        </div>
+                    </div>
+
+                    <!-- Critical Alert Banner -->
+                    <div class="bg-error-container/80 border-2 border-error p-4 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-error text-white p-2 rounded-lg animate-bounce">
+                                <span class="material-symbols-outlined text-[24px]">warning</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-on-error-container text-base">Cluster Influx Alert: 2 Snakebite Emergencies in Seloo Taluka</h4>
+                                <p class="text-xs text-on-error-container/80">Antivenom dispatch MH-31-EM-102 en route to Seloo Sub-Centre. Wardha ICU Bed #3 reserved.</p>
+                            </div>
+                        </div>
+                        <button onclick="switchDashTab('cases')" class="bg-error text-on-error hover:bg-[#93000a] text-xs font-bold px-4 py-2 rounded-lg whitespace-nowrap shadow">
+                            View Triage Queue
+                        </button>
+                    </div>
+
+                    <!-- Dual Grid: Live Activity Feed + Network Health -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Recent Incoming Protocol Alerts -->
+                        <div class="lg:col-span-2 bg-white rounded-xl border border-outline-variant p-4 shadow-sm">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="font-bold text-base text-primary flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-error">notification_important</span> Live Incoming Emergency Triage Feed
+                                </h3>
+                                <button onclick="triggerDataRefresh()" class="text-xs text-secondary font-bold hover:underline flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px]">refresh</span> Refresh
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="dash-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Case ID</th>
+                                            <th>Patient / Area</th>
+                                            <th>Emergency Type</th>
+                                            <th>Triage Level</th>
+                                            <th>Destination</th>
+                                            <th>ETA</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-overview-cases-tbody">
+                                        <!-- Dynamically generated rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Network Facility Readiness Summary -->
+                        <div class="bg-white rounded-xl border border-outline-variant p-4 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-bold text-base text-primary mb-3 flex items-center gap-1.5">
+                                    <span class="material-symbols-outlined text-primary">analytics</span> Facility Readiness Index
+                                </h3>
+                                <div class="space-y-4 text-xs">
+                                    <div>
+                                        <div class="flex justify-between font-bold mb-1">
+                                            <span>District Hospital Wardha</span>
+                                            <span class="text-[#166534]">92% Ready</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-[#166534] h-full rounded-full" style="width: 92%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-bold mb-1">
+                                            <span>Rural Hospital Sevagram</span>
+                                            <span class="text-amber-700">74% Ready</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-amber-500 h-full rounded-full" style="width: 74%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-bold mb-1">
+                                            <span>SDH Hinganghat</span>
+                                            <span class="text-[#166534]">88% Ready</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-[#166534] h-full rounded-full" style="width: 88%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-bold mb-1">
+                                            <span>PHC Deoli</span>
+                                            <span class="text-red-700">55% Ready (Low O2)</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden">
+                                            <div class="bg-red-500 h-full rounded-full" style="width: 55%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-outline-variant flex justify-between items-center text-xs">
+                                <span class="text-on-surface-variant font-medium">Auto-dispatch algorithms: <strong>ACTIVE</strong></span>
+                                <button onclick="switchDashTab('hospitals')" class="text-primary font-bold hover:underline">Manage All &rarr;</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. EMERGENCY CASES & TRIAGE PANEL -->
+                <div id="dash-panel-cases" class="dash-panel space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 rounded-xl border border-outline-variant">
+                        <div class="relative w-full sm:w-72">
+                            <span class="material-symbols-outlined absolute left-2.5 top-2.5 text-on-surface-variant text-[18px]">search</span>
+                            <input type="text" id="case-search-input" onkeyup="filterCaseTable()" placeholder="Search Case ID, symptom, hospital..." class="dash-search">
+                        </div>
+                        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                            <select id="case-filter-priority" onchange="filterCaseTable()" class="text-xs px-3 py-2 rounded-lg border border-outline-variant bg-surface outline-none">
+                                <option value="ALL">All Priorities</option>
+                                <option value="CRITICAL">Critical Only</option>
+                                <option value="URGENT">Urgent Only</option>
+                                <option value="STABLE">Stable Only</option>
+                            </select>
+                            <button onclick="triggerNewAdmissionModal()" class="bg-primary text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-primary-container transition-colors flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">add</span> Register Case
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="dash-table" id="main-cases-table">
+                                <thead>
+                                    <tr>
+                                        <th>Case #</th>
+                                        <th>Reported At</th>
+                                        <th>Patient Name / Age</th>
+                                        <th>Type &amp; Symptoms</th>
+                                        <th>Priority</th>
+                                        <th>Trust Score</th>
+                                        <th>Assigned Facility</th>
+                                        <th>Attending MO</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cases-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2b. PRE-ARRIVAL HANDSHAKE PANEL — duty-officer decisions -->
+                <div id="dash-panel-handshake" class="dash-panel space-y-4">
+                    <div class="bg-white p-3 rounded-xl border border-outline-variant flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">handshake</span>
+                            <div>
+                                <h3 class="font-bold text-on-surface leading-tight">Pre-Arrival Handshake Requests</h3>
+                                <p class="text-xs text-on-surface-variant">Incoming ambulance pre-alerts from citizens &amp; the 108 gateway — acknowledge to reserve beds, or reroute.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="dash-badge yellow" id="hs-panel-pending-count">0 PENDING</span>
+                            <span class="dash-badge green" id="hs-panel-ack-count">0 ACK</span>
+                            <span class="dash-badge red" id="hs-panel-declined-count">0 REROUTED</span>
+                        </div>
+                    </div>
+                    <div id="hs-admin-queue" class="space-y-3">
+                        <!-- Populated by js/admin-handshake.js -->
+                    </div>
+                </div>
+
+                <!-- 3. HOSPITALS & BED MANAGEMENT PANEL -->
+                <div id="dash-panel-hospitals" class="dash-panel space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="hospital-cards-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- 4. PATIENTS DIRECTORY -->
+                <div id="dash-panel-patients" class="dash-panel space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 rounded-xl border border-outline-variant">
+                        <div class="relative w-full sm:w-80">
+                            <span class="material-symbols-outlined absolute left-2.5 top-2.5 text-on-surface-variant text-[18px]">search</span>
+                            <input type="text" id="patient-search-input" onkeyup="filterPatientTable()" placeholder="Search patient name, ABHA ID, Blood group..." class="dash-search">
+                        </div>
+                        <div class="text-xs text-on-surface-variant">
+                            Showing <strong id="patient-count-display">3</strong> Active In-Patients
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="dash-table" id="patient-table">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Full Name</th>
+                                        <th>Age/Sex</th>
+                                        <th>Blood Group</th>
+                                        <th>Known Allergies</th>
+                                        <th>Admitted Ward</th>
+                                        <th>Current Vitals</th>
+                                        <th>Emergency Contact</th>
+                                        <th>Passport</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patient-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. MEDICAL INVENTORY PANEL -->
+                <div id="dash-panel-inventory" class="dash-panel space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 rounded-xl border border-outline-variant">
+                        <div class="relative w-full sm:w-72">
+                            <span class="material-symbols-outlined absolute left-2.5 top-2.5 text-on-surface-variant text-[18px]">search</span>
+                            <input type="text" id="inventory-search-input" onkeyup="filterInventoryTable()" placeholder="Search medicine, O2, blood units..." class="dash-search">
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="requestEmergencyRestock()" class="bg-secondary text-white text-xs font-bold px-3 py-2 rounded-lg hover:bg-primary-container transition-colors flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px]">local_shipping</span> Trigger Restock Request
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="dash-table" id="inventory-table">
+                                <thead>
+                                    <tr>
+                                        <th>Resource Item</th>
+                                        <th>Category</th>
+                                        <th>Location / Hub</th>
+                                        <th>Current Stock</th>
+                                        <th>Min Threshold</th>
+                                        <th>Status</th>
+                                        <th>Live Quick Adjust</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. AMBULANCE FLEET & GPS PANEL -->
+                <div id="dash-panel-ambulances" class="dash-panel space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="ambulance-cards-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- 6b. LIVE DISTRICT MAP PANEL (Leaflet + OSM) -->
+                <div id="dash-panel-litemap" class="dash-panel space-y-4">
+                    <div class="bg-white p-3 rounded-xl border border-outline-variant flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">map</span>
+                            <div>
+                                <h3 class="font-bold text-on-surface leading-tight">Wardha District — Live Operations Map</h3>
+                                <p class="text-xs text-on-surface-variant">Facilities by readiness · active cases by tier · en-route ambulances</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3 text-xs font-semibold text-on-surface-variant">
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#1c695f] inline-block"></span> Facility</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#ba1a1a] inline-block"></span> Critical case</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#d97706] inline-block"></span> Urgent case</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#2563eb] inline-block"></span> Stable case</span>
+                            <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-[#7c3aed] inline-block"></span> Ambulance</span>
+                        </div>
+                    </div>
+                    <div id="dash-live-map" style="height: 420px; border-radius: 16px; border: 1px solid var(--outline-variant, #e1e8e5); z-index: 1;"></div>
+                </div>
+
+                <!-- 7. BROADCAST ALERT CENTER -->
+                <div id="dash-panel-broadcast" class="dash-panel space-y-6">
+                    <div class="bg-white p-6 rounded-2xl border border-outline-variant shadow-sm max-w-2xl mx-auto">
+                        <div class="flex items-center gap-3 mb-4 pb-3 border-b border-outline-variant">
+                            <div class="bg-error-container text-error p-3 rounded-xl">
+                                <span class="material-symbols-outlined text-[32px]">podcasts</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-on-background">District-Wide Emergency Broadcast</h3>
+                                <p class="text-xs text-on-surface-variant">Send high-priority alerts to all PHCs, ambulances, and community Asha workers via SMS &amp; IVR.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Alert Scope / Target Group</label>
+                                <select id="broadcast-target" class="w-full p-2.5 border border-outline-variant rounded-lg bg-surface text-sm font-medium outline-none">
+                                    <option>All Network Hospitals &amp; PHCs (Wardha District)</option>
+                                    <option>Ambulance Drivers &amp; Paramedics Only</option>
+                                    <option>Accident &amp; Trauma Specialists on Call</option>
+                                    <option>All Accredited Asha Workers (Rural Push SMS)</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Broadcast Type</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label class="p-3 border border-error rounded-lg flex items-center gap-2 cursor-pointer bg-error/5">
+                                        <input type="radio" name="bcast-type" value="Critical" checked class="text-error">
+                                        <span class="text-xs font-bold text-error">CRITICAL (Level 1)</span>
+                                    </label>
+                                    <label class="p-3 border border-amber-500 rounded-lg flex items-center gap-2 cursor-pointer bg-amber-500/5">
+                                        <input type="radio" name="bcast-type" value="Weather" class="text-amber-600">
+                                        <span class="text-xs font-bold text-amber-700">Flood / Surge Alert</span>
+                                    </label>
+                                    <label class="p-3 border border-primary rounded-lg flex items-center gap-2 cursor-pointer bg-primary/5">
+                                        <input type="radio" name="bcast-type" value="General" class="text-primary">
+                                        <span class="text-xs font-bold text-primary">Supply Dispatch</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Message Text (SMS &amp; Audio Synthesized)</label>
+                                <textarea id="broadcast-message-text" rows="3" class="w-full p-3 border border-outline-variant rounded-lg bg-surface text-sm outline-none focus:ring-2 focus:ring-primary" placeholder="Type emergency broadcast message...">URGENT ADVISORY: Antivenom vials replenished at PHC Deoli and SDH Hinganghat. Divert Seloo snakebite cases to Wardha District Hospital Trauma Unit.</textarea>
+                            </div>
+
+                            <button onclick="sendDistrictBroadcast()" class="w-full bg-error text-white py-3 rounded-xl font-bold hover:bg-[#93000a] transition-all flex items-center justify-center gap-2 shadow-lg">
+                                <span class="material-symbols-outlined">send</span> Dispatch District Broadcast Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dashboard Footer Summary -->
+            <div class="bg-surface-container-high border-t border-outline-variant p-3 sm:px-6 flex flex-wrap justify-between items-center text-xs text-on-surface-variant">
+                <div>Emergency Mitra Central Dispatch v3.4 • Connected to <strong>108 MH-EMRI</strong> Gateway</div>
+                <div class="flex items-center gap-3">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> API Response: 48ms</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> SMS Gateway: 99.8% Uptime</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Quick New Admission Modal -->
+    <div class="modal items-center justify-center p-4 z-[120]" id="modal-quick-admission">        <div class="bg-white rounded-xl p-6 max-w-lg w-full shadow-2xl border border-outline-variant space-y-4">
+            <div class="flex justify-between items-center border-b pb-3">
+                <h3 class="font-bold text-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined text-error">emergency</span> Direct Emergency Case Admission
+                </h3>
+                <button onclick="closeModal('modal-quick-admission')" class="text-on-surface-variant hover:text-black">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form onsubmit="handleQuickAdmission(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Patient Name</label>
+                    <input type="text" id="adm-name" required placeholder="e.g. Anand Deshmukh" class="w-full p-2 border border-outline-variant rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Age &amp; Gender</label>
+                        <input type="text" id="adm-age" required placeholder="e.g. 38 / Male" class="w-full p-2 border border-outline-variant rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Emergency Protocol</label>
+                        <select id="adm-type" class="w-full p-2 border border-outline-variant rounded-lg text-sm">
+                            <option value="Snakebite">Snakebite 🐍</option>
+                            <option value="Cardiac Arrest">Cardiac Arrest</option>
+                            <option value="Accident / Trauma">Accident / Trauma</option>
+                            <option value="Severe Bleeding">Severe Bleeding</option>
+                            <option value="Breathing Issue">Breathing Issue</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Triage Priority</label>
+                        <select id="adm-priority" class="w-full p-2 border border-outline-variant rounded-lg text-sm">
+                            <option value="CRITICAL">CRITICAL (Level 1)</option>
+                            <option value="URGENT">URGENT (Level 2)</option>
+                            <option value="STABLE">STABLE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-on-surface-variant uppercase mb-1">Target Facility</label>
+                        <select id="adm-hospital" class="w-full p-2 border border-outline-variant rounded-lg text-sm">
+                            <option value="District Hospital Wardha">District Hospital Wardha</option>
+                            <option value="Rural Hospital Sevagram">Rural Hospital Sevagram</option>
+                            <option value="SDH Hinganghat">SDH Hinganghat</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary-container transition-colors mt-2">
+                    Admit &amp; Dispatch Alert
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Case Timeline Modal -->
+    <div class="modal items-center justify-center p-4 z-[120]" id="modal-case-timeline">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-outline-variant">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-primary flex items-center gap-2">
+                    <span class="material-symbols-outlined">timeline</span> Golden-Hour Journey
+                </h3>
+                <button onclick="closeModal('modal-case-timeline')" class="text-on-surface-variant hover:text-error p-1 rounded-lg hover:bg-error-container">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="case-timeline-body"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="dash-toast">
+        <span class="material-symbols-outlined" id="toast-icon">check_circle</span>
+        <span id="toast-msg">Operation completed successfully.</span>
+    </div>
+    <!-- Passport Modal (live citizen data) -->
+    <div class="modal items-center justify-center p-4" id="modal-passport">
+        <div
+            class="bg-surface rounded-lg p-md lg:p-xl max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+                class="absolute top-4 right-4 text-on-surface-variant hover:text-on-surface h-11 w-11 flex items-center justify-center"
+                onclick="closeModal('modal-passport')"><span class="material-symbols-outlined">close</span></button>
+            <h3 class="text-xl lg:text-2xl font-bold mb-4 flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary">badge</span> Offline Emergency Passport</h3>
+            <div id="passport-body"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- EXTERNAL SCRIPTS (loaded in order - they share globals)      -->
+    <!-- 1. js/app.js          : core engine (triage, SOS, modals)    -->
+    <!-- 2. js/admin.js        : admin dashboard controller           -->
+    <!-- 3. js/translations.js : i18n dictionary + translatePage()    -->
+    <!-- ----------------------------------------------------------   -->
+    <!-- 4. TRUST LAYER (anti-fake reporting & credibility engine)    -->
+    <!--    Must load AFTER app.js/admin.js because it wraps their    -->
+    <!--    functions non-destructively (zero-regression hooks).      -->
+    <!--    js/trust/device-trust.js       : F1 fingerprint + spam    -->
+    <!--    js/trust/evidence-capture.js   : F1 camera/GPS/audio      -->
+    <!--    js/trust/credibility-engine.js : F2+F3 scoring pipeline   -->
+    <!--    js/trust/trust-ui.js           : wiring + verification UI -->
+    <!-- ============================================================ -->
+    <!-- ============================================================ -->
+    <!-- EXTERNAL SCRIPTS (admin console) — loaded in order:          -->
+    <!-- 1. js/app.js          : core engine (modals, helpers)        -->
+    <!-- 2. js/admin.js        : admin dashboard controller           -->
+    <!-- 3. js/portal-bridge.js: pulls citizen cases into adminCases  -->
+    <!-- 4. js/translations.js : i18n + translatePage()               -->
+    <!-- ----------------------------------------------------------   -->
+    <!-- 5. TRUST LAYER — wraps admin render functions to attach      -->
+    <!--    credibility chips; must load after app.js/admin.js.       -->
+    <!-- Citizen-only wizard/SOS/facility scripts are NOT loaded:     -->
+    <!-- officers get exactly the dashboard toolset, nothing else.    -->
+    <!-- ============================================================ -->
+    <script src="js/app.js"></script>
+    <script src="js/admin.js"></script>
+    <!-- PRE-ARRIVAL HANDSHAKE: shared request bus + officer decision panel -->
+    <script src="js/handshake.js"></script>
+    <script src="js/admin-handshake.js"></script>
+    <script src="js/portal-bridge.js"></script>
+    <script src="js/translations.js"></script>
+    <script src="js/network-cards.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/trust/device-trust.js"></script>
+    <script src="js/trust/evidence-capture.js"></script>
+    <script src="js/trust/credibility-engine.js"></script>
+    <script src="js/trust/trust-ui.js"></script>
+
+    <!-- ============================================================ -->
+    <!-- ADMIN GATE + AUTO-OPEN: officer identity + dashboard reopen  -->
+    <!-- ============================================================ -->
+    <script>
+        (function () {
+            var u = window.AdminAuth ? AdminAuth.currentUser() : null;
+            var lbl = document.getElementById('admin-officer-label');
+            if (lbl && u) {
+                lbl.textContent = 'Duty Officer: ' +
+                    (u === 'admin' ? 'Dr. S. Kulkarni (MD EM)' : 'Control Room Officer') +
+                    ' • signed in as ' + u.toUpperCase();
+            }
+            var open = function () {
+                try { if (typeof openDashboardModal === 'function') openDashboardModal(); }
+                catch (e) { /* user can click Open Dashboard */ }
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', open);
+            } else {
+                open();
+            }
+        })();
+    </script>
+    <div id="footer-root"></div>
+    <script src="js/footer.js"></script>
+</body>
+
+</html>

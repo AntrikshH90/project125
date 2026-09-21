@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport">
+    <meta content="#00453d" name="theme-color">
+    <meta content="telephone=no" name="format-detection">
+    <title>Emergency Mitra � Who are you?</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/trust.css">
+    <script src="js/tailwind-config.js"></script>
+    <!-- i18n engine: full-page language switching (EN/HI/MR), persisted -->
+    <script src="js/translations.js"></script>
+    <!-- Accessibility: A? / A / A+ / A++ text-size controls (govt style) -->
+    <script src="js/text-size.js"></script>
+</head>
+
+<!-- ========================================================================== -->
+<!-- ROLE CHOOSER (index.html) � the single entry point of the portal           -->
+<!--                                                                            -->
+<!--   "I am a Patient / Citizen"  -> citizen.html  (everything EXCEPT the      -->
+<!--                                  admin Command Center)                     -->
+<!--   "I am an Admin / Officer"   -> admin-login.html (credential gate) ->     -->
+<!--                                  admin.html (Command Center ONLY)          -->
+<!--                                                                            -->
+<!-- Keeping the two worlds apart means citizens never see the duty-officer     -->
+<!-- dashboard, and officers land straight in their toolset after sign-in.      -->
+<!-- ========================================================================== -->
+
+<body
+    class="bg-surface-container-lowest text-on-background font-body-md text-lg antialiased min-h-screen flex flex-col overflow-x-hidden">
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <section class="w-full max-w-4xl mx-auto py-10">
+            <!-- Brand -->
+            <div class="flex flex-col items-center text-center gap-3 mb-10">
+                <img src="logo.png" alt="Emergency Mitra"
+                    class="w-16 h-16 lg:w-20 lg:h-20 object-contain">
+                <h1 class="text-3xl lg:text-4xl font-bold text-on-background tracking-tight">Emergency Mitra</h1>
+                <p class="text-on-surface-variant text-base lg:text-lg max-w-xl">
+                    Right Care. Right Facility. Right Now. � Tell us who you are, and we will take you to the right
+                    place.
+                </p>
+            </div>
+
+            <!-- Role cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-7">
+
+                <!-- Citizen / Patient -->
+                <a href="citizen.html"
+                    class="group bg-surface rounded-2xl border-2 border-primary/40 hover:border-primary shadow-md hover:shadow-xl transition-all p-7 lg:p-9 flex flex-col items-center text-center gap-4 hover-scale">
+                    <span
+                        class="bg-primary-container text-on-primary-container rounded-2xl p-4 transition-transform duration-300 group-hover:scale-110">
+                        <span class="material-symbols-outlined text-[52px] lg:text-[60px]">person</span>
+                    </span>
+                    <div>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-on-background">I am a Patient / Citizen</h2>
+                        <p class="text-on-surface-variant mt-2 text-sm lg:text-base leading-relaxed">
+                            Report an emergency, send an SOS, find nearby government facilities, check first-aid
+                            guidance and manage your verified health account.
+                        </p>
+                    </div>
+                    <span
+                        class="mt-auto bg-primary text-on-primary font-bold px-6 py-3 rounded-xl flex items-center gap-2 min-h-[52px] w-full justify-center group-hover:bg-primary-container transition-colors">
+                        Enter Citizen Portal
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </span>
+                </a>
+
+                <!-- Admin / Officer -->
+                <a href="admin-login.html"
+                    class="group bg-[#00453d] rounded-2xl border-2 border-[#71f8e4]/40 hover:border-[#71f8e4] shadow-md hover:shadow-xl transition-all p-7 lg:p-9 flex flex-col items-center text-center gap-4 hover-scale text-white">
+                    <span
+                        class="bg-white/10 rounded-2xl p-4 transition-transform duration-300 group-hover:scale-110">
+                        <span class="material-symbols-outlined text-[52px] lg:text-[60px] text-[#71f8e4]">
+                            admin_panel_settings</span>
+                    </span>
+                    <div>
+                        <h2 class="text-2xl lg:text-3xl font-bold text-white">I am an Admin / Officer</h2>
+                        <p class="text-white/75 mt-2 text-sm lg:text-base leading-relaxed">
+                            Duty-officer access to the Command Center: live emergency cases, bed management,
+                            medical inventory, ambulance fleet GPS and district-wide broadcasts.
+                        </p>
+                    </div>
+                    <span
+                        class="mt-auto bg-[#71f8e4] text-[#00201c] font-bold px-6 py-3 rounded-xl flex items-center gap-2 min-h-[52px] w-full justify-center group-hover:bg-white transition-colors">
+                        <span class="material-symbols-outlined">lock</span>
+                        Officer Login
+                    </span>
+                </a>
+            </div>
+
+            <!-- Reassurance strip -->
+            <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-10 pt-6 border-t border-outline-variant">
+                <span class="flex items-center gap-xs text-on-surface-variant text-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    Govt Healthcare Network
+                </span>
+                <span class="flex items-center gap-xs text-on-surface-variant text-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    Low-Connectivity Support
+                </span>
+                <span class="flex items-center gap-xs text-on-surface-variant text-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    SMS Fallback
+                </span>
+                <span class="flex items-center gap-xs text-on-surface-variant text-sm">
+                    <span class="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                    &#2361;&#2367;&#2344;&#2381;&#2342;&#2368; + English + &#2350;&#2352;&#2366;&#2338;&#2368;
+                </span>
+            </div>
+
+            <!-- Language switcher (EN / HI / MR) -->
+            <div class="flex justify-center items-center gap-2 mt-6 flex-wrap" id="lang-switcher">
+                <span class="material-symbols-outlined text-[18px] text-on-surface-variant">language</span>
+                <button type="button" onclick="translatePage('en')" id="mob-lang-en"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-primary bg-primary text-on-primary">EN</button>
+                <button type="button" onclick="translatePage('hi')" id="mob-lang-hi"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">&#2361;&#2367;&#2306;&#2342;&#2368;</button>
+                <button type="button" onclick="translatePage('mr')" id="mob-lang-mr"
+                    class="px-3 py-1.5 text-xs font-bold rounded border border-outline-variant bg-surface text-on-surface">&#2350;&#2352;&#2366;&#2336;&#2368;</button>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-root"></div>
+    <script src="js/footer.js"></script>
+</body>
+
+</html>
