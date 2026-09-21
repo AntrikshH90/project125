@@ -86,10 +86,10 @@ export default function Dashboard() {
               <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
                 <TaskCard title="Design UI" points={100} position={[-2, 0, 0]} />
               </Float>
-              <Float speed={2.5} rotationIntensity={0.3} floatIntensity={0.5} delay={0.5}>
+              <Float speed={2.5} rotationIntensity={0.3} floatIntensity={0.5}>
                 <TaskCard title="Backend" points={150} position={[0, 0, 0]} />
               </Float>
-              <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5} delay={1}>
+              <Float speed={3} rotationIntensity={0.2} floatIntensity={0.5}>
                 <TaskCard title="Testing" points={75} position={[2, 0, 0]} />
               </Float>
             </Stage>
