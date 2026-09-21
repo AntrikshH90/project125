@@ -1,4 +1,1 @@
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "out"
-}
+{"framework":null,"buildCommand":"echo Deploying static site","outputDirectory":"."}
