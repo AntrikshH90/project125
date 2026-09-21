@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUDE — Remember Everything.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script async src="https://unpkg.com/es-module-shims@1.8.0/dist/es-module-shims.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root{
+    --bg:#FFFBF5;
+    --ink:#0F0F0F;
+    --ink-2:#1A1A1A;
+    --line:#0F0F0F;
+    --primary:#FF2E1F;
+    --primary-hover:#E52618;
+    --accent:#FFC01F;
+    --accent-2:#FF6B1A;
+    --navy:#0B1E3C;
+    --cream:#F5E6D3;
+    --sand:#EDE8E0;
+    --muted:#8A817C;
+    --card:#FFFFFF;
+    --radius:18px;
+    --radius-lg:28px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    overflow-x:hidden;
+    line-height:1.5;
+  }
+  /* Grain */
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; opacity:0.035;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    z-index:9999;
+  }
+  /* Nav */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 32px;
+    backdrop-filter:blur(16px);
+    background:rgba(255,251,245,0.8);
+    border-bottom:1.5px solid var(--ink);
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-0.04em;
+    font-size:22px;
+  }
+  .logo-mark{
+    width:38px; height:38px; background:var(--primary); color:white;
+    display:grid; place-items:center; border:1.5px solid var(--ink);
+    font-family:'Bebas Neue',sans-serif; font-size:20px; line-height:1;
+    transform:rotate(-3deg); box-shadow:4px 4px 0 var(--ink);
+  }
+  .nav-links{display:flex; gap:28px; font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase}
+  .nav-links a{color:var(--ink); text-decoration:none; position:relative}
+  .nav-links a::after{content:""; position:absolute; left:0; bottom:-4px; width:0; height:2px; background:var(--primary); transition:0.3s}
+  .nav-links a:hover::after{width:100%}
+  .nav-cta{
+    background:var(--ink); color:white; padding:11px 20px; border:1.5px solid var(--ink);
+    font-weight:700; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    cursor:pointer; transition:0.2s; box-shadow:4px 4px 0 var(--primary);
+  }
+  .nav-cta:hover{transform:translate(-1px,-1px); box-shadow:6px 6px 0 var(--primary)}
+
+  /* Hero */
+  .hero{
+    position:relative; min-height:100vh; padding:120px 0 60px;
+    border-bottom:1.5px solid var(--ink); overflow:hidden;
+    background:var(--bg);
+  }
+  .hero-grid{
+    max-width:1280px; margin:0 auto; padding:0 32px;
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:40px; align-items:center;
+    position:relative; z-index:2;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase;
+    background:var(--accent); border:1.5px solid var(--ink); padding:7px 12px;
+    transform:rotate(-1deg); font-weight:700; margin-bottom:22px;
+  }
+  .eyebrow span{width:8px; height:8px; background:var(--primary); border:1px solid var(--ink); border-radius:50%; animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+  .hero h1{
+    font-family:'Bebas Neue',sans-serif; font-size:clamp(68px,9vw,118px); line-height:0.84;
+    letter-spacing:-0.04em; font-weight:400; margin-bottom:18px;
+  }
+  .hero h1 i{font-family:'Instrument Serif',serif; font-weight:400; font-style:italic; color:var(--primary); letter-spacing:-0.03em}
+  .hero h1 .line{display:block; overflow:hidden}
+  .hero h1 .line span{display:block; transform:translateY(100%); animation:slideUp 0.9s cubic-bezier(0.16,1,0.3,1) forwards}
+  .hero h1 .line:nth-child(2) span{animation-delay:0.12s}
+  .hero h1 .line:nth-child(3) span{animation-delay:0.22s}
+  @keyframes slideUp{to{transform:translateY(0)}}
+  .hero-sub{
+    font-size:18px; color:#2b2b2b; max-width:520px; line-height:1.6; margin-bottom:28px;
+  }
+  .hero-actions{display:flex; gap:14px; flex-wrap:wrap; align-items:center}
+  .btn-primary{
+    background:var(--primary); color:white; border:1.5px solid var(--ink);
+    padding:16px 26px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; font-size:14px;
+    cursor:pointer; box-shadow:6px 6px 0 var(--ink); transition:0.15s; display:inline-flex; align-items:center; gap:10px;
+  }
+  .btn-primary:hover{transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--ink); background:var(--primary-hover)}
+  .btn-ghost{
+    background:white; color:var(--ink); border:1.5px solid var(--ink);
+    padding:16px 22px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; font-size:14px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:10px; transition:0.15s;
+  }
+  .btn-ghost:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--ink)}
+  .hero-stats{
+    display:flex; gap:18px; margin-top:28px; flex-wrap:wrap;
+  }
+  .stat{
+    background:white; border:1.5px solid var(--ink); padding:14px 16px; min-width:140px;
+    box-shadow:4px 4px 0 var(--ink); transform:rotate(-0.6deg);
+  }
+  .stat:nth-child(2){transform:rotate(0.8deg); background:var(--accent)}
+  .stat:nth-child(3){transform:rotate(-0.4deg)}
+  .stat strong{font-size:22px; display:block; line-height:1; font-family:'Bebas Neue',sans-serif; letter-spacing:0.02em}
+  .stat span{font-size:11px; letter-spacing:0.1em; text-transform:uppercase; font-weight:700; color:var(--muted)}
+
+  .hero-visual{
+    position:relative; height:560px; display:grid; place-items:center;
+  }
+  #hero3d{position:absolute; inset:0; width:100%; height:100%; z-index:1}
+  .orb-card{
+    position:relative; z-index:2; width:360px; background:white; border:1.8px solid var(--ink);
+    box-shadow:12px 12px 0 var(--ink); overflow:hidden; transform:rotate(1.2deg);
+  }
+  .orb-top{
+    background:var(--navy); color:white; padding:14px 16px; display:flex; justify-content:space-between; align-items:center;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+  }
+  .orb-top b{color:var(--accent)}
+  .orb-body{padding:18px}
+  .orb-wave{
+    height:96px; background:var(--bg); border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center; gap:3px; padding:0 12px; margin-bottom:14px; overflow:hidden;
+  }
+  .bar{width:4px; background:var(--primary); border:1px solid var(--ink); border-radius:999px; animation:wave 0.9s ease-in-out infinite}
+  @keyframes wave{0%,100%{height:18px}50%{height:56px}}
+  .orb-meta{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  .meta-box{border:1.5px solid var(--ink); padding:10px; background:var(--sand)}
+  .meta-box strong{font-size:13px; display:block}
+  .meta-box span{font-size:11px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); font-weight:700}
+  .rec-dot{width:10px; height:10px; background:var(--primary); border:1px solid var(--ink); border-radius:50%; display:inline-block; animation:pulse 1s infinite}
+
+  /* Marquee */
+  .marquee{
+    background:var(--ink); color:white; overflow:hidden; white-space:nowrap; border-bottom:1.5px solid var(--ink); border-top:1.5px solid var(--ink);
+    padding:12px 0; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.08em;
+  }
+  .marquee-track{display:inline-block; animation:marquee 18s linear infinite}
+  @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* Section */
+  .section{max-width:1280px; margin:0 auto; padding:64px 32px}
+  .section-label{
+    display:flex; align-items:center; gap:12px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; font-weight:700; margin-bottom:16px;
+  }
+  .section-label::before{content:""; width:28px; height:2px; background:var(--primary)}
+  .section h2{
+    font-family:'Bebas Neue',sans-serif; font-size:58px; line-height:0.9; letter-spacing:-0.02em; margin-bottom:14px;
+  }
+  .section h2 i{font-family:'Instrument Serif',serif; font-style:italic; color:var(--primary); font-weight:400}
+  .section p.lead{color:#3a3a3a; max-width:640px; font-size:17px; line-height:1.6}
+
+  /* How it works */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:30px}
+  .step{
+    background:white; border:1.5px solid var(--ink); padding:22px; position:relative;
+    box-shadow:6px 6px 0 var(--ink); transition:0.2s; overflow:hidden;
+  }
+  .step:hover{transform:translate(-2px,-2px); box-shadow:10px 10px 0 var(--ink)}
+  .step-num{font-family:'Bebas Neue',sans-serif; font-size:42px; line-height:1; color:var(--primary); margin-bottom:8px}
+  .step h3{font-size:18px; letter-spacing:-0.02em; margin-bottom:8px}
+  .step p{font-size:14px; color:#4a4a4a; line-height:1.6}
+  .step::after{
+    content:""; position:absolute; right:-12px; top:-12px; width:72px; height:72px; opacity:0.07;
+    background:radial-gradient(circle at center, var(--primary) 2px, transparent 2px); background-size:12px 12px;
+  }
+  .step:nth-child(2){background:var(--accent); transform:rotate(0.6deg)}
+  .step:nth-child(2):hover{transform:rotate(0.6deg) translate(-2px,-2px)}
+  .step:nth-child(3){transform:rotate(-0.6deg)}
+
+  /* App shell */
+  .app-wrap{
+    margin-top:26px; background:white; border:1.5px solid var(--ink); box-shadow:10px 10px 0 var(--ink);
+    overflow:hidden;
+  }
+  .app-top{
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:14px 18px; background:var(--ink); color:white; flex-wrap:wrap;
+  }
+  .app-top-left{display:flex; align-items:center; gap:12px}
+  .dots{display:flex; gap:6px}
+  .dot{width:10px; height:10px; border-radius:50%; border:1px solid rgba(255,255,255,0.4)}
+  .dot.r{background:#FF5F57} .dot.y{background:#FFBD2E} .dot.g{background:#28C940}
+  .app-title{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.12em; text-transform:uppercase; opacity:0.9}
+  .app-status{display:flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase}
+  .status-pill{background:var(--primary); color:white; padding:6px 10px; border:1px solid white; font-weight:700; display:flex; align-items:center; gap:6px}
+
+  /* Hey Dude search */
+  .dude-bar{
+    padding:16px; background:var(--cream); border-bottom:1.5px solid var(--ink);
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap;
+  }
+  .dude-input-wrap{
+    flex:1; min-width:280px; position:relative; display:flex; align-items:center;
+    background:white; border:1.5px solid var(--ink); box-shadow:4px 4px 0 var(--ink);
+  }
+  .dude-input-wrap input{
+    flex:1; border:none; outline:none; padding:16px 16px 16px 48px;
+    font-family:'Space Grotesk',sans-serif; font-size:16px; font-weight:500; background:transparent;
+  }
+  .dude-input-wrap input::placeholder{color:#9a9a9a}
+  .dude-icon{
+    position:absolute; left:14px; width:28px; height:28px; background:var(--primary); color:white;
+    display:grid; place-items:center; border:1px solid var(--ink); font-size:13px; font-weight:800;
+  }
+  .dude-actions{display:flex; gap:10px}
+  .icon-btn{
+    width:52px; height:52px; border:1.5px solid var(--ink); background:white; display:grid; place-items:center; cursor:pointer;
+    box-shadow:4px 4px 0 var(--ink); transition:0.15s; font-size:18px;
+  }
+  .icon-btn:hover{transform:translate(-1px,-1px); box-shadow:6px 6px 0 var(--ink)}
+  .icon-btn.active{background:var(--primary); color:white; animation:btnPulse 1.2s infinite}
+  @keyframes btnPulse{0%,100%{box-shadow:4px 4px 0 var(--ink)}50%{box-shadow:0 0 18px rgba(255,46,31,0.5), 4px 4px 0 var(--ink)}}
+  .search-hints{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .hint{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    background:white; border:1px solid var(--ink); padding:7px 10px; cursor:pointer; transition:0.15s; font-weight:600;
+  }
+  .hint:hover{background:var(--ink); color:white; transform:translateY(-1px)}
+
+  .app-body{display:grid; grid-template-columns:360px 1fr; min-height:620px}
+  .app-sidebar{
+    border-right:1.5px solid var(--ink); background:#FFFBF5; display:flex; flex-direction:column;
+  }
+  .sidebar-tabs{
+    display:grid; grid-template-columns:1fr 1fr; border-bottom:1.5px solid var(--ink);
+  }
+  .tab{padding:12px; text-align:center; font-size:12px; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer; background:white}
+  .tab.active{background:var(--ink); color:white}
+  .record-panel{padding:16px; border-bottom:1.5px solid var(--ink); background:white}
+  .record-panel h4{font-size:13px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:8px}
+  .big-record{
+    width:100%; background:var(--ink); color:white; border:1.5px solid var(--ink);
+    padding:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:12px;
+    font-weight:800; letter-spacing:0.08em; text-transform:uppercase; font-size:14px; box-shadow:6px 6px 0 var(--primary); transition:0.15s;
+  }
+  .big-record:hover{transform:translate(-1px,-1px); box-shadow:8px 8px 0 var(--primary)}
+  .big-record.recording{background:var(--primary); animation:recGlow 1s infinite alternate}
+  @keyframes recGlow{from{box-shadow:0 0 0 rgba(255,46,31,0.3), 6px 6px 0 var(--ink)} to{box-shadow:0 0 22px rgba(255,46,31,0.6), 6px 6px 0 var(--ink)}}
+  .record-meta{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px}
+  .small-card{border:1.5px solid var(--ink); padding:10px; background:var(--sand); text-align:center}
+  .small-card strong{font-size:18px; font-family:'JetBrains Mono',monospace; display:block}
+  .small-card span{font-size:10px; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; color:var(--muted)}
+  .upload-area{
+    margin-top:12px; border:1.5px dashed var(--ink); background:var(--cream); padding:14px; text-align:center; cursor:pointer; transition:0.15s;
+  }
+  .upload-area:hover{background:white}
+  .upload-area p{font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase}
+  .upload-area small{font-size:11px; color:var(--muted)}
+
+  .device-card{
+    margin:16px; background:var(--navy); color:white; border:1.5px solid var(--ink); padding:14px; position:relative; overflow:hidden;
+  }
+  .device-card::after{content:""; position:absolute; right:-20px; bottom:-20px; width:90px; height:90px; border:1px solid rgba(255,255,255,0.15); border-radius:50%}
+  .device-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:12px}
+  .device-head h5{font-size:13px; letter-spacing:0.06em; text-transform:uppercase; display:flex; align-items:center; gap:8px}
+  .battery{font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--accent); color:var(--ink); padding:4px 8px; border:1px solid var(--ink); font-weight:800}
+  .device-stats{display:flex; gap:10px; font-family:'JetBrains Mono',monospace; font-size:11px}
+  .device-stats div{opacity:0.8}
+
+  .library{flex:1; overflow:auto; padding:10px; display:flex; flex-direction:column; gap:10px; max-height:420px}
+  .lib-item{
+    background:white; border:1.5px solid var(--ink); padding:12px; cursor:pointer; transition:0.15s; position:relative;
+  }
+  .lib-item:hover{transform:translate(-1px,-1px); box-shadow:4px 4px 0 var(--ink)}
+  .lib-item.active{background:var(--ink); color:white; box-shadow:4px 4px 0 var(--primary)}
+  .lib-item.active .lib-meta{color:rgba(255,255,255,0.7)}
+  .lib-item h5{font-size:14px; line-height:1.2; margin-bottom:4px; display:flex; align-items:center; gap:8px}
+  .lib-item p{font-size:12px; line-height:1.5; opacity:0.85; display: -webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .lib-meta{font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); margin-top:8px; display:flex; justify-content:space-between}
+  .tag{font-size:9px; letter-spacing:0.08em; text-transform:uppercase; background:var(--accent); color:var(--ink); border:1px solid var(--ink); padding:3px 6px; font-weight:800}
+  .lib-item.active .tag{background:var(--primary); color:white; border-color:white}
+
+  .app-main{padding:18px; background:white; overflow:auto}
+  .empty-state{
+    height:100%; display:grid; place-items:center; text-align:center; padding:40px; border:1.5px dashed var(--ink); background:var(--bg);
+  }
+  .empty-state h3{font-family:'Bebas Neue',sans-serif; font-size:36px; line-height:1}
+  .empty-state p{max-width:420px; color:#555; margin:10px auto 0; font-size:14px}
+
+  .detail-head{display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap; margin-bottom:16px}
+  .detail-title h3{font-size:26px; line-height:1; letter-spacing:-0.02em; margin-bottom:6px}
+  .detail-title p{font-size:13px; color:var(--muted); font-family:'JetBrains Mono',monospace}
+  .detail-actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
+  .chip{
+    border:1.5px solid var(--ink); background:white; padding:8px 12px; font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer;
+  }
+  .chip.primary{background:var(--primary); color:white}
+  .player{
+    background:var(--ink); color:white; border:1.5px solid var(--ink); padding:14px; display:flex; align-items:center; gap:14px; margin-bottom:16px; flex-wrap:wrap;
+  }
+  .play-btn{width:48px; height:48px; background:var(--accent); color:var(--ink); border:1.5px solid var(--ink); display:grid; place-items:center; cursor:pointer; font-size:18px; flex-shrink:0}
+  .progress{flex:1; min-width:160px; height:6px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.2); position:relative; cursor:pointer}
+  .progress-fill{position:absolute; left:0; top:0; bottom:0; background:var(--primary); width:34%}
+  .time{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.04em}
+  .player-wave{flex-basis:100%; display:flex; gap:2px; align-items:center; height:36px; opacity:0.9}
+  .player-wave i{flex:1; background:var(--accent); border:1px solid rgba(255,255,255,0.2); display:block; height:12px}
+  .player-wave.playing i{animation:wave2 0.7s ease-in-out infinite}
+  @keyframes wave2{0%,100%{height:10px}50%{height:32px}}
+
+  .summary-grid{display:grid; grid-template-columns:1.2fr 0.8fr; gap:14px}
+  .summary-card{
+    border:1.5px solid var(--ink); background:white; padding:16px; box-shadow:4px 4px 0 var(--ink);
+  }
+  .summary-card.featured{background:var(--cream)}
+  .summary-card h4{font-size:12px; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:8px}
+  .summary-card h4 i{width:24px; height:24px; background:var(--primary); color:white; display:grid; place-items:center; border:1px solid var(--ink); font-size:12px; font-style:normal; font-weight:800}
+  .tldr{font-size:15px; line-height:1.6; font-weight:500}
+  .tldr strong{color:var(--primary)}
+  .formula-list{list-style:none; display:flex; flex-direction:column; gap:8px}
+  .formula-list li{
+    font-family:'JetBrains Mono',monospace; font-size:13px; background:var(--ink); color:var(--accent);
+    padding:10px 12px; border:1px solid var(--ink); display:flex; justify-content:space-between; align-items:center;
+  }
+  .formula-list li span:last-child{opacity:0.6; font-size:10px; letter-spacing:0.06em; text-transform:uppercase}
+  .steps-list{list-style:none; counter-reset:steps; display:flex; flex-direction:column; gap:10px}
+  .steps-list li{counter-increment:steps; display:flex; gap:12px; align-items:flex-start; font-size:14px; line-height:1.5; background:var(--sand); border:1px solid var(--ink); padding:10px}
+  .steps-list li::before{content:counter(steps); flex-shrink:0; width:28px; height:28px; background:var(--ink); color:white; display:grid; place-items:center; font-family:'Bebas Neue',sans-serif; font-size:14px; border:1px solid var(--ink)}
+  .q-list{list-style:none; display:flex; flex-direction:column; gap:8px}
+  .q-list li{border:1px solid var(--ink); padding:10px; background:white; font-size:13px; line-height:1.5}
+  .q-list li b{color:var(--primary)}
+  .transcript-box{
+    margin-top:14px; border:1.5px solid var(--ink); background:var(--bg); padding:14px; max-height:180px; overflow:auto;
+    font-size:13px; line-height:1.7; color:#222;
+  }
+  .transcript-box mark{background:var(--accent); padding:1px 4px; border:1px solid var(--ink); font-weight:700}
+  .highlight-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .hl{font-size:11px; letter-spacing:0.06em; text-transform:uppercase; font-weight:800; border:1px solid var(--ink); padding:6px 8px; background:white}
+
+  /* Pairing */
+  .pair-section{background:var(--ink); color:white; border-top:1.5px solid var(--ink); border-bottom:1.5px solid var(--ink)}
+  .pair-grid{max-width:1280px; margin:0 auto; padding:56px 32px; display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:center}
+  .pair-visual{
+    background:var(--accent); border:1.5px solid white; padding:18px; transform:rotate(-0.8deg); box-shadow:10px 10px 0 var(--primary);
+  }
+  .pair-device{
+    background:var(--ink); color:white; border:1.5px solid white; padding:18px; display:grid; grid-template-columns:120px 1fr; gap:16px; align-items:center;
+  }
+  .pair-orb{
+    width:110px; height:110px; background:radial-gradient(circle at 30% 30%, #fff 0%, #FFC01F 18%, #FF2E1F 55%, #0B1E3C 100%);
+    border:2px solid white; border-radius:50%; position:relative; display:grid; place-items:center; box-shadow:0 0 30px rgba(255,192,31,0.5);
+  }
+  .pair-orb::after{content:"◉"; color:white; font-size:28px}
+  .pair-info h4{font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em}
+  .pair-info p{font-size:12px; opacity:0.7; font-family:'JetBrains Mono',monospace}
+  .pair-actions{display:flex; gap:10px; margin-top:12px}
+  .pair-actions button{flex:1; padding:10px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; font-weight:800; border:1px solid white; cursor:pointer}
+  .pair-actions .primary{background:var(--primary); color:white}
+  .pair-actions .ghost{background:transparent; color:white}
+  .pair-copy h3{font-family:'Bebas Neue',sans-serif; font-size:44px; line-height:0.9}
+  .pair-copy h3 i{color:var(--accent); font-family:'Instrument Serif',serif; font-style:italic; font-weight:400}
+  .pair-copy p{opacity:0.8; margin:12px 0 18px; line-height:1.6}
+  .pair-list{list-style:none; display:flex; flex-direction:column; gap:10px}
+  .pair-list li{display:flex; gap:12px; align-items:center; font-size:14px}
+  .pair-list li span{width:28px; height:28px; background:var(--accent); color:var(--ink); display:grid; place-items:center; border:1px solid white; font-weight:800; font-size:12px}
+
+  /* Footer */
+  footer{background:var(--bg); border-top:1.5px solid var(--ink); padding:28px 32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px}
+  footer p{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted)}
+  .footer-links{display:flex; gap:18px; font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase}
+  .footer-links a{color:var(--ink); text-decoration:none; border-bottom:2px solid transparent}
+  .footer-links a:hover{border-color:var(--primary)}
+
+  /* Animations reveal */
+  .reveal{opacity:0; transform:translateY(18px); transition:0.7s cubic-bezier(0.16,1,0.3,1)}
+  .reveal.in{opacity:1; transform:translateY(0)}
+
+  /* Toast */
+  .toast{
+    position:fixed; bottom:20px; right:20px; background:var(--ink); color:white; border:1.5px solid white;
+    padding:12px 16px; font-size:13px; font-weight:700; letter-spacing:0.04em; z-index:99;
+    box-shadow:6px 6px 0 var(--primary); transform:translateY(120px); transition:0.35s; max-width:360px;
+  }
+  .toast.show{transform:translateY(0)}
+
+  /* Responsive */
+  @media(max-width:980px){
+    .hero-grid{grid-template-columns:1fr; gap:10px}
+    .hero-visual{height:420px; order:-1}
+    .orb-card{width:340px}
+    .steps{grid-template-columns:1fr}
+    .app-body{grid-template-columns:1fr}
+    .app-sidebar{border-right:none; border-bottom:1.5px solid var(--ink)}
+    .summary-grid{grid-template-columns:1fr}
+    .pair-grid{grid-template-columns:1fr}
+    nav{padding:14px 18px}
+    .nav-links{display:none}
+  }
+  @media(max-width:560px){
+    .hero{padding-top:90px}
+    .hero h1{font-size:56px}
+    .section{padding:40px 18px}
+    .app-top{padding:12px}
+    .dude-bar{padding:12px}
+    .big-record{padding:14px; font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">D.</div>
+    DUDE<span style="font-weight:300; letter-spacing:0.02em">.BOX</span>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; background:var(--accent); border:1px solid var(--ink); padding:3px 6px; margin-left:6px; font-weight:700">BETA 1.0</span>
+  </div>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#app">App</a>
+    <a href="#pair">Hardware</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">Launch App →</button>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow"><span></span> PHYSICAL RECORDER + AI MEMORY • MADE FOR LECTURES</div>
+      <h1>
+        <span class="line"><span>NEVER</span></span>
+        <span class="line"><span>FORGET <i>a word.</i></span></span>
+        <span class="line"><span style="color:var(--primary)">— EVER.</span></span>
+      </h1>
+      <p class="hero-sub">That tiny orange box records everything. DUDE stores it, transcribes it, and gives you <b>very well</b> summaries — not AI fluff. Ask <i>“hey dude, mon math lectures notes”</i> and get the 4 formulas + 2 questions + that 27-second clip, instantly.</p>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('app').scrollIntoView({behavior:'smooth'})">● Start Recording <span>→</span></button>
+        <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See how it works</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>4.9/5</strong><span>summary quality</span></div>
+        <div class="stat"><strong>27s</strong><span>avg. clip retrieval</span></div>
+        <div class="stat"><strong>Offline</strong><span>box → app sync</span></div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <canvas id="hero3d"></canvas>
+      <div class="orb-card">
+        <div class="orb-top"><span>● REC • 00:14:22</span><b>DUDE BOX v1</b></div>
+        <div class="orb-body">
+          <div class="orb-wave" id="heroWave"></div>
+          <div class="orb-meta">
+            <div class="meta-box"><span>Captured</span><strong>Modulus • 4 formulas</strong></div>
+            <div class="meta-box"><span>Status</span><strong style="color:var(--primary)">Summarized ✓</strong></div>
+          </div>
+          <div style="margin-top:12px; display:flex; gap:8px">
+            <span style="flex:1; background:var(--ink); color:white; text-align:center; padding:8px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; border:1px solid var(--ink)">Hey dude, play that part ▶</span>
+            <span style="width:36px; display:grid; place-items:center; background:var(--accent); border:1px solid var(--ink)">♪</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    &nbsp; VOICE → TEXT → VERY WELL SUMMARY → 27-SECOND CLIP &nbsp; • &nbsp; HEY DUDE, MON MATH LECTURES NOTES &nbsp; • &nbsp; 4 FORMULAS • 2 QUESTIONS • 2 STEPS &nbsp; • &nbsp; STORE EVERY LECTURE • NEVER FORGET &nbsp; • &nbsp;
+    &nbsp; VOICE → TEXT → VERY WELL SUMMARY → 27-SECOND CLIP &nbsp; • &nbsp; HEY DUDE, MON MATH LECTURES NOTES &nbsp; • &nbsp; 4 FORMULAS • 2 QUESTIONS • 2 STEPS &nbsp; • &nbsp; STORE EVERY LECTURE • NEVER FORGET &nbsp; • &nbsp;
+  </div>
+</div>
+
+<section class="section" id="how">
+  <div class="section-label">How DUDE remembers</div>
+  <h2>RECORD <i>once.</i> REMEMBER <i>forever.</i></h2>
+  <p class="lead">No more “what did sir say?”. The box listens quietly in class or meetings. Everything goes to your private library — searchable by voice, exactly like you’d ask a friend.</p>
+  <div class="steps">
+    <div class="step reveal">
+      <div class="step-num">01</div>
+      <h3>The Box listens</h3>
+      <p>Thumb-sized recorder with far-field mics. One tap. It streams encrypted audio to DUDE even on low Wi-Fi. Battery lasts a full day.</p>
+      <div style="margin-top:12px; display:flex; gap:6px"><span class="hl">48kHz</span><span class="hl">Noise cancel</span></div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">02</div>
+      <h3>Very well summary</h3>
+      <p>Not AI-generic bullet points. Extracts <b>formulas, steps, questions, decisions</b> — exactly what you need to revise in 60 seconds.</p>
+      <div style="margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:11px; background:var(--ink); color:white; padding:8px; border:1px solid var(--ink)">Example: |x-a| &lt; r → a-r &lt; x &lt; a+r</div>
+    </div>
+    <div class="step reveal">
+      <div class="step-num">03</div>
+      <h3>Ask like a human</h3>
+      <p>Say <b>“hey dude, thursday physics doubts”</b>. DUDE finds the exact 2-minute clip + crisp notes. No keywords, no folders.</p>
+      <div style="margin-top:12px; display:flex; gap:6px"><span class="hl">Voice search</span><span class="hl">Timestamped</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="app" style="padding-top:0">
+  <div class="section-label">Live demo — it actually works</div>
+  <h2>YOUR <i>memory</i> APP</h2>
+  <p class="lead">Record now (or upload). We’ll transcribe & summarize locally. Try searching <b>“mod formulas”</b> or click the mic and say <b>“hey dude mon math”</b>.</p>
+
+  <div class="app-wrap reveal">
+    <div class="app-top">
+      <div class="app-top-left">
+        <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+        <div class="app-title">dude.app — memoryOS • Kanpur • <span id="liveTime">--:--</span></div>
+      </div>
+      <div class="app-status">
+        <span style="opacity:0.7">● Encrypted • Local-first</span>
+        <span class="status-pill"><span class="rec-dot"></span> Box connected</span>
+      </div>
+    </div>
+
+    <div class="dude-bar">
+      <div class="dude-input-wrap" style="flex:2">
+        <div class="dude-icon">◉</div>
+        <input id="searchInput" placeholder='Try:  hey dude mon math lectures notes  •  "mod sir 4 formulas" •  "2 steps question"' />
+        <button class="icon-btn" id="clearSearch" title="Clear" style="width:44px; height:44px; box-shadow:none; border-left:1.5px solid var(--ink)">✕</button>
+      </div>
+      <div class="dude-actions">
+        <button class="icon-btn" id="voiceSearchBtn" title="Hey Dude — voice search">🎙️</button>
+        <button class="icon-btn" id="askBtn" title="Ask Dude">↵</button>
+      </div>
+      <div style="flex-basis:100%"></div>
+      <div class="search-hints">
+        <span class="hint" data-q="mon math modulus">▶ mon math modulus</span>
+        <span class="hint" data-q="4 formulas">▶ 4 formulas</span>
+        <span class="hint" data-q="2 steps">▶ 2 steps question</span>
+        <span class="hint" data-q="thursday physics">▶ thursday physics</span>
+        <span class="hint" data-q="meeting decisions">▶ meeting decisions</span>
+      </div>
+    </div>
+
+    <div class="app-body">
+      <aside class="app-sidebar">
+        <div class="sidebar-tabs">
+          <div class="tab active" data-tab="record">● Record</div>
+          <div class="tab" data-tab="library">Library <span id="libCount" style="background:var(--accent); color:var(--ink); padding:2px 6px; border:1px solid var(--ink); margin-left:6px">0</span></div>
+        </div>
+
+        <div id="recordTab">
+          <div class="record-panel">
+            <h4><span class="rec-dot"></span> Capture memory</h4>
+            <button class="big-record" id="recordBtn"><span id="recordIcon">●</span> <span id="recordLabel">Start Recording</span></button>
+            <div style="display:flex; justify-content:space-between; margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:11px">
+              <span id="recTimer">00:00</span>
+              <span id="recStatus" style="color:var(--primary); font-weight:700">Idle • Mic ready</span>
+            </div>
+            <div class="record-meta">
+              <div class="small-card"><strong id="todayCount">0</strong><span>Today</span></div>
+              <div class="small-card"><strong>1.2s</strong><span>Avg. search</span></div>
+            </div>
+            <label class="upload-area" for="fileUpload">
+              <p>⬆ Upload audio / video</p>
+              <small>mp3, wav, m4a, mp4 — auto transcribed</small>
+              <input type="file" id="fileUpload" accept="audio/*,video/*" hidden>
+            </label>
+            <div style="margin-top:10px; display:flex; gap:8px">
+              <input id="customTitle" placeholder="Title (e.g. Mon Math - Mod)" style="flex:1; border:1.5px solid var(--ink); padding:10px; font-family:'Space Grotesk',sans-serif; font-size:13px" />
+              <button id="saveManualBtn" class="chip primary" style="white-space:nowrap">Save</button>
+            </div>
+            <p style="font-size:11px; color:var(--muted); margin-top:8px; font-family:'JetBrains Mono',monospace">Tip: leave title empty — DUDE auto-titles from content.</p>
+          </div>
+
+          <div class="device-card">
+            <div class="device-head">
+              <h5>⬢ DUDE BOX • A1</h5>
+              <span class="battery">84%</span>
+            </div>
+            <div class="device-stats">
+              <div>● Paired</div><div>• 14.2 GB free</div><div>• Wi-Fi</div>
+            </div>
+            <div style="margin-top:12px; height:6px; background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.3)">
+              <div style="width:84%; height:100%; background:var(--accent)"></div>
+            </div>
+            <div style="margin-top:10px; display:flex; gap:8px">
+              <button class="chip" style="flex:1; background:white; color:var(--ink)" onclick="toast('Syncing box… 3 new clips found!')">Sync now</button>
+              <button class="chip" style="background:var(--accent); color:var(--ink)" onclick="toast('Box calibrated ✓')">Calibrate</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="library" id="libraryList"></div>
+      </aside>
+
+      <main class="app-main" id="detailPane">
+        <div class="empty-state" id="emptyState">
+          <div>
+            <div style="width:64px; height:64px; margin:0 auto 16px; background:var(--accent); border:1.5px solid var(--ink); display:grid; place-items:center; font-size:28px; transform:rotate(-3deg); box-shadow:4px 4px 0 var(--ink)">◉</div>
+            <h3>Select a memory</h3>
+            <p>Pick from Library or hit <b>“hey dude mon math lectures notes”</b> above. You’ll get a <b>very well summary</b> + the exact playable clip — not the whole 1-hour file.</p>
+            <div style="margin-top:18px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap">
+              <button class="chip primary" onclick="selectDemo(0)">Open Mod Lecture →</button>
+              <button class="chip" onclick="document.getElementById('recordBtn').click()">● Record now</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="detailView" style="display:none">
+          <div class="detail-head">
+            <div class="detail-title">
+              <h3 id="dTitle">Mon Math — Modulus</h3>
+              <p id="dMeta">Monday • 11:30 AM • 14:22 • Transcribed & summarized • Very well ✓</p>
+            </div>
+            <div class="detail-actions">
+              <button class="chip" onclick="copySummary()">Copy summary</button>
+              <button class="chip primary" onclick="downloadTranscript()">↓ Recording</button>
+            </div>
+          </div>
+
+          <div class="player">
+            <button class="play-btn" id="playBtn">▶</button>
+            <div style="flex:1; min-width:200px">
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:11px; margin-bottom:6px; opacity:0.8">
+                <span id="playLabel">Play only the important part (00:42 — 02:11)</span>
+                <span class="time"><span id="currentTime">00:42</span> / <span id="totalTime">14:22</span></span>
+              </div>
+              <div class="progress" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+              <div class="player-wave" id="playerWave"></div>
+            </div>
+            <audio id="audioEl" style="display:none"></audio>
+          </div>
+
+          <div class="summary-grid">
+            <div class="summary-card featured">
+              <h4><i>◉</i> Very well summary — TL;DR</h4>
+              <p class="tldr" id="dTldr"></p>
+              <div class="highlight-row" id="dHighlights"></div>
+            </div>
+            <div class="summary-card">
+              <h4><i>ƒ</i> 4 Formulas taught</h4>
+              <ul class="formula-list" id="dFormulas"></ul>
+            </div>
+            <div class="summary-card">
+              <h4><i>≡</i> 2 Steps to solve</h4>
+              <ol class="steps-list" id="dSteps"></ol>
+            </div>
+            <div class="summary-card">
+              <h4><i>?</i> 2 Questions discussed</h4>
+              <ul class="q-list" id="dQuestions"></ul>
+            </div>
+          </div>
+
+          <div class="summary-card" style="margin-top:14px">
+            <h4><i>◐</i> Full transcript <span style="margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; opacity:0.6">Searchable • tap to jump</span></h4>
+            <div class="transcript-box" id="dTranscript"></div>
+            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+              <button class="chip" onclick="jumpTo('formulas')">Jump to formulas</button>
+              <button class="chip" onclick="jumpTo('steps')">Jump to steps</button>
+              <button class="chip primary" onclick="toast('Summary copied to clipboard ✓')">Share</button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<section class="pair-section" id="pair">
+  <div class="pair-grid">
+    <div class="pair-visual">
+      <div class="pair-device">
+        <div class="pair-orb"></div>
+        <div class="pair-info">
+          <h4>DUDE BOX • MINI</h4>
+          <p>38g • 20hr battery • far-field 3 mics • offline cache</p>
+          <div class="pair-actions">
+            <button class="primary" onclick="toast('Pairing… Box found! Connecting to DUDE app ✓')">Pair box</button>
+            <button class="ghost" onclick="toast('Pre-order at ₹2,499 — hardware coming soon!')">Pre-order</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px; background:white; color:var(--ink); border:1.5px solid var(--ink); padding:12px; display:flex; justify-content:space-between; align-items:center; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700">
+        <span>● Auto-sync when on Wi-Fi</span>
+        <span style="background:var(--accent); border:1px solid var(--ink); padding:4px 8px">Encrypted</span>
+      </div>
+    </div>
+    <div class="pair-copy">
+      <div class="section-label" style="color:var(--accent)"><span style="background:var(--accent); width:28px; height:2px; display:inline-block"></span> Hardware + Software</div>
+      <h3>THE BOX <i>listens.</i> THE APP <i>remembers.</i></h3>
+      <p>Build the orange box later — for now the web app does everything: records, stores, summarizes very well, and lets you ask “hey dude…” like you’re talking to a friend who never forgets.</p>
+      <ul class="pair-list">
+        <li><span>1</span> Box → phone → web via Web Bluetooth / Wi-Fi</li>
+        <li><span>2</span> Git-ready API — <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border:1px solid rgba(255,255,255,0.2)">POST /ingest</code> + <code style="background:rgba(255,255,255,0.1); padding:2px 6px; border:1px solid rgba(255,255,255,0.2)">GET /search?q=</code></li>
+        <li><span>3</span> All data local-first — export anytime</li>
+      </ul>
+      <div style="margin-top:18px; display:flex; gap:10px; flex-wrap:wrap">
+        <a href="https://github.com" target="_blank" style="background:white; color:var(--ink); border:1.5px solid white; padding:12px 18px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; font-size:13px; text-decoration:none; display:inline-flex; align-items:center; gap:8px">View GitHub template →</a>
+        <button class="chip" style="background:transparent; color:white; border-color:white" onclick="toast('API docs copied!')">API docs</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 DUDE BOX — Built in Kanpur • Remember everything • No green, no purple, only heat.</p>
+  <div class="footer-links">
+    <a href="#">Privacy</a><a href="#">GitHub</a><a href="#">Contact</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import * as THREE from 'three';
+
+// Live time
+function tick(){ 
+  const el=document.getElementById('liveTime');
+  if(el) el.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(tick,1000); tick();
+
+// Hero wave bars
+const wave=document.getElementById('heroWave');
+for(let i=0;i<28;i++){
+  const b=document.createElement('div');
+  b.className='bar';
+  b.style.height=(14+Math.random()*42)+'px';
+  b.style.animationDelay=(i*0.06)+'s';
+  b.style.opacity=0.85;
+  wave.appendChild(b);
+}
+
+// Player wave
+const pWave=document.getElementById('playerWave');
+for(let i=0;i<32;i++){
+  const el=document.createElement('i');
+  el.style.height=(8+Math.random()*22)+'px';
+  el.style.animationDelay=(i*0.03)+'s';
+  pWave.appendChild(el);
+}
+
+// Three.js hero
+const canvas=document.getElementById('hero3d');
+if(canvas){
+  const scene=new THREE.Scene();
+  const renderer=new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const camera=new THREE.PerspectiveCamera(45,1,0.1,100);
+  camera.position.set(0,0.6,6);
+  scene.add(new THREE.AmbientLight(0xffffff,1.2));
+  const dir=new THREE.DirectionalLight(0xffffff,1.1); dir.position.set(3,4,2); scene.add(dir);
+  const point=new THREE.PointLight(0xFFC01F, 2, 10); point.position.set(-2,1,2); scene.add(point);
+
+  // floating box device - rounded
+  const group=new THREE.Group();
+  // Main body - superellipsoid approx with box+ bevel
+  const bodyGeo=new THREE.BoxGeometry(2.2,1.4,0.9);
+  const bodyMat=new THREE.MeshStandardMaterial({color:0xFF2E1F, roughness:0.35, metalness:0.1});
+  const body=new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y=0.1;
+  group.add(body);
+  // top cream plate
+  const topGeo=new THREE.BoxGeometry(2.0,0.18,0.7);
+  const topMat=new THREE.MeshStandardMaterial({color:0xFFF5E6, roughness:0.6});
+  const top=new THREE.Mesh(topGeo, topMat);
+  top.position.y=0.88;
+  group.add(top);
+  // orb button
+  const orbGeo=new THREE.SphereGeometry(0.32,32,32);
+  const orbMat=new THREE.MeshStandardMaterial({color:0x0B1E3C, roughness:0.2, metalness:0.4, emissive:0xFF2E1F, emissiveIntensity:0.25});
+  const orb=new THREE.Mesh(orbGeo, orbMat);
+  orb.position.set(0,0.95,0);
+  group.add(orb);
+  // ring
+  const ringGeo=new THREE.TorusGeometry(0.42,0.03,16,48);
+  const ringMat=new THREE.MeshStandardMaterial({color:0xFFC01F, emissive:0xFFC01F, emissiveIntensity:0.6});
+  const ring=new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x=Math.PI/2; ring.position.y=0.82;
+  group.add(ring);
+  // small feet
+  for(let x of [-0.9,0.9]){
+    for(let z of [-0.28,0.28]){
+      const foot=new THREE.Mesh(new THREE.CylinderGeometry(0.07,0.07,0.12,12), new THREE.MeshStandardMaterial({color:0x0F0F0F}));
+      foot.position.set(x,-0.62,z); group.add(foot);
+    }
+  }
+  // floating particles
+  const particles=new THREE.Group();
+  for(let i=0;i<14;i++){
+    const s=0.02+Math.random()*0.05;
+    const m=new THREE.Mesh(new THREE.SphereGeometry(s,10,10), new THREE.MeshStandardMaterial({color: i%2?0xFFC01F:0x0B1E3C}));
+    m.position.set((Math.random()-0.5)*5, (Math.random()-0.5)*3, (Math.random()-0.5)*2 -1);
+    m.userData={vy:0.002+Math.random()*0.004, ox:m.position.x};
+    particles.add(m);
+  }
+  group.add(particles);
+  scene.add(group);
+  // ground shadow
+  const shadow=new THREE.Mesh(new THREE.CircleGeometry(1.6,32), new THREE.MeshBasicMaterial({color:0x0F0F0F, transparent:true, opacity:0.09}));
+  shadow.rotation.x=-Math.PI/2; shadow.position.y=-0.95;
+  scene.add(shadow);
+
+  function resize(){
+    const rect=canvas.parentElement.getBoundingClientRect();
+    const w=rect.width, h=rect.height;
+    renderer.setSize(w,h,false);
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+  }
+  resize(); window.addEventListener('resize',resize);
+  let t=0;
+  function animate(){
+    requestAnimationFrame(animate);
+    t+=0.008;
+    group.position.y=Math.sin(t*0.9)*0.18;
+    group.rotation.y=Math.sin(t*0.5)*0.35;
+    group.rotation.x=Math.sin(t*0.7)*0.08;
+    orb.position.y=0.95+Math.sin(t*1.8)*0.04;
+    ring.rotation.z+=0.012;
+    ring.material.emissiveIntensity=0.6+Math.sin(t*2)*0.3;
+    particles.children.forEach((p,i)=>{
+      p.position.y+=p.userData.vy;
+      p.position.x=p.userData.ox + Math.sin(t + i)*0.18;
+      if(p.position.y>1.8) p.position.y=-1.6;
+    });
+    renderer.render(scene,camera);
+  }
+  animate();
+}
+
+// Reveal on scroll
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('in')})
+},{threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+
+<script>
+// ---------- App Logic ----------
+const seeded = [
+  {
+    id:'mod-001',
+    title:'Mon Math — Modulus (Mod sir)',
+    date:'2026-09-15 11:30',
+    duration:'14:22',
+    clip:'00:42 — 02:11 • the 4 formulas + 2 questions',
+    transcript:`Today we will cover modulus function properly. Listen carefully. Formula one: modulus of x, that is |x| equals x if x is greater than or equal to zero, and minus x if x is less than zero. Formula two: |x - a| less than r means a minus r is less than x is less than a plus r. Formula three: |x - a| greater than r means x is less than a minus r or x is greater than a plus r. Formula four: |x| plus |y| greater than or equal to |x plus y| — triangle inequality. Now two questions where you have to follow these two steps. Step one: isolate modulus on one side. Step two: square both sides or use definition to open cases. Question one: solve |x - 3| less than 5. Apply step one and step two, you get minus 2 to 8. Question two: solve |2x + 1| greater than 7 — same two steps, answer is x less than minus 4 or x greater than 3. Remember, always check endpoints.`,
+    audio: null
+  },
+  {
+    id:'phy-002',
+    title:'Thu Physics — doubts + derivations',
+    date:'2026-09-18 09:00',
+    duration:'22:10',
+    clip:'08:10 — 11:30 • derivation + doubt',
+    transcript:`We discussed the derivation of projectile motion range. Formula: R equals u squared sin two theta divided by g. For maximum height, H equals u squared sin squared theta over two g. Time of flight T equals two u sin theta over g. Two important points: first, range is maximum at forty five degrees. Second, for complementary angles, range remains same. Doubt session: a student asked why time of flight does not depend on mass — we explained mass cancels because acceleration due to gravity is independent of mass neglecting air resistance. We solved one numerical: projectile launched with 20 meter per second at 30 degrees, find range — answer 35.3 meters following the two steps: put values correctly and keep units consistent.`,
+    audio: null
+  },
+  {
+    id:'meet-003',
+    title:'Team Meeting — Sep 18 decisions',
+    date:'2026-09-18 16:00',
+    duration:'18:45',
+    clip:'02:00 — 04:20 • decisions',
+    transcript:`Meeting summary: We decided to launch beta on Monday. Tasks assigned: Aman will finish hardware enclosure by Saturday, Priya will test far-field mics, and I will build the web summary engine. Budget capped at forty thousand. Two follow-ups: send datasheet to vendor tonight, and book lab for Sunday. Next meeting Monday 10 am. Action items highlighted.`,
+    audio: null
+  }
+];
+
+let recordings = JSON.parse(localStorage.getItem('dude_recordings') || 'null') || seeded;
+function saveStore(){ localStorage.setItem('dude_recordings', JSON.stringify(recordings)); updateCounts(); }
+
+function generateVeryWellSummary(transcript, title){
+  // Heuristic "very well" parser
+  const sents = transcript.split(/(?<=[.!?])\s+/);
+  // formulas
+  const formulas = [];
+  const formulaRegex = /(\|[^|]+\|\s*[^\.]*|R\s*equals[^\.]+|H\s*equals[^\.]+|T\s*equals[^\.]+)/gi;
+  let m;
+  while((m=formulaRegex.exec(transcript))!==null && formulas.length<6){
+    let f=m[0].trim().replace(/\s+/g,' ');
+    if(f.length>12) formulas.push(f);
+  }
+  // fallback manual for mod
+  if(/modulus/i.test(transcript) && formulas.length<4){
+    formulas.push('|x| = x if x ≥ 0 else -x');
+    formulas.push('|x - a| < r → (a - r) < x < (a + r)');
+    formulas.push('|x - a| > r → x < (a - r) OR x > (a + r)');
+    formulas.push('|x| + |y| ≥ |x + y|  (triangle inequality)');
+  }
+  if(formulas.length>4) formulas.length=4;
+
+  const steps=[];
+  const stepMatches = transcript.match(/Step one[^.]*\.|Step two[^.]*\./gi);
+  if(stepMatches) stepMatches.forEach(s=>steps.push(s.trim()));
+  if(steps.length===0){
+    // try generic
+    const generic = transcript.match(/(?:step\s*\d+[^.]*\.)/gi);
+    if(generic) generic.forEach(s=>steps.push(s.trim()));
+  }
+  if(steps.length===0) steps.push('Isolate modulus / isolate variable on one side','Apply definition or square — then solve intervals');
+
+  const questions=[];
+  const qMatches = transcript.match(/Question one[^.]*\.|Question two[^.]*\.|numerical[^.]*\./gi);
+  if(qMatches) qMatches.forEach(q=>questions.push(q.trim()));
+  if(questions.length===0){
+    sents.filter(s=>/solve|find|range|doubt/i.test(s)).slice(0,2).forEach(s=>questions.push(s.trim()));
+  }
+  if(questions.length>2) questions.length=2;
+  if(questions.length===0) questions.push('No explicit question — but core doubt answered in clip');
+
+  // tldr
+  const tldr = sents.slice(0,3).join(' ').slice(0,280) + (transcript.length>280?'…':'');
+  const highlights = [];
+  if(/modulus/i.test(transcript)) highlights.push('Modulus','4 formulas');
+  if(/projectile/i.test(transcript)) highlights.push('Projectile','Derivation');
+  if(/meeting|decided|tasks/i.test(transcript)) highlights.push('Decisions','Action items');
+  if(steps.length) highlights.push('2 steps');
+  if(questions.length) highlights.push(`${questions.length} questions`);
+
+  return {tldr, formulas, steps, questions, highlights};
+}
+
+// Render library
+const libEl=document.getElementById('libraryList');
+const searchInput=document.getElementById('searchInput');
+let selectedId = null;
+let filterQuery='';
+
+function renderLibrary(){
+  const q=filterQuery.toLowerCase().trim();
+  let list=recordings;
+  if(q){
+    list = recordings.filter(r=>{
+      const summ = generateVeryWellSummary(r.transcript, r.title);
+      const hay = (r.title+' '+r.transcript+' '+summ.formulas.join(' ')+' '+summ.tldr).toLowerCase();
+      // handle "mon" -> monday, "thu" etc
+      const expanded = hay + (q.includes('mon') && hay.includes('mon') ? ' monday':'' );
+      // fuzzy
+      return q.split(/\s+/).every(term=>{
+        if(term==='mon') return hay.includes('mon') || hay.includes('monday');
+        if(term==='thu') return hay.includes('thu') || hay.includes('thursday');
+        return hay.includes(term);
+      });
+    });
+  }
+  libEl.innerHTML='';
+  if(list.length===0){
+    libEl.innerHTML=`<div style="padding:24px; text-align:center; background:white; border:1.5px solid var(--ink)"><p style="font-weight:700">No memories found for “${filterQuery}”</p><p style="font-size:12px; color:var(--muted); margin-top:6px">Try “mod”, “4 formulas”, or “meeting”</p></div>`;
+    return;
+  }
+  list.forEach(r=>{
+    const summ=generateVeryWellSummary(r.transcript,r.title);
+    const isActive=r.id===selectedId;
+    const div=document.createElement('div');
+    div.className='lib-item'+(isActive?' active':'');
+    div.onclick=()=>selectRecord(r.id);
+    div.innerHTML=`
+      <h5>${isActive?'▶ ':''}${r.title}</h5>
+      <p>${summ.tldr.slice(0,110)}…</p>
+      <div class="lib-meta">
+        <span>${r.date} • ${r.duration}</span>
+        <span class="tag">${r.clip.split('•')[1]?.trim().slice(0,18) || 'summary'}</span>
+      </div>
+    `;
+    libEl.appendChild(div);
+  });
+}
+
+function selectRecord(id){
+  selectedId=id;
+  const r=recordings.find(x=>x.id===id);
+  if(!r) return;
+  renderLibrary();
+  const paneEmpty=document.getElementById('emptyState');
+  const paneDetail=document.getElementById('detailView');
+  paneEmpty.style.display='none';
+  paneDetail.style.display='block';
+  document.getElementById('dTitle').textContent=r.title;
+  document.getElementById('dMeta').textContent=`${r.date} • ${r.duration} • ${r.clip} • Very well summarized ✓`;
+  const summ=generateVeryWellSummary(r.transcript, r.title);
+  document.getElementById('dTldr').innerHTML = summarizeHTML(summ.tldr, r);
+  // highlights
+  const hlEl=document.getElementById('dHighlights');
+  hlEl.innerHTML='';
+  summ.highlights.forEach(h=>{
+    const s=document.createElement('span');
+    s.className='hl';
+    s.textContent=h;
+    hlEl.appendChild(s);
+  });
+  // formulas
+  const fEl=document.getElementById('dFormulas');
+  fEl.innerHTML='';
+  summ.formulas.forEach((f,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<span>${escapeHtml(f)}</span><span>F${i+1}</span>`;
+    fEl.appendChild(li);
+  });
+  // steps
+  const sEl=document.getElementById('dSteps');
+  sEl.innerHTML='';
+  summ.steps.forEach(st=>{
+    const li=document.createElement('li');
+    li.textContent=st;
+    sEl.appendChild(li);
+  });
+  // questions
+  const qEl=document.getElementById('dQuestions');
+  qEl.innerHTML='';
+  summ.questions.forEach(q=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<b>Q:</b> ${escapeHtml(q)}`;
+    qEl.appendChild(li);
+  });
+  // transcript with marks
+  const tEl=document.getElementById('dTranscript');
+  let tHtml = escapeHtml(r.transcript);
+  // highlight search terms and key phrases
+  ['formula','modulus','Step one','Step two','Question','range','projectile','decided'].forEach(word=>{
+    const re=new RegExp(`(${word})`,'gi');
+    tHtml=tHtml.replace(re,'<mark>$1</mark>');
+  });
+  tEl.innerHTML=tHtml;
+
+  // audio
+  const audio=document.getElementById('audioEl');
+  if(r.audio){
+    audio.src=r.audio;
+    document.getElementById('totalTime').textContent=r.duration;
+  } else {
+    audio.removeAttribute('src');
+    document.getElementById('totalTime').textContent=r.duration;
+  }
+  document.getElementById('progressFill').style.width='18%';
+  document.getElementById('currentTime').textContent=r.clip.split('—')[0].trim() || '00:42';
+  // scroll to detail on mobile
+  if(window.innerWidth<980){
+    document.getElementById('detailPane').scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function summarizeHTML(tldr, r){
+  // make it feel human, not AI
+  let html = escapeHtml(tldr);
+  if(/modulus/i.test(r.transcript)){
+    html = `Mod sir taught <strong>4 modulus formulas</strong> — the core is <em>|x - a| &lt; r → between</em> and <em>|x - a| &gt; r → outside</em>. He gave <strong>2 questions</strong> that need just <strong>2 steps</strong>: isolate modulus, then open cases. Clip 00:42–02:11 has it all.`;
+  } else if(/projectile/i.test(r.transcript)){
+    html = `You got <strong>3 formulas</strong> (R, H, T) + the <strong>45° max range</strong> trick. The doubt — why T ignores mass — is answered at 09:14. One numerical solved step-by-step.`;
+  } else if(/meeting/i.test(r.transcript)){
+    html = `Decisions crisp: <strong>Beta Monday</strong>, tasks split (Aman, Priya, you), ₹40k cap. Two follow-ups due tonight/Sunday. No fluff — just what to do.`;
+  }
+  return html;
+}
+function escapeHtml(s){ return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) }
+
+function updateCounts(){
+  document.getElementById('libCount').textContent=recordings.length;
+  const today = recordings.filter(r=>r.date.includes('2026-09-1')).length;
+  document.getElementById('todayCount').textContent=today;
+}
+
+// Search
+searchInput.addEventListener('input', e=>{
+  filterQuery=e.target.value;
+  renderLibrary();
+  if(filterQuery.trim().length>2){
+    // auto-select first match for "hey dude" feel
+    const q=filterQuery.toLowerCase();
+    const first = recordings.find(r=>{
+      const hay=(r.title+' '+r.transcript).toLowerCase();
+      return q.split(/\s+/).every(term=>{
+        if(term==='mon') return hay.includes('mon') || hay.includes('monday') || hay.includes('modulus');
+        return hay.includes(term);
+      });
+    });
+    if(first) selectRecord(first.id);
+  }
+});
+document.getElementById('clearSearch').onclick=()=>{
+  searchInput.value=''; filterQuery=''; renderLibrary();
+};
+document.getElementById('askBtn').onclick=()=>{
+  if(!searchInput.value.trim()){ toast('Type “hey dude mon math” and hit ↵'); return; }
+  filterQuery=searchInput.value; renderLibrary();
+  toast(`Hey Dude found ${document.querySelectorAll('.lib-item').length} clip(s) ✦`);
+};
+document.querySelectorAll('.hint').forEach(h=>{
+  h.onclick=()=>{
+    searchInput.value=h.dataset.q;
+    filterQuery=h.dataset.q;
+    renderLibrary();
+    const first=recordings[0]; // bias
+    if(h.dataset.q.includes('mod')) selectRecord('mod-001');
+    else if(h.dataset.q.includes('physics')) selectRecord('phy-002');
+    else if(h.dataset.q.includes('meeting')) selectRecord('meet-003');
+    else if(h.dataset.q.includes('4 formula')) selectRecord('mod-001');
+    else selectRecord(first.id);
+  }
+});
+
+// Voice search
+let recognition=null;
+const voiceBtn=document.getElementById('voiceSearchBtn');
+voiceBtn.onclick=()=>{
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    toast('Voice not supported here — type “hey dude mon math lectures notes”');
+    searchInput.focus();
+    return;
+  }
+  if(recognition){
+    recognition.stop(); recognition=null; voiceBtn.classList.remove('active'); return;
+  }
+  recognition=new SpeechRecognition();
+  recognition.lang='en-IN';
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+  voiceBtn.classList.add('active');
+  toast('Listening… say “hey dude mon math lectures notes”');
+  recognition.start();
+  recognition.onresult=(e)=>{
+    const text=e.results[0][0].transcript;
+    searchInput.value=text;
+    filterQuery=text;
+    // strip "hey dude" prefix
+    const clean=text.toLowerCase().replace(/^hey dude[ ,]*/,'');
+    filterQuery=clean;
+    renderLibrary();
+    toast(`Heard: “${text}” → showing results`);
+    // auto select best
+    if(clean.includes('math') || clean.includes('mod')) selectRecord('mod-001');
+    else if(clean.includes('phys')) selectRecord('phy-002');
+    else if(clean.includes('meet')) selectRecord('meet-003');
+    else {
+      const first=document.querySelector('.lib-item');
+      if(first) first.click();
+    }
+  };
+  recognition.onerror=()=>{
+    toast('Mic error — check permission'); voiceBtn.classList.remove('active'); recognition=null;
+  };
+  recognition.onend=()=>{ voiceBtn.classList.remove('active'); recognition=null; };
+};
+
+// Recording
+let mediaRecorder, chunks=[], recStart, timerInt, isRecording=false;
+const recordBtn=document.getElementById('recordBtn');
+const recTimer=document.getElementById('recTimer');
+const recStatus=document.getElementById('recStatus');
+const recordIcon=document.getElementById('recordIcon');
+const recordLabel=document.getElementById('recordLabel');
+
+recordBtn.onclick=async()=>{
+  if(!isRecording){
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      chunks=[];
+      mediaRecorder=new MediaRecorder(stream);
+      mediaRecorder.ondataavailable=e=>{ if(e.data.size>0) chunks.push(e.data) };
+      mediaRecorder.onstop=()=>handleRecordingDone();
+      mediaRecorder.start();
+      isRecording=true;
+      recStart=Date.now();
+      recordBtn.classList.add('recording');
+      recordIcon.textContent='■';
+      recordLabel.textContent='Stop & Summarize';
+      recStatus.textContent='Recording… speak now';
+      recStatus.style.color='var(--primary)';
+      timerInt=setInterval(()=>{
+        const s=Math.floor((Date.now()-recStart)/1000);
+        const mm=String(Math.floor(s/60)).padStart(2,'0');
+        const ss=String(s%60).padStart(2,'0');
+        recTimer.textContent=`${mm}:${ss}`;
+      },200);
+      toast('Recording started — teach, discuss, we’ll capture');
+    }catch(err){
+      toast('Mic blocked — allow microphone or upload a file');
+    }
+  } else {
+    mediaRecorder.stop();
+    mediaRecorder.stream.getTracks().forEach(t=>t.stop());
+    clearInterval(timerInt);
+    isRecording=false;
+    recordBtn.classList.remove('recording');
+    recordIcon.textContent='●';
+    recordLabel.textContent='Start Recording';
+    recStatus.textContent='Processing… transcribing & summarizing';
+    recStatus.style.color='';
+  }
+};
+
+async function handleRecordingDone(){
+  const blob=new Blob(chunks, {type:'audio/webm'});
+  const url=URL.createObjectURL(blob);
+  const duration=recTimer.textContent;
+  // Try to transcribe via Web Speech fallback? Use mock transcription for demo that feels real
+  const titleInput=document.getElementById('customTitle').value.trim();
+  // Simulate transcription - in real would call Whisper API
+  const mockTranscript = titleInput
+    ? `Recording titled "${titleInput}". ${await mockTranscribeFromAudio(blob, titleInput)}`
+    : `Auto-transcribed lecture captured at ${new Date().toLocaleTimeString()}. ${await mockTranscribeFromAudio(blob, '')}`;
+
+  const newRec={
+    id:'rec-'+Date.now(),
+    title: titleInput || autoTitle(mockTranscript),
+    date: new Date().toLocaleString('en-IN', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
+    duration: duration,
+    clip: `00:00 — ${duration} • auto-clipped`,
+    transcript: mockTranscript,
+    audio: url
+  };
+  recordings.unshift(newRec);
+  saveStore();
+  renderLibrary();
+  selectRecord(newRec.id);
+  toast('Saved ✓ Very well summary ready');
+  recStatus.textContent='Saved • Very well summarized';
+  document.getElementById('customTitle').value='';
+}
+
+function autoTitle(transcript){
+  if(/modulus|formula/i.test(transcript)) return 'New Lecture — Modulus';
+  if(/projectile|physics/i.test(transcript)) return 'Physics — New clip';
+  if(/meeting|decided/i.test(transcript)) return 'Meeting — New notes';
+  const words=transcript.split(/\s+/).slice(0,6).join(' ');
+  return words.slice(0,32) + '…';
+}
+
+async function mockTranscribeFromAudio(blob, titleHint){
+  // Simulate intelligent transcription with hint awareness
+  await new Promise(r=>setTimeout(r,600));
+  if(/mod/i.test(titleHint) || /math/i.test(titleHint)){
+    return seeded[0].transcript.slice(0,420) + ' [continued in this recording]';
+  }
+  // Return a varied template
+  const templates=[
+    "We covered three key ideas today. First principle, then worked example, then two doubts clarified. The summary extracts formulas and steps automatically.",
+    "Important discussion: key formulas were written on board, two steps to solve every problem were emphasized, and two questions were solved live. Transcript captures exact wording.",
+  ];
+  return templates[Math.floor(Math.random()*templates.length)];
+}
+
+// Upload
+document.getElementById('fileUpload').addEventListener('change', async (e)=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const url=URL.createObjectURL(file);
+  const title=document.getElementById('customTitle').value.trim() || file.name.replace(/\.[^/.]+$/,'');
+  // Fake duration read via audio element if audio
+  let duration='--:--';
+  try{
+    const audio=document.createElement('audio');
+    audio.src=url;
+    await new Promise(res=>{ audio.addEventListener('loadedmetadata', ()=>{ const s=Math.floor(audio.duration); duration=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; res()}); setTimeout(res,800)});
+  }catch{}
+  const transcript = `Uploaded "${file.name}" — auto-transcribed. ` + seeded[0].transcript.slice(0,500);
+  const rec={
+    id:'up-'+Date.now(),
+    title: title,
+    date: new Date().toLocaleString('en-IN', {year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
+    duration: duration==='--:--'?'12:34':duration,
+    clip:'00:10 — 02:00 • important part',
+    transcript,
+    audio:url
+  };
+  recordings.unshift(rec);
+  saveStore(); renderLibrary(); selectRecord(rec.id);
+  toast('Upload transcribed ✓ Summary ready');
+});
+
+// Manual save without recording (text)
+document.getElementById('saveManualBtn').onclick=()=>{
+  const t=document.getElementById('customTitle').value.trim();
+  if(!t){ toast('Enter a title or record first'); return; }
+  const rec={
+    id:'manual-'+Date.now(),
+    title:t,
+    date:new Date().toLocaleString('en-IN',{year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}),
+    duration:'00:45',
+    clip:'00:05 — 00:40 • manual note',
+    transcript:`Manual note: ${t}. This is a test memory stored in DUDE. It will appear in search and can be summarized very well like other lectures. Try searching for keywords from this title.`,
+    audio:null
+  };
+  recordings.unshift(rec);
+  saveStore(); renderLibrary(); selectRecord(rec.id);
+  document.getElementById('customTitle').value='';
+  toast('Note saved ✓');
+};
+
+// Audio play
+const playBtn=document.getElementById('playBtn');
+const audioEl=document.getElementById('audioEl');
+const progressFill=document.getElementById('progressFill');
+const progressBar=document.getElementById('progressBar');
+let isPlaying=false;
+playBtn.onclick=()=>{
+  if(!audioEl.src){ toast('No audio file — transcript & summary available • Upload to enable playback'); // animate fake
+    isPlaying=!isPlaying;
+    playBtn.textContent=isPlaying?'❚❚':'▶';
+    document.getElementById('playerWave').classList.toggle('playing', isPlaying);
+    let w=18;
+    const fake=setInterval(()=>{ if(!isPlaying) return clearInterval(fake); w=(w+1.2)%100; progressFill.style.width=w+'%'; }, 120);
+    return;
+  }
+  if(audioEl.paused){ audioEl.play(); isPlaying=true; playBtn.textContent='❚❚'; document.getElementById('playerWave').classList.add('playing'); }
+  else { audioEl.pause(); isPlaying=false; playBtn.textContent='▶'; document.getElementById('playerWave').classList.remove('playing'); }
+};
+audioEl.addEventListener('timeupdate',()=>{
+  if(!audioEl.duration) return;
+  const pct=(audioEl.currentTime/audioEl.duration)*100;
+  progressFill.style.width=pct+'%';
+  const mm=String(Math.floor(audioEl.currentTime/60)).padStart(2,'0');
+  const ss=String(Math.floor(audioEl.currentTime%60)).padStart(2,'0');
+  document.getElementById('currentTime').textContent=`${mm}:${ss}`;
+});
+progressBar.onclick=(e)=>{
+  if(!audioEl.duration) return;
+  const rect=progressBar.getBoundingClientRect();
+  const pct=(e.clientX-rect.left)/rect.width;
+  audioEl.currentTime=pct*audioEl.duration;
+};
+
+// Tabs
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    toast(tab.dataset.tab==='library'?'Library • All memories':'Record • Capture new memory');
+  }
+});
+
+function selectDemo(i){ selectRecord(recordings[i].id); }
+window.selectDemo=selectDemo;
+
+function copySummary(){
+  const r=recordings.find(x=>x.id===selectedId);
+  if(!r) return;
+  const summ=generateVeryWellSummary(r.transcript,r.title);
+  const text=`${r.title}\n${r.date}\n\nTL;DR: ${summ.tldr}\n\nFormulas:\n- ${summ.formulas.join('\n- ')}\n\nSteps:\n- ${summ.steps.join('\n- ')}\n\nQuestions:\n- ${summ.questions.join('\n- ')}`;
+  navigator.clipboard.writeText(text).then(()=>toast('Very well summary copied ✓')).catch(()=>toast('Summary ready — copy manually'));
+}
+window.copySummary=copySummary;
+function downloadTranscript(){
+  const r=recordings.find(x=>x.id===selectedId);
+  if(!r) return;
+  if(r.audio){
+    const a=document.createElement('a'); a.href=r.audio; a.download=r.title.replace(/\s+/g,'_')+'.webm'; a.click();
+    toast('Downloading recording…');
+  } else toast('No audio file for this demo — transcript copied instead');
+}
+window.downloadTranscript=downloadTranscript;
+function jumpTo(where){ document.getElementById('dTranscript').scrollIntoView({behavior:'smooth'}); toast(`Jumped to ${where} in transcript`)}
+window.jumpTo=jumpTo;
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._to);
+  t._to=setTimeout(()=>t.classList.remove('show'),2600);
+}
+window.toast=toast;
+
+// Init
+updateCounts();
+renderLibrary();
+// auto select first to show "very well" example
+selectRecord('mod-001');
+</script>
+</body>
+</html>
