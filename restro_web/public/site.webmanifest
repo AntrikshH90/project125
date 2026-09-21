@@ -1,0 +1,12 @@
+{
+  "name": "EMBER & OAK",
+  "short_name": "E&O",
+  "description": "Where smoke meets soul",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0604",
+  "theme_color": "#d4793a",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

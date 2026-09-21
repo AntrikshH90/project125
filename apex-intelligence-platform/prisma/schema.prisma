@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  points    Int      @default(0)
+  avatarUrl String?
+  role      String   @default("member")
+  teamId    String?
+  team      Team?    @relation(fields: [teamId], references: [id])
+  tasks     Task[]   @relation("AssignedTasks")
+  pointsTransactions PointsTransaction[]
+  redeemedRewards RedeemedReward[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Team {
+  id          String @id @default(uuid())
+  name        String
+  memberCount Int    @default(0)
+  members     User[]
+  tasks       Task[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  status      String   @default("todo")
+  points      Int
+  deadline    DateTime?
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  assigneeId  String?
+  assignee    User?    @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  subtasks    TaskSubtask[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TaskSubtask {
+  id        String   @id @default(uuid())
+  title     String
+  completed Boolean  @default(false)
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model PointsTransaction {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int
+  description String
+  createdAt DateTime @default(now())
+}
+
+model Reward {
+  id          String @id @default(uuid())
+  name        String
+  description String?
+  pointsCost  Int
+  category    String
+  image3dUrl  String?
+  createdAt   DateTime @default(now())
+}
+
+model RedeemedReward {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  rewardId    String
+  reward      Reward   @relation(fields: [rewardId], references: [id])
+  pointsSpent Int
+  createdAt   DateTime @default(now())
+}

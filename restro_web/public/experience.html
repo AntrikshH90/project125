@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMBER & OAK — 3D Experience</title>
+<meta name="description" content="Step inside EMBER & OAK — an immersive 3D walkthrough of our dining room, chef's table, bar and wine cellar.">
+<meta name="theme-color" content="#0a0604">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="vendor/gsap.min.js"></script>
+
+<script src="vendor/three.min.js"></script>
+
+<link rel="stylesheet" href="css/experience.css">
+</head>
+<body>
+
+<div id="scene-container"></div>
+<div class="fx-vignette"></div>
+<div class="fx-grain"></div>
+
+<!-- Loader -->
+<div class="loader" id="loader">
+    <div class="loader-inner">
+        <span class="loader-brand">EMBER &amp; OAK</span>
+        <span class="loader-sub">Preparing the room…</span>
+        <div class="loader-bar"><div class="loader-fill" id="loaderFill"></div></div>
+    </div>
+</div>
+
+<!-- Top bar -->
+<header class="tour-topbar">
+    <a class="tour-back" href="/">← Back to Site</a>
+    <span class="tour-brand">EMBER &amp; OAK <em>3D Experience</em></span>
+    <a class="tour-reserve" href="/#reserve">Reserve a Table</a>
+</header>
+
+<!-- Hotspot markers -->
+<div class="hotspots" id="hotspots"></div>
+
+<!-- Info card -->
+<aside class="info-card" id="infoCard">
+    <span class="info-eyebrow">You're viewing</span>
+    <h2 class="info-title" id="infoTitle">Main Dining</h2>
+    <p class="info-text" id="infoText"></p>
+    <div class="info-actions">
+        <a class="btn-tour primary" href="/#reserve">Reserve This Space</a>
+        <button class="btn-tour ghost" id="btnOverview">← Overview</button>
+    </div>
+</aside>
+
+<!-- Hint -->
+<div class="hint" id="hint">
+    <span>Drag to look around</span><i></i>
+    <span>Scroll to zoom</span><i></i>
+    <span>Click a glowing marker to walk there</span>
+</div>
+
+<div class="nogl" id="nogl" hidden>
+    <h2 id="noglTitle">3D Experience Unavailable</h2>
+    <p id="noglReason">Something went wrong loading the 3D engine.</p>
+    <p style="margin-top:1rem"><a href="/">← Return to main site</a></p>
+</div>
+
+<script src="js/store3d.js"></script>
+</body>
+</html>

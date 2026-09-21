@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMBER & OAK | Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div id="loginScreen" class="login-screen">
+        <form class="login-form" id="loginForm">
+            <h1 class="login-title">EMBER &amp; OAK</h1>
+            <p class="login-sub">Admin Panel</p>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+            <p class="login-error" id="loginError"></p>
+        </form>
+    </div>
+
+    <div id="dashboard" class="dashboard" style="display:none">
+        <aside class="sidebar">
+            <h2>EMBER &amp; OAK</h2>
+            <nav>
+                <a class="nav-item active" data-view="reservations">📅 Reservations</a>
+                <a class="nav-item" data-view="menu">🍴 Menu</a>
+                <a class="nav-item" data-view="contacts">✉️ Contacts</a>
+                <a class="nav-item" data-view="analytics">📊 Analytics</a>
+            </nav>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1 id="viewTitle">Reservations</h1>
+                <div class="user-info">
+                    <span id="adminName">Admin</span>
+                </div>
+            </header>
+
+            <section class="content">
+                <!-- RESERVATIONS VIEW -->
+                <div class="view active" id="reservationsView">
+                    <div class="stats-grid">
+                        <div class="stat-card"><span class="stat-card-num" id="todayCount">0</span><span>Today</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="weekCount">0</span><span>This Week</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="totalGuests">0</span><span>Total Guests</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="pendingCount">0</span><span>Pending</span></div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Guests</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- MENU VIEW -->
+                <div class="view" id="menuView">
+                    <div class="view-header">
+                        <button class="btn-primary" id="addMenuItem">+ Add Item</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Available</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menuBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CONTACTS VIEW -->
+                <div class="view" id="contactsView">
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Subject / Message</th>
+                                    <th>Date</th>
+                                    <th>Read</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contactsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS VIEW -->
+                <div class="view" id="analyticsView">
+                    <div class="stats-grid">
+                        <div class="stat-card"><span class="stat-card-num" id="totalReservations">0</span><span>Total Reservations</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="totalRevenue">$0</span><span>Est. Revenue</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="avgParty">0</span><span>Avg Party Size</span></div>
+                        <div class="stat-card"><span class="stat-card-num" id="newsletterCount">0</span><span>Subscribers</span></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal" id="menuModal">
+        <div class="modal-content">
+            <span class="modal-close" id="modalClose">×</span>
+            <h2 id="modalTitle">Add Menu Item</h2>
+            <form id="menuForm">
+                <input type="text" name="name" placeholder="Name" required>
+                <select name="category" required>
+                    <option value="starters">Starters</option>
+                    <option value="mains">Mains</option>
+                    <option value="desserts">Desserts</option>
+                    <option value="wines">Wines</option>
+                    <option value="cocktails">Cocktails</option>
+                </select>
+                <textarea name="description" placeholder="Description" required></textarea>
+                <input type="number" name="price" placeholder="Price" step="0.01" required>
+                <input type="text" name="badge" placeholder="Badge (optional)">
+                <label class="check"><input type="checkbox" name="available" checked> Available</label>
+                <label class="check"><input type="checkbox" name="featured"> Featured</label>
+                <button type="submit" class="btn-primary">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

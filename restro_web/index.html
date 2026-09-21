@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Step inside EMBER & OAK. A 3D immersive dining experience.">
+<meta name="theme-color" content="#0a0604">
+<title>EMBER & OAK | Step Inside</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 3D Canvas Mount -->
+  <div id="root"></div>
+
+  <!-- 2D HUD Overlay -->
+  <div class="hud" id="hud">
+    <header class="hud-top">
+      <a href="/" class="hud-logo">EMBER &amp; OAK</a>
+      <nav class="hud-nav">
+        <button class="hud-link active" data-zone="entrance">Entrance</button>
+        <button class="hud-link" data-zone="lounge">Lounge</button>
+        <button class="hud-link" data-zone="dining">Dining</button>
+        <button class="hud-link" data-zone="kitchen">Kitchen</button>
+        <button class="hud-link" data-zone="cellar">Cellar</button>
+        <button class="hud-link" data-zone="patio">Patio</button>
+      </nav>
+      <div class="hud-actions">
+        <button class="hud-icon" id="audioToggle" aria-label="Audio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <path d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14"/>
+          </svg>
+        </button>
+        <button class="hud-icon" id="tourBtn" aria-label="Guided Tour">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+        <a href="#reserve" class="hud-reserve" data-reserve>Reserve</a>
+      </div>
+    </header>
+
+    <!-- Minimap -->
+    <div class="minimap" id="minimap">
+      <div class="minimap-marker" id="minimapMarker"></div>
+      <div class="minimap-zone" data-zone="entrance" style="top:50%;left:50%"></div>
+      <div class="minimap-zone" data-zone="lounge" style="top:30%;left:35%"></div>
+      <div class="minimap-zone" data-zone="dining" style="top:40%;left:60%"></div>
+      <div class="minimap-zone" data-zone="kitchen" style="top:20%;left:70%"></div>
+      <div class="minimap-zone" data-zone="cellar" style="top:70%;left:30%"></div>
+      <div class="minimap-zone" data-zone="patio" style="top:60%;left:80%"></div>
+    </div>
+
+    <!-- Bottom info -->
+    <div class="hud-bottom">
+      <div class="hud-zone-info">
+        <span class="hud-zone-name" id="currentZone">The Entrance</span>
+        <span class="hud-zone-hint">Drag to look around · Scroll to zoom · Click glowing points</span>
+      </div>
+      <div class="hud-progress">
+        <div class="hud-progress-bar" id="exploreProgress"></div>
+        <span class="hud-progress-text"><span id="discovered">1</span> / 6 discovered</span>
+      </div>
+    </div>
+
+    <!-- Gyroscope permission prompt (mobile) -->
+    <div class="gyro-prompt" id="gyroPrompt" hidden>
+      <p>Enable motion for an immersive view</p>
+      <button id="enableGyro">Enable</button>
+      <button id="skipGyro">Skip</button>
+    </div>
+
+    <!-- Loading screen -->
+    <div class="loader" id="loader">
+      <div class="loader-flame">
+        <svg viewBox="0 0 100 100">
+          <path d="M50 10 C 30 30, 30 50, 50 90 C 70 50, 70 30, 50 10 Z" fill="url(#flameGradient)">
+            <animate attributeName="d" dur="2s" repeatCount="indefinite"
+              values="M50 10 C 30 30, 30 50, 50 90 C 70 50, 70 30, 50 10 Z;
+                      M50 15 C 35 35, 35 55, 50 85 C 65 55, 65 35, 50 15 Z;
+                      M50 10 C 30 30, 30 50, 50 90 C 70 50, 70 30, 50 10 Z"/>
+          </path>
+          <defs>
+            <radialGradient id="flameGradient">
+              <stop offset="0%" stop-color="#fff4d4"/>
+              <stop offset="40%" stop-color="#f4a464"/>
+              <stop offset="100%" stop-color="#d4793a" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="loader-text">EMBER &amp; OAK</div>
+      <div class="loader-status" id="loaderStatus">Preparing your experience</div>
+      <div class="loader-bar">
+        <div class="loader-progress" id="loaderProgress"></div>
+      </div>
+      <div class="loader-percent" id="loaderPercent">0%</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>
