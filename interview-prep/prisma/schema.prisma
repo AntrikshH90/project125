@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Team {
+  id        String     @id @default(cuid())
+  code      String     @unique
+  name      String
+  createdAt DateTime   @default(now())
+  members   User[]
+  attempts  Attempt[]
+}
+
+model User {
+  id        String     @id @default(cuid())
+  name      String
+  email     String?    @unique
+  teamId    String?
+  team      Team?      @relation(fields: [teamId], references: [id])
+  attempts  Attempt[]
+  createdAt DateTime   @default(now())
+}
+
+model Question {
+  id          String     @id @default(cuid())
+  category    String     // "aptitude" | "technical" | "hr"
+  subTopic    String     // e.g. "probability", "graphs", "behavioral"
+  difficulty  String     // "easy" | "medium" | "hard"
+  prompt      String
+  options     String     // JSON array of 4 options
+  correctIdx  Int
+  explanation String
+  company     String?    // e.g. "google", "amazon", null for general
+  role        String?    // e.g. "Research Intern", "SDE-1"
+  askedYear   Int?       // last year this question was reported
+  lastReported DateTime? // date of last candidate report
+  timesReported Int      @default(1)
+  source      String?    // e.g. "LeetCode discuss", "Glassdoor"
+  attempts    AttemptAnswer[]
+  createdAt   DateTime   @default(now())
+}
+
+model Attempt {
+  id         String           @id @default(cuid())
+  userId     String
+  user       User             @relation(fields: [userId], references: [id])
+  teamId     String?
+  team       Team?            @relation(fields: [teamId], references: [id])
+  mode       String           // "mcq" | "company" | "predicted"
+  category   String?
+  company    String?
+  role       String?
+  score      Int
+  total      Int
+  durationSec Int
+  startedAt  DateTime         @default(now())
+  finishedAt DateTime?
+  answers    AttemptAnswer[]
+}
+
+model AttemptAnswer {
+  id         String   @id @default(cuid())
+  attemptId  String
+  attempt    Attempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  selectedIdx Int
+  isCorrect  Boolean
+  timeSpentMs Int
+}
