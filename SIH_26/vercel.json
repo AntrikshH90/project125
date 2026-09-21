@@ -1,0 +1,4 @@
+{
+  "version": 2,
+  "builds": [{ "src": "SIH_26/**/*.html", "use": "@vercel/static" }]
+}
